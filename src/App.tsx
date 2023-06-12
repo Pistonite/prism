@@ -9,6 +9,7 @@ import { usePrismSvg } from 'usePrismSvg';
 import { produce } from 'immer';
 import { CodeControl } from 'comp/CodeControl';
 import { fileSave } from 'browser-fs-access';
+import { useIsDarkMode } from 'theme';
 
 const TOOLBAR_KEY_GRID = "grid";
 const TOOLBAR_KEY_SIDE_PANEL = "side-panel";
@@ -27,6 +28,8 @@ const toHumanReadableBytes = (bytes: number): string => {
 }
 
 export const App: React.FC = () => {
+    const isDarkMode = useIsDarkMode();
+
     const [prism, setPrism] = useState<PrismTree>(() => load().prism);
     const [shader, setShader] = useState<Shader>(() => load().shader);
     const [unitLength, setUnitLength] = useState<number>(() => load().unit);
@@ -159,7 +162,7 @@ export const App: React.FC = () => {
                     <Text>Size: {toHumanReadableBytes(svg.length)}</Text>
                 </Toolbar>
                 
-                <div id="canvas" ref={canvasRef} style={{ position: "relative", backgroundColor: "#eeeeee" }} onMouseDown={(e) => {
+                <div id="canvas" ref={canvasRef} style={{ position: "relative", backgroundColor: isDarkMode ? "#222222" : "#eeeeee" }} onMouseDown={(e) => {
                     setDragStart([e.clientX - translate[0], e.clientY - translate[1]]);
                 }} onMouseMove={(e) => {
                     if (!dragStart) {
@@ -186,7 +189,7 @@ export const App: React.FC = () => {
                                 height={canvasRef.current?.clientHeight || 0}
                                 translateX={translate[0]}
                                 translateY={translate[1]}
-                                color="#cccccc"
+                                color={isDarkMode ? "#555555" : "#cccccc"}
                                 svgXShift={svgTranslate[0]}
                                 svgYShift={svgTranslate[1]}
                             />
