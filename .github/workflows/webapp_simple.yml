@@ -1,0 +1,49 @@
+# This Workflow builds a webapp with npm and deploys it to pages on version tags
+# assumes building to the "dist" directory
+
+name: Simple Web App CI
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup | Checkout
+      uses: actions/checkout@v3
+    - name: Setup | Node Install
+      run: npm ci
+    - name: Build | Build App
+      run: npm run build
+    - name: Build | Upload Artifact
+      uses: actions/upload-pages-artifact@v1.0.4
+      with:
+        path: dist
+        retention-days: 30
+
+  deploy:
+    name: Deploy
+    needs:
+    - build
+    if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy | GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v1
