@@ -1,124 +1,249 @@
 /// Optimize grid
 
 import { Grid, Point, Segment } from "data";
-import { getGrid } from "./grid";
+import { getGrid, setGrid } from "./grid";
+
+const MAX_TREE_DEPTH = 2048;
 
 export const toPolylines = (grids: Record<string, Grid<boolean>>, shaders: Record<string, Grid<boolean>>): [Record<string, Point[][]>, Record<string, Point[][]>] => {
     const basePolygons: Record<string, Point[][]> = {};
-    for(const color in grids) {
+    for (const color in grids) {
         basePolygons[color] = toPolygonsInternal(grids[color]);
     }
     const shaderPolygons: Record<string, Point[][]> = {};
-    for(const color in shaders) {
+    for (const color in shaders) {
         shaderPolygons[color] = toPolygonsInternal(shaders[color]);
     }
-    // console.log(shaderPolygons);
     return [basePolygons, shaderPolygons];
 }
 
 /// Convert a grid to many polygons
 const toPolygonsInternal = (grid: Grid<boolean>): Point[][] => {
-    const uvLayer = toUVPoints(grid);
-    const segments = getSegments(grid, uvLayer);
-    const polygons = findPolygonsFromSegments(segments);
+    const uvTrees = toUVTrees(grid);
+    const polygons = uvTrees.map(tree => {
+        const segments: Segment[] = [];
+        addSegmentsFromTree(tree, segments, undefined);
+
+        return optimizeSegments(segments);
+    });
     return polygons;
 }
 
-/// Get segments in a uv layer
-const getSegments = (grid: Grid<boolean>, uvs: Point[]): Segment[] => {
-    const out: Segment[] = [];
-    uvs.forEach(([u, v]) => {
-        if (!getGrid(grid, u, v-1)) {
-            // top side
-            out.push({
+type Tree = {
+    center: Point,
+    top: Tree | undefined,
+    bottom: Tree | undefined,
+    side: Tree | undefined,
+}
+type TreeSide = "top" | "bottom" | "side";
+
+/// Convert grid to a tree of points
+const toUVTrees = (grid: Grid<boolean>): Tree[] => {
+    // clone the grid because we will mutate it
+    const clonedGrid: Grid<boolean> = {};
+    for (const u in grid) {
+        for (const v in grid[u]) {
+            if (grid[u][v]) {
+                setGrid(clonedGrid, Number(u), Number(v), true);
+            }
+        }
+    }
+    const trees: Tree[] = [];
+    let point = removeOnePointOnGrid(clonedGrid);
+    while(point !== undefined) {
+        const tree = findUVTreeHelper(clonedGrid, 0, point);
+        trees.push(tree);
+        point = removeOnePointOnGrid(clonedGrid);
+   }
+    return trees;
+}
+
+const removeOnePointOnGrid = (grid: Grid<boolean>): Point | undefined => {
+    for (const u in grid) {
+        for (const v in grid[u]) {
+            if (grid[u][v]) {
+                delete grid[u][v];
+                return [Number(u), Number(v)];
+            }
+        }
+    }
+    return undefined
+}
+
+const findUVTreeHelper = (grid: Grid<boolean>, depth: number, center: Point): Tree => {
+    const tree: Tree = {
+        center,
+        top: undefined,
+        bottom: undefined,
+        side: undefined,
+    };
+    if (depth > MAX_TREE_DEPTH) {
+        return tree;
+    }
+    const [u, v] = center;
+    // Get top subtree if possible (u, v-1)
+
+    if (getGrid(grid, u, v - 1)) {
+        delete grid[u][v-1];
+        tree.top = findUVTreeHelper(grid, depth + 1, [u, v - 1]);
+    }
+    // Get bottom subtree if possible (u, v+1)
+    if (getGrid(grid, u, v + 1)) {
+        delete grid[u][v+1];
+        tree.bottom = findUVTreeHelper(grid, depth + 1, [u, v + 1]);
+    }
+    // Get side subtree
+    const isPointingLeft = (u + v) % 2 === 0;
+    const side: Point = isPointingLeft ? [u + 1, v] : [u - 1, v];
+    if (getGrid(grid, side[0], side[1])) {
+        delete grid[side[0]][side[1]];
+        tree.side = findUVTreeHelper(grid, depth + 1, side);
+    }
+    return tree;
+}
+
+/// Add segments from tree. The segments are added clockwise
+const addSegmentsFromTree = (tree: Tree, segments: Segment[], fromSide: TreeSide | undefined) => {
+    const [u, v] = tree.center;
+    const isPointingLeft = (u + v) % 2 === 0;
+    const addTopTree = () => {
+        if (tree.top !== undefined) {
+            addSegmentsFromTree(tree.top, segments, "bottom");
+        } else {
+            segments.push({
                 uv: [u, v],
                 vertical: false
             });
         }
-        if (!getGrid(grid, u, v+1)) {
-            // bottom side
-            out.push({
-                uv: [u, v+1],
+    };
+    const addBottomTree = () => {
+        if (tree.bottom !== undefined) {
+            addSegmentsFromTree(tree.bottom, segments, "top");
+        } else {
+            segments.push({
+                uv: [u, v + 1],
                 vertical: false
             });
         }
-        const isPointingLeft = (u+v)%2 === 0;
-        if (isPointingLeft) {
-            // right side
-            if (!getGrid(grid, u+1, v)) {
-                out.push({
-                    uv: [u, v],
-                    vertical: true
-                });
-            }
+    };
+    const addSideTree = () => {
+        if (tree.side !== undefined) {
+            addSegmentsFromTree(tree.side, segments, "side");
         } else {
-            // left side
-            if (!getGrid(grid, u-1, v)) {
-                out.push({
-                    uv: [u-1, v],
-                    vertical: true
-                });
-            }
+            segments.push({
+                uv: isPointingLeft ? [u, v] : [u - 1, v],
+                vertical: true
+            });
         }
-    });
-    return out;
-}
-
-const toUVPoints = (grid: Grid<boolean>): Point[] => {
-    const points: Point[] = [];
-    for (const u in grid) {
-        for (const v in grid[u]) {
-            if (grid[u][v]) {
-                points.push([Number(u), Number(v)]);
-            }
+    };
+    if (!fromSide) {
+        addTopTree();
+        if (isPointingLeft) {
+            addSideTree();
+            addBottomTree();
+        } else {
+            addBottomTree();
+            addSideTree();
         }
+        return;
     }
-    return points;
-}
-
-/// Find segments that make a (closed) polygon. Return undefined if none found
-const findPolygonsFromSegments = (segments: Segment[]): Point[][] => {
-    const polygons: Point[][] = [];
-    while(segments.length > 0) {
-        // current stack top direction
-        let negativeV = false;
-        // stack for the current polygon
-        const stack: Segment[] = [segments.pop()!]; // eslint-disable-line @typescript-eslint/no-non-null-assertion
-        const directions: boolean[] = [negativeV];
-        while(stack.length < 3 || getNextSegmentDirection(stack[stack.length-1], negativeV, stack[0]) === undefined) {
-            const [nextI, nextNegativeV] = indexOfNextSegment(stack[stack.length-1], segments, negativeV);
-            if (nextI === -1) {
-                // no next segment found
-                console.warn({
-                    message: "No next segment found. This should not happen.",
-                    stack: [...stack],
-                    directions: [...directions],
-                    segments: [...segments]
-                });
+    if (isPointingLeft) {
+        switch (fromSide) {
+            case "top":
+                addSideTree();
+                addBottomTree();
                 break;
-            }
-            stack.push(segments[nextI]);
-            directions.push(nextNegativeV);
-            segments.splice(nextI, 1);
-            negativeV = nextNegativeV;
+            case "bottom":
+                addTopTree();
+                addSideTree();
+                break;
+            case "side":
+                addBottomTree();
+                addTopTree();
+                break;
         }
-        const polygon = createPolygonFromSegments(stack, directions);
-        polygons.push(polygon);
+    } else {
+        switch (fromSide) {
+            case "top":
+                addBottomTree();
+                addSideTree();
+                break;
+            case "bottom":
+                addSideTree();
+                addTopTree();
+                break;
+            case "side":
+                addTopTree();
+                addBottomTree();
+                break;
+        }
     }
-    return polygons;
 }
 
-/// Find the next segment in rest that can make a polygon.
-/// negativeV is the direction of the current segment. If true, it is going in the negative v direction
-/// Returns the index or -1 if none found, and if the next segment is in negative v direction
-const indexOfNextSegment = (current: Segment, rest: Segment[], negativeV: boolean): [number, boolean] => {
-    for(let i=0;i<rest.length;i++) {
-        const result = getNextSegmentDirection(current, negativeV, rest[i]);
-        if (result !== undefined) {
-            return [i, result];
+/// Remove unnecessary segments, and orient each segment in negative or positive directions
+const optimizeSegments = (segments: Segment[]): Point[] => {
+    if (segments.length < 3) {
+        return [];
+    }
+    const optimizedSegments: Segment[] = [];
+    const negativeVs: boolean[] = [];
+
+    for (let i = 0; i < segments.length; i++) {
+        if (optimizedSegments.length === 0 || negativeVs.length === 0) {
+            if (i >= segments.length - 1) {
+                console.warn("Fail to optimize segment: cannot get direction of segment", segments);
+                return [];
+            }
+            const nextSegment = segments[i + 1];
+            if (getNextSegmentDirection(segments[i], false, nextSegment) !== undefined) {
+                negativeVs.push(false);
+            } else if (getNextSegmentDirection(segments[i], true, nextSegment) !== undefined) {
+                negativeVs.push(true);
+            } else {
+                // this means the next segment is the same as current segment, so we skip both
+                if (!segmentsAreEqual(segments[i], nextSegment)) {
+                    console.warn("Expecting 2 segments to be equal when optimizing, but they are not", {
+                        nextSegment,
+                        lastSegment: segments[i],
+                    })
+                }
+                i++;
+                continue;
+            }
+            optimizedSegments.push(segments[i]);
+            continue;
+        }
+        const nextSegment = segments[i];
+        const nextNegativeV = getNextSegmentDirection(
+            optimizedSegments[optimizedSegments.length - 1],
+            negativeVs[negativeVs.length - 1],
+            nextSegment
+        );
+        if (nextNegativeV === undefined) {
+            // The next segment is invalid, this can only mean that the next segment
+            // is the same as last segment, but in the other direction.
+            // so we remove the last segment
+            if (!segmentsAreEqual(optimizedSegments[optimizedSegments.length - 1], nextSegment)) {
+                console.warn("Expecting 2 segments to be equal when optimizing, but they are not", {
+                    negativeV: negativeVs[negativeVs.length - 1],
+                    nextSegment,
+                    lastSegment: optimizedSegments[optimizedSegments.length - 1],
+                })
+            }
+            
+            optimizedSegments.pop();
+            negativeVs.pop();
+        } else {
+            optimizedSegments.push(nextSegment);
+            negativeVs.push(nextNegativeV);
         }
     }
-    return [-1, false];
+
+    return createPolygonFromSegments(optimizedSegments, negativeVs);
+}
+
+const segmentsAreEqual = (a: Segment, b: Segment): boolean => {
+    return a.uv[0] === b.uv[0] && a.uv[1] === b.uv[1] && a.vertical === b.vertical;
 }
 
 /// Test if the next segment can be a valid next segment. Return undefined if not, and if the next segment is in negative v direction
@@ -130,103 +255,103 @@ const getNextSegmentDirection = (current: Segment, negativeV: boolean, next: Seg
             if (nu === u && nv === v && !next.vertical) {
                 return false;
             }
-            if (nu === u && nv === v-1 && !next.vertical) {
+            if (nu === u && nv === v - 1 && !next.vertical) {
                 return true;
             }
-            if (nu === u && nv === v-2 && next.vertical) {
+            if (nu === u && nv === v - 2 && next.vertical) {
                 return true;
             }
-            if (nu === u+1 && nv === v-1 && !next.vertical) {
+            if (nu === u + 1 && nv === v - 1 && !next.vertical) {
                 return true;
             }
-            if (nu === u+1 && nv === v && !next.vertical) {
+            if (nu === u + 1 && nv === v && !next.vertical) {
                 return false;
             }
         } else {
-            if (nu === u+1 && nv === v+1 && !next.vertical) {
+            if (nu === u + 1 && nv === v + 1 && !next.vertical) {
                 return true;
             }
-            if (nu === u+1 && nv === v+2 && !next.vertical) {
+            if (nu === u + 1 && nv === v + 2 && !next.vertical) {
                 return false;
             }
-            if (nu === u && nv === v+2 && next.vertical) {
+            if (nu === u && nv === v + 2 && next.vertical) {
                 return false;
             }
-            if (nu === u && nv === v+2 && !next.vertical) {
+            if (nu === u && nv === v + 2 && !next.vertical) {
                 return false;
             }
-            if (nu === u && nv === v+1 && !next.vertical) {
+            if (nu === u && nv === v + 1 && !next.vertical) {
                 return true;
             }
         }
     } else {
         // if triangle is pointing left
-        const isPointingLeft = (u+v)%2 === 0;
+        const isPointingLeft = (u + v) % 2 === 0;
         if (negativeV) {
             if (isPointingLeft) {
-                if (nu === u && nv === v-1 && !next.vertical) {
+                if (nu === u && nv === v - 1 && !next.vertical) {
                     return true;
                 }
-                if (nu === u && nv === v-2 && next.vertical) {
+                if (nu === u && nv === v - 2 && next.vertical) {
                     return true;
                 }
-                if (nu === u+1 && nv === v-1 && !next.vertical) {
+                if (nu === u + 1 && nv === v - 1 && !next.vertical) {
                     return true;
                 }
-                if (nu === u+1 && nv === v && !next.vertical) {
+                if (nu === u + 1 && nv === v && !next.vertical) {
                     return false;
                 }
                 if (nu === u && nv === v && next.vertical) {
                     return false;
                 }
             } else {
-                if (nu === u-1 && nv == v && next.vertical) {
+                if (nu === u - 1 && nv == v && next.vertical) {
                     return false;
                 }
-                if (nu === u-1 && nv == v && !next.vertical) {
+                if (nu === u - 1 && nv == v && !next.vertical) {
                     return false;
                 }
-                if (nu === u-1 && nv == v-1&& !next.vertical) {
+                if (nu === u - 1 && nv == v - 1 && !next.vertical) {
                     return true;
                 }
-                if (nu === u-1 && nv == v-2 && next.vertical) {
+                if (nu === u - 1 && nv == v - 2 && next.vertical) {
                     return true;
                 }
-                if (nu === u && nv == v-1 && !next.vertical) {
+                if (nu === u && nv == v - 1 && !next.vertical) {
                     return true;
                 }
             }
         } else {
             if (isPointingLeft) {
-                if (nu === u && nv === v+1 && !next.vertical) {
+                if (nu === u && nv === v + 1 && !next.vertical) {
                     return false;
                 }
-                if (nu === u-1 && nv === v+1 && next.vertical) {
+                if (nu === u - 1 && nv === v + 1 && next.vertical) {
                     return false;
                 }
-                if (nu === u-1 && nv === v+1 && !next.vertical) {
+                if (nu === u - 1 && nv === v + 1 && !next.vertical) {
                     return false;
                 }
-                if (nu === u-1 && nv === v && !next.vertical) {
+                if (nu === u - 1 && nv === v && !next.vertical) {
                     return true;
                 }
-                if (nu === u-1 && nv === v-1 && next.vertical) {
+                if (nu === u - 1 && nv === v - 1 && next.vertical) {
                     return true;
                 }
             } else {
-                if (nu === u && nv === v-1 && next.vertical) {
+                if (nu === u && nv === v - 1 && next.vertical) {
                     return true;
                 }
-                if (nu === u+1 && nv === v && !next.vertical) {
+                if (nu === u + 1 && nv === v && !next.vertical) {
                     return true;
                 }
-                if (nu === u+1 && nv === v+1 && !next.vertical) {
+                if (nu === u + 1 && nv === v + 1 && !next.vertical) {
                     return false;
                 }
-                if (nu === u && nv === v+1 && next.vertical) {
+                if (nu === u && nv === v + 1 && next.vertical) {
                     return false;
                 }
-                if (nu === u && nv === v+1 && !next.vertical) {
+                if (nu === u && nv === v + 1 && !next.vertical) {
                     return false;
                 }
             }
@@ -238,10 +363,10 @@ const getNextSegmentDirection = (current: Segment, negativeV: boolean, next: Seg
 /// Create polygon vertices from segments
 const createPolygonFromSegments = (segments: Segment[], negativeV: boolean[]): Point[] => {
     const points = [];
-    for(let i=0;i<segments.length;i++) {
+    for (let i = 0; i < segments.length; i++) {
         const segment = segments[i];
         const negative = negativeV[i];
-        if (i === 0 || !isColinear(segment, segments[i-1])) {
+        if (i === 0 || !isColinear(segment, segments[i - 1])) {
             points.push(getTail(segment, negative));
         }
     }
@@ -249,26 +374,27 @@ const createPolygonFromSegments = (segments: Segment[], negativeV: boolean[]): P
 }
 
 /// Get the head point of a segment. Flip negativeV to get the tail point
-const getHead = (segment: Segment, negativeV: boolean): Point => {
+const getTail = (segment: Segment, negativeV: boolean): Point => {
     const [u, v] = segment.uv;
-    const isPointingLeft = (u+v)%2 === 0;
+    const isPointingLeft = (u + v) % 2 === 0;
     if (isPointingLeft) {
         if (negativeV) {
-            // same head if segment is vertical or not
-            return [(u+1) * Math.sqrt(3)/2, v * 0.5];
-        } else {
             if (segment.vertical) {
-                return [(u+1) * Math.sqrt(3)/2, v * 0.5 + 1];
+                return [(u + 1) * Math.sqrt(3) / 2, v * 0.5 + 1];
             } else {
-                return [u * Math.sqrt(3)/2, (v+1) * 0.5];
+                return [u * Math.sqrt(3) / 2, (v + 1) * 0.5];
             }
+        } else {
+            // same tail if segment is vertical or not
+            return [(u + 1) * Math.sqrt(3) / 2, v * 0.5];
+
         }
     } else {
         // cannot be vertical
         if (negativeV) {
-            return [u * Math.sqrt(3)/2, v * 0.5];
+            return [(u + 1) * Math.sqrt(3) / 2, (v + 1) * 0.5];
         } else {
-            return [(u+1) * Math.sqrt(3)/2, (v+1) * 0.5];
+            return [u * Math.sqrt(3) / 2, v * 0.5];
         }
     }
 }
@@ -281,11 +407,7 @@ const isColinear = (s1: Segment, s2: Segment): boolean => {
         return true;
     }
     // the triangle need to point at the same direction
-    const d1 = (s1.uv[0]+s1.uv[1])%2;
-    const d2 = (s2.uv[0]+s2.uv[1])%2;
+    const d1 = (s1.uv[0] + s1.uv[1]) % 2;
+    const d2 = (s2.uv[0] + s2.uv[1]) % 2;
     return d1 === d2;
-}
-
-const getTail = (segment: Segment, negativeV: boolean): Point => {
-    return getHead(segment, !negativeV);
 }

@@ -5,6 +5,10 @@ import { Prism, PrismGroup, PrismTree } from "./types";
 export const copyValidate = (prism: PrismTree): PrismTree => {
     const isGroup = "children" in prism;
     const result: PrismTree = isGroup ? createPrismGroup() : createPrism();
+    result.name = prism.name || "";
+    result.color = prism.color;
+    result.positive = prism.positive;
+    result.hidden = prism.hidden;
     if (prism.position) {
         result.position.x = prism.position.x || 0;
         result.position.y = prism.position.y || 0;

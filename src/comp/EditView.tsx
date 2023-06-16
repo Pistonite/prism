@@ -16,6 +16,8 @@ type EditViewProps = {
     unitLength: number;
     /// Callback to set the unit length
     setUnitLength: (unitLength: number) => void;
+    /// Should the cut option be disabled (i.e. for root)
+    disableCut: boolean;
 }
 
 const parseSpinButtonInt = (data: SpinButtonOnChangeData): number => {
@@ -43,7 +45,15 @@ const parseSpinButtonFloat = (data: SpinButtonOnChangeData): number => {
 
 
 /// View for editing the prism tree
-export const EditView: React.FC<EditViewProps> = ({ prism, setPrism, shader, setShader, unitLength, setUnitLength }) => {
+export const EditView: React.FC<EditViewProps> = ({
+    prism,
+    setPrism,
+    shader,
+    setShader,
+    unitLength,
+    setUnitLength,
+    disableCut
+}) => {
     const isInterior = "children" in prism;
     const [globalShown, setGlobalShown] = useState<boolean>(false);
     return (
@@ -81,7 +91,7 @@ export const EditView: React.FC<EditViewProps> = ({ prism, setPrism, shader, set
                     </>
                 )
             }
-            <Switch label="Cut volume" checked={!prism.positive} onChange={(_, data)=>setPrism({...prism, positive: !data.checked})}/>
+            <Switch label="Cut volume" disabled={disableCut} checked={!prism.positive} onChange={(_, data)=>setPrism({...prism, positive: !data.checked})}/>
             <Switch label="Hidden" checked={!!prism.hidden} onChange={(_, data)=>setPrism({...prism, hidden: data.checked})}/>
             <Switch label="Show global properties" checked={globalShown} onChange={(_, data)=>setGlobalShown(data.checked)}/>
             {

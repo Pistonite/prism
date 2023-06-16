@@ -29,6 +29,13 @@ export const flattenPrismTree = (tree: PrismTree, parentColor: Color): PrismRend
                 out = subtractAll(out, childRender);
             }
         });
+        if (tree.position.x || tree.position.y || tree.position.z) {
+            out.forEach(pos => {
+                pos.position.x += tree.position.x;
+                pos.position.y += tree.position.y;
+                pos.position.z += tree.position.z;       
+            });
+        }
         return out;
     }
 
