@@ -41,7 +41,7 @@ const drawFace = (grid: Grid<ColorAndFace>, face: PrismFace) => {
     }
 }
 /// Draw on a grid
-const setGrid = <T>(grid: Grid<T>, u: number, v: number, t: T) => {
+export const setGrid = <T>(grid: Grid<T>, u: number, v: number, t: T) => {
     if (grid[u] === undefined) {
         grid[u] = {};
     }

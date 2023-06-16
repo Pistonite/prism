@@ -126,6 +126,7 @@ export const App: React.FC = () => {
                                 setShader={setShader}
                                 unitLength={unitLength}
                                 setUnitLength={setUnitLength}
+                                disableCut={editingIndex.length === 0}
                             />
 
                         </div>
