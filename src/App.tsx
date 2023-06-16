@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Tree } from '@fluentui/react-components/unstable';
 import { BulletedTreeListIcon, DownloadIcon, ShowGridIcon } from '@fluentui/react-icons-mdl2';
-import { Toolbar, ToolbarButton, ToolbarDivider, ToolbarToggleButton, Text, Tooltip } from '@fluentui/react-components';
+import { Toolbar, ToolbarButton, ToolbarDivider, ToolbarToggleButton, Text, Tooltip, Switch } from '@fluentui/react-components';
 import { EditView, PrismTreeView, GridView, ZoomControl } from 'comp';
 import { PrismTree, Shader, load, save } from 'data';
 import { useTransformControl } from 'useTransformControl';
@@ -87,12 +87,13 @@ export const App: React.FC = () => {
     const [toolbarCheckedItems, setToolbarCheckedItems] = useState<ToolBarCheckedItems>({ _: [TOOLBAR_KEY_SIDE_PANEL] });
     const showGrid = toolbarCheckedItems._.includes(TOOLBAR_KEY_GRID);
     const showSidePanel = toolbarCheckedItems._.includes(TOOLBAR_KEY_SIDE_PANEL);
+    const [forceSquare, setForceSquare] = useState<boolean>(true);
 
     const {
         svg,
         svgRef,
         svgTranslate
-    } = usePrismSvg(prism, shader, unitLength);
+    } = usePrismSvg(prism, shader, unitLength, forceSquare);
 
     const json = useMemo(() => JSON.stringify(prism), [prism]);
     
@@ -159,7 +160,8 @@ export const App: React.FC = () => {
                             fileSave(new Blob([svg]), { fileName: `${prism.name || "Prism"}.svg`, extensions: [".svg"] })
                         }}/>
                     </Tooltip>
-                    <Text>Size: {toHumanReadableBytes(svg.length)}</Text>
+                    <Text>Size: {toHumanReadableBytes(svg.length)} </Text>
+                    <Switch label="Square Icon" checked={forceSquare} onChange={(_, data)=>setForceSquare(data.checked)}/>
                 </Toolbar>
                 
                 <div id="canvas" ref={canvasRef} style={{ position: "relative", backgroundColor: isDarkMode ? "#222222" : "#eeeeee" }} onMouseDown={(e) => {

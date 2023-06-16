@@ -12,7 +12,7 @@ type PrismSvgData = {
 }
 
 /// Hook to convert Prism data to SVG
-export const usePrismSvg = (prism: PrismTree, shader: Shader, unitLength: number): PrismSvgData => {
+export const usePrismSvg = (prism: PrismTree, shader: Shader, unitLength: number, forceSquare: boolean): PrismSvgData => {
     const [svg, setSvg] = useState("");
     const [svgXShift, setSvgXShift] = useState(0);
     const [svgYShift, setSvgYShift] = useState(0);
@@ -35,7 +35,7 @@ export const usePrismSvg = (prism: PrismTree, shader: Shader, unitLength: number
             // Convert the grid to polygones
             const [basePolygons, shaderPolygons] = toPolylines(baseGrid, shaderGrid);
             // Convert the polygons to SVG
-            const [svg, xShift, yShift] =  toSvgAndShifts(basePolygons, shaderPolygons, unitLength);
+            const [svg, xShift, yShift] =  toSvgAndShifts(basePolygons, shaderPolygons, unitLength, forceSquare);
 
             setSvg(svg);
             setSvgXShift(xShift);
@@ -44,7 +44,7 @@ export const usePrismSvg = (prism: PrismTree, shader: Shader, unitLength: number
             div.innerHTML = svg;
         });
         
-    }, [svgRef, prism, shader, unitLength]);
+    }, [svgRef, prism, shader, unitLength, forceSquare]);
 
     return {
         svgRef,

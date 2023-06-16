@@ -22,7 +22,17 @@ type GridViewProps = {
 }
 
 /// Grid view
-export const GridView: React.FC<GridViewProps> = ({ scale, unitLength, width, height, translateX, translateY, color, svgYShift, svgXShift }) => {
+export const GridView: React.FC<GridViewProps> = ({
+    scale,
+    unitLength,
+    width,
+    height,
+    translateX,
+    translateY,
+    color,
+    svgYShift,
+    svgXShift
+}) => {
     // Unit lengths (spacing between lines)
     const xUnitLength = unitLength * Math.sqrt(3) / 2 * scale;
     const yUnitLength = unitLength * scale;
