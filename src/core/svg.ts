@@ -17,7 +17,7 @@ export const toSvgAndShifts = (
         paths += toSvgPolygon(color, shaders[color], shiftX, shiftY, scale);
     }
     //uncomment to see border
-    paths+=`<rect width="${width*scale}" height="${height*scale}" fill="none" stroke="black"/>`
+    //paths+=`<rect width="${width*scale}" height="${height*scale}" fill="none" stroke="black"/>`
 
     return [`<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="${width*scale}" height="${height*scale}">${paths}</svg>`, -shiftX, -shiftY];
 }
