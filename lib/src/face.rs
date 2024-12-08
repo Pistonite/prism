@@ -8,7 +8,7 @@ use crate::poly::Layer;
 ///
 /// Each face can be put onto a 2D grid, when faces of different
 /// positions are rendered into the same location on the grid,
-/// the face with higher `layer()` should be rendered on top 
+/// the face with higher `layer()` should be rendered on top
 /// (i.e. lower layer should be covered completely).
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Face<'c> {
@@ -59,11 +59,11 @@ impl<'c> Face<'c> {
         // moving it in +Z direction by 1. So
         // every movement in +Z direction is effectively moving
         // through 2 layers
-        self.pos.x() + self.pos.y() + self.pos.z()*2
+        self.pos.x() + self.pos.y() + self.pos.z() * 2
     }
 
     /// Get the UV coordinates of the face in the grid
-    /// 
+    ///
     /// Each face occupies 2 slots in the grid. The returned
     /// values are (u1, v1, u2, v2)
     pub fn get_uvs(&self) -> (i32, i32, i32, i32) {
@@ -77,9 +77,9 @@ impl<'c> Face<'c> {
         let u = ux + uy + uz;
         let v = vx + vy + vz;
         match self.dir {
-            FaceDir::Top => (u, v, u+1, v),
-            FaceDir::Front => (u, v+1, u, v+2),
-            FaceDir::Side => (u+1, v+1, u+1, v+2),
+            FaceDir::Top => (u, v, u + 1, v),
+            FaceDir::Front => (u, v + 1, u, v + 2),
+            FaceDir::Side => (u + 1, v + 1, u + 1, v + 2),
         }
     }
 }
@@ -96,7 +96,7 @@ pub enum FaceDir {
 
 /// Grid for rendering faces
 #[derive(Debug, Clone, Derivative)]
-#[derivative(Default(bound = "", new="true"))]
+#[derivative(Default(bound = "", new = "true"))]
 pub struct Canvas<'c> {
     /// Direction of the face at each grid position
     grid: Grid2<CanvasPoint<'c>>,
@@ -125,7 +125,7 @@ impl<'c> Canvas<'c> {
                 // if the grid already has a face above it,try
                 // to compose the color
                 point.get_mut().add_color(face.color);
-            },
+            }
             Entry::Vacant(point) => {
                 point.insert(CanvasPoint::new(face.dir, face.color));
             }
@@ -141,8 +141,11 @@ struct LayerBuilder {
 
 impl LayerBuilder {
     pub fn new(shader: Vec3<Color>) -> Self {
-        let shade = (Layer::new(&shader.x_ref().into()), 
-            Layer::new(&shader.y_ref().into()), Layer::new(&shader.z_ref().into()));
+        let shade = (
+            Layer::new(&shader.x_ref().into()),
+            Layer::new(&shader.y_ref().into()),
+            Layer::new(&shader.z_ref().into()),
+        );
         Self {
             opaque: Default::default(),
             alpha: Default::default(),
@@ -163,7 +166,7 @@ impl LayerBuilder {
                 if !self.shade.x_ref().color.is_transparent() {
                     self.shade.x_mut().grid.set(u, v, ());
                 }
-            },
+            }
             FaceDir::Side => {
                 if !self.shade.y_ref().color.is_transparent() {
                     self.shade.y_mut().grid.set(u, v, ());
@@ -203,13 +206,18 @@ impl LayerBuilder {
 pub struct CanvasPoint<'c> {
     /// Direction of the face at this point, used to apply shading
     pub face: FaceDir,
-    /// Opaque color at the bottom of the layer 
+    /// Opaque color at the bottom of the layer
     pub opaque_color: &'c Color,
     /// Colors at the point, in order of above -> below
     pub alpha_blend: Color,
 }
 
-const TRANSPARENT: Color = Color { r: 0., g: 0., b: 0., a: 0. };
+const TRANSPARENT: Color = Color {
+    r: 0.,
+    g: 0.,
+    b: 0.,
+    a: 0.,
+};
 
 impl<'c> CanvasPoint<'c> {
     pub fn new(face: FaceDir, color: &'c Color) -> Self {

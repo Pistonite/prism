@@ -4,7 +4,6 @@ use derive_more::derive::{Deref, DerefMut};
 use crate::face::Face;
 use crate::math::{nonneg, Vec3};
 
-
 /// Render result of a Prism Tree, representing a positive 3D prism
 /// in the space
 #[derive(Debug, Clone, PartialEq, Deref, DerefMut)]
@@ -33,19 +32,19 @@ impl Prism {
         // top
         for x in x1..x2 {
             for y in y1..y2 {
-                out.push(Face::top(&self.color, (x, y, z2-1)));
+                out.push(Face::top(&self.color, (x, y, z2 - 1)));
             }
         }
         // front
         for y in y1..y2 {
             for z in z1..z2 {
-                out.push(Face::front(&self.color, (x2-1, y, z)));
+                out.push(Face::front(&self.color, (x2 - 1, y, z)));
             }
         }
         // side
         for x in x1..x2 {
             for z in z1..z2 {
-                out.push(Face::side(&self.color, (x, y2-1, z)));
+                out.push(Face::side(&self.color, (x, y2 - 1, z)));
             }
         }
     }
@@ -60,7 +59,10 @@ pub struct Geom3 {
 
 impl Geom3 {
     pub fn new(pos: impl Into<Vec3<i32>>, size: impl Into<Vec3<u32>>) -> Self {
-        Self { pos: pos.into(), size: size.into().into() }
+        Self {
+            pos: pos.into(),
+            size: size.into(),
+        }
     }
 
     /// Returns the intersection of this prism with another prism
@@ -68,10 +70,10 @@ impl Geom3 {
     /// If the prisms do not intersect, A 0-volume prism is returned.
     pub fn intersection(&self, other: &Self) -> Self {
         let pos = Vec3::from((
-                self.pos.x().max(other.pos.x()),
-                self.pos.y().max(other.pos.y()),
-                self.pos.z().max(other.pos.z()),
-            ));
+            self.pos.x().max(other.pos.x()),
+            self.pos.y().max(other.pos.y()),
+            self.pos.z().max(other.pos.z()),
+        ));
         Self::new(
             pos,
             (
@@ -117,11 +119,14 @@ mod test {
         let prism = Prism::new(&color, (0, 0, 0), (1, 1, 1));
         let mut faces = Vec::new();
         prism.render_faces(&mut faces);
-        assert_eq!(faces, vec![
-            Face::top(&color, (0, 0, 0)),
-            Face::front(&color, (0, 0, 0)),
-            Face::side(&color, (0, 0, 0)),
-        ])
+        assert_eq!(
+            faces,
+            vec![
+                Face::top(&color, (0, 0, 0)),
+                Face::front(&color, (0, 0, 0)),
+                Face::side(&color, (0, 0, 0)),
+            ]
+        )
     }
 
     #[test]
@@ -130,19 +135,22 @@ mod test {
         let prism = Prism::new(&color, (0, 0, 0), (2, 2, 2));
         let mut faces = Vec::new();
         prism.render_faces(&mut faces);
-        assert_eq!(faces, vec![
-            Face::top(&color, (0, 0, 1)),
-            Face::top(&color, (0, 1, 1)),
-            Face::top(&color, (1, 0, 1)),
-            Face::top(&color, (1, 1, 1)),
-            Face::front(&color, (1, 0, 0)),
-            Face::front(&color, (1, 0, 1)),
-            Face::front(&color, (1, 1, 0)),
-            Face::front(&color, (1, 1, 1)),
-            Face::side(&color, (0, 1, 0)),
-            Face::side(&color, (0, 1, 1)),
-            Face::side(&color, (1, 1, 0)),
-            Face::side(&color, (1, 1, 1)),
-        ])
+        assert_eq!(
+            faces,
+            vec![
+                Face::top(&color, (0, 0, 1)),
+                Face::top(&color, (0, 1, 1)),
+                Face::top(&color, (1, 0, 1)),
+                Face::top(&color, (1, 1, 1)),
+                Face::front(&color, (1, 0, 0)),
+                Face::front(&color, (1, 0, 1)),
+                Face::front(&color, (1, 1, 0)),
+                Face::front(&color, (1, 1, 1)),
+                Face::side(&color, (0, 1, 0)),
+                Face::side(&color, (0, 1, 1)),
+                Face::side(&color, (1, 1, 0)),
+                Face::side(&color, (1, 1, 1)),
+            ]
+        )
     }
 }

@@ -1,4 +1,3 @@
-
 use csscolorparser::Color;
 use serde::{Deserialize, Serialize};
 
@@ -49,7 +48,6 @@ impl PrismTree {
         serde_yaml_ng::from_str(yaml)
     }
 
-
     /// Render the Tree into a flat list of non-intersecting 3D shapes
     pub fn render_prisms(&self) -> Vec<Prism> {
         let mut out = Vec::new();
@@ -71,9 +69,21 @@ impl PrismTree {
     /// - Z: rgba(0, 0, 0, 0)
     pub fn get_shader(&self) -> Vec3<Color> {
         let shader_option = &self.shader;
-        let x = shader_option.x_ref().as_ref().cloned().unwrap_or(DEFAULT_SHADER_X);
-        let y = shader_option.y_ref().as_ref().cloned().unwrap_or(DEFAULT_SHADER_Y);
-        let z = shader_option.z_ref().as_ref().cloned().unwrap_or(DEFAULT_SHADER_Z);
+        let x = shader_option
+            .x_ref()
+            .as_ref()
+            .cloned()
+            .unwrap_or(DEFAULT_SHADER_X);
+        let y = shader_option
+            .y_ref()
+            .as_ref()
+            .cloned()
+            .unwrap_or(DEFAULT_SHADER_Y);
+        let z = shader_option
+            .z_ref()
+            .as_ref()
+            .cloned()
+            .unwrap_or(DEFAULT_SHADER_Z);
         Vec3(x, y, z)
     }
 
@@ -105,8 +115,7 @@ pub struct TreeNode {
 
 impl TreeNode {
     /// Render this tree into the given vector
-    pub fn render_into(&self, offset: Vec3<i32>, parent_color: &Color,out: &mut Vec<Prism>)
-    {
+    pub fn render_into(&self, offset: Vec3<i32>, parent_color: &Color, out: &mut Vec<Prism>) {
         if self.hidden {
             return;
         }
@@ -117,7 +126,7 @@ impl TreeNode {
                 for child in children {
                     if child.cut {
                         // for cuts, it needs to be put into a separate buffer,
-                        // so we can run the subtration 
+                        // so we can run the subtration
                         let mut cut = Vec::new();
                         child.render_into(offset, color, &mut cut);
                         Prism::vec_subtract(out, &cut);
@@ -134,8 +143,6 @@ impl TreeNode {
             }
         }
     }
-
-
 }
 
 macro_rules! prism_subtraction_part {
@@ -163,7 +170,7 @@ impl Prism {
     }
 
     /// Subtract another prism from this prism
-    /// 
+    ///
     /// Output is a list of prisms that are the result of the subtraction.
     /// Only positive volume prisms are emitted. The results
     /// are pushed to the out vec.
@@ -204,7 +211,7 @@ impl Prism {
             ]
         };
 
-            // -x
+        // -x
         prism_subtraction_part! {
             out, color,
             pos: Vec3(
@@ -256,11 +263,8 @@ impl Prism {
                 nonneg_sub!(b.pos.z(), self.pos.z())
             ]
         };
-        
     }
 }
-
-
 
 /// Size or children of the prism
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -277,39 +281,35 @@ mod test {
 
     #[test]
     fn render_one() {
-        let tree = PrismTree::from_yaml(r##"
+        let tree = PrismTree::from_yaml(
+            r##"
 color: "#ff0000"
 prism:
   - pos: [0, 0, 0]
     size: [1, 1, 1]
-        "##).unwrap();
+        "##,
+        )
+        .unwrap();
 
         let prisms = tree.render_prisms();
         let color = "#ff0000".parse().unwrap();
-        assert_eq!(prisms, 
-        vec![Prism::new(
-            &color
-            , (0, 0, 0), (1, 1, 1))]);
-
+        assert_eq!(prisms, vec![Prism::new(&color, (0, 0, 0), (1, 1, 1))]);
     }
 
     #[test]
     fn render_one_big() {
-        let tree = PrismTree::from_yaml(r##"
+        let tree = PrismTree::from_yaml(
+            r##"
 color: "#ff0000"
 prism:
   - pos: [1, 2, 3]
     size: [10, 12, 13]
-        "##).unwrap();
+        "##,
+        )
+        .unwrap();
 
         let prisms = tree.render_prisms();
         let color = "#ff0000".parse().unwrap();
-        assert_eq!(prisms, 
-        vec![Prism::new(
-            &color
-            , (1, 2, 3), (10, 12, 13))]);
-
+        assert_eq!(prisms, vec![Prism::new(&color, (1, 2, 3), (10, 12, 13))]);
     }
-
-
 }

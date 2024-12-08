@@ -20,26 +20,24 @@ pub enum SvgResult {
 pub fn make_svg(script: String, force_square: bool) -> SvgResult {
     let prism = match Prism::from_yaml(&script) {
         Ok(prism) => prism,
-        Err(err) => {
-            match err.location() {
-                Some(loc) => {
-                    return SvgResult::Err {
-                        message: err.to_string(),
-                        line: loc.line(),
-                        column: loc.column(),
-                        index: loc.index(),
-                    };
-                }
-                None => {
-                    return SvgResult::Err {
-                        message: err.to_string(),
-                        line: 0,
-                        column: 0,
-                        index: 0,
-                    };
-                }
+        Err(err) => match err.location() {
+            Some(loc) => {
+                return SvgResult::Err {
+                    message: err.to_string(),
+                    line: loc.line(),
+                    column: loc.column(),
+                    index: loc.index(),
+                };
             }
-        }
+            None => {
+                return SvgResult::Err {
+                    message: err.to_string(),
+                    line: 0,
+                    column: 0,
+                    index: 0,
+                };
+            }
+        },
     };
 
     let polygons = prism.render();
@@ -48,13 +46,11 @@ pub fn make_svg(script: String, force_square: bool) -> SvgResult {
             let svg = Svg::from_polygons(&polygons, prism.get_unit(), force_square);
             SvgResult::Val(svg)
         }
-        Err(err) => {
-            SvgResult::Err {
-                message: err,
-                line: 0,
-                column: 0,
-                index: 0,
-            }
-        }
+        Err(err) => SvgResult::Err {
+            message: err,
+            line: 0,
+            column: 0,
+            index: 0,
+        },
     }
 }

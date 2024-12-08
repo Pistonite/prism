@@ -1,8 +1,6 @@
-
 use derive_more::derive::{Deref, DerefMut};
 
 use crate::math::{Grid2, Rgba, VecMapEntry};
-
 
 /// Per-color coordinate map
 #[derive(Debug, Clone)]
@@ -25,7 +23,7 @@ impl VecMapEntry for Layer {
 
     fn new(key: &Self::Key) -> Self {
         Self {
-            color: key.clone(),
+            color: *key,
             grid: Default::default(),
         }
     }
@@ -35,7 +33,7 @@ impl VecMapEntry for Layer {
 #[derive(Debug, Clone)]
 pub struct Polygon {
     pub color: Rgba,
-    pub verts: Vec<(f64, f64)>
+    pub verts: Vec<(f64, f64)>,
 }
 
 impl Polygon {
@@ -55,13 +53,13 @@ impl Layer {
     /// - There will be gaps between all the polygons
     ///
     /// To solve this, we need to combine the adjacent triangles into
-    /// a single polygon. To do this, the grid is converted first 
+    /// a single polygon. To do this, the grid is converted first
     /// into a tree. Then, internal borders of the tree are removed,
     /// forming the outer edges of the polygon
     pub fn into_polygons(mut self, out: &mut Vec<Polygon>) {
-        let trees = self.into_trees();
+        let trees = self.make_trees();
         for tree in trees {
-            let segs = tree.to_segments();
+            let segs = tree.into_segments();
             let verts = create_vertices(&segs);
             out.push(Polygon::new(self.color, verts));
         }
@@ -71,7 +69,7 @@ impl Layer {
     ///
     /// The return is a vec because the grid may have multiple
     /// disjoint trees
-    fn into_trees(&mut self) -> Vec<Tree3> {
+    fn make_trees(&mut self) -> Vec<Tree3> {
         let mut trees = Vec::new();
         while let Some((u, v, _)) = self.grid.remove_one() {
             trees.push(make_tree_recur(&mut self.grid, 0, u, v));
@@ -173,7 +171,7 @@ impl Tree3 {
     ///
     /// Internal borders are removed, but outer borders
     /// are kept even if they are internal to the polygon
-    fn to_segments(self) -> Vec<Seg> {
+    fn into_segments(self) -> Vec<Seg> {
         let mut segs = Vec::new();
         self.add_to_segments(&mut segs, None);
         segs
@@ -222,7 +220,6 @@ impl Tree3 {
             }
         }
     }
-
 }
 
 impl TreeUV {
@@ -230,7 +227,10 @@ impl TreeUV {
     fn add_top(&self, top: Option<Box<Tree3>>, segs: &mut Vec<Seg>) {
         match top {
             None => {
-                segs.push(Seg { uv: *self, vertical: false });
+                segs.push(Seg {
+                    uv: *self,
+                    vertical: false,
+                });
             }
             Some(top) => {
                 top.add_to_segments(segs, Some(TreeSide::Bottom));
@@ -242,7 +242,10 @@ impl TreeUV {
     fn add_bottom(&self, bottom: Option<Box<Tree3>>, segs: &mut Vec<Seg>) {
         match bottom {
             None => {
-                segs.push(Seg { uv: TreeUV(self.u(), self.v() + 1), vertical: false });
+                segs.push(Seg {
+                    uv: TreeUV(self.u(), self.v() + 1),
+                    vertical: false,
+                });
             }
             Some(bottom) => {
                 bottom.add_to_segments(segs, Some(TreeSide::Top));
@@ -259,7 +262,7 @@ impl TreeUV {
                 } else {
                     TreeUV(self.u() - 1, self.v())
                 };
-                segs.push(Seg { uv , vertical: true });
+                segs.push(Seg { uv, vertical: true });
             }
             Some(side) => {
                 side.add_to_segments(segs, Some(TreeSide::Side));
@@ -283,10 +286,13 @@ fn create_vertices(segs: &[Seg]) -> Vec<(f64, f64)> {
         }
         match optimized.last() {
             None => {
-                let next = match segs.get(i+1) {
+                let next = match segs.get(i + 1) {
                     None => {
                         // this should not happen
-                        debug_assert!(false, "there should always be next segment if optimized is empty");
+                        debug_assert!(
+                            false,
+                            "there should always be next segment if optimized is empty"
+                        );
                         return vec![];
                     }
                     Some(next) => next,
@@ -326,7 +332,7 @@ fn create_vertices_with_optimized(segs: &[(Seg, Dir)]) -> Vec<(f64, f64)> {
     let mut verts = Vec::new();
     for (i, (seg, dir)) in segs.iter().enumerate() {
         if i == 0 || !seg.colinear(&segs[i - 1].0) {
-            verts.push(seg.to_vert(*dir));
+            verts.push(seg.get_vertice(*dir));
         }
     }
     verts
@@ -341,72 +347,60 @@ impl Seg {
 
         if self.vertical {
             let dir = match dir {
-                Dir::NegV => {
-                    match (d_u, d_v, next.vertical) {
-                        (0, 0, false) => Dir::PosV,
-                        (0, -1, false) => Dir::NegV,
-                        (0, -2, true) => Dir::NegV,
-                        (1, -1, false) => Dir::NegV,
-                        (1, 0, false) => Dir::PosV,
-                        _ => return None,
-                    }
-                }
-                Dir::PosV => {
-                    match (d_u, d_v, next.vertical) {
-                        (1, 1, false) => Dir::NegV,
-                        (1, 2, false) => Dir::PosV,
-                        (0, 2, true) => Dir::PosV,
-                        (0, 2, false) => Dir::PosV,
-                        (0, 1, false) => Dir::NegV,
-                        _ => return None,
-                    }
-                }
+                Dir::NegV => match (d_u, d_v, next.vertical) {
+                    (0, 0, false) => Dir::PosV,
+                    (0, -1, false) => Dir::NegV,
+                    (0, -2, true) => Dir::NegV,
+                    (1, -1, false) => Dir::NegV,
+                    (1, 0, false) => Dir::PosV,
+                    _ => return None,
+                },
+                Dir::PosV => match (d_u, d_v, next.vertical) {
+                    (1, 1, false) => Dir::NegV,
+                    (1, 2, false) => Dir::PosV,
+                    (0, 2, true) => Dir::PosV,
+                    (0, 2, false) => Dir::PosV,
+                    (0, 1, false) => Dir::NegV,
+                    _ => return None,
+                },
             };
             return Some(dir);
         }
 
         let dir = match (dir, self.is_pointing_left()) {
-            (Dir::NegV, true) => {
-                match (d_u, d_v, next.vertical) {
-                    (0, -1, false) => Dir::NegV,
-                    (0, -2, true) => Dir::NegV,
-                    (1, -1, false) => Dir::NegV,
-                    (1, 0, false) => Dir::PosV,
-                    (0, 0, true) => Dir::PosV,
-                    _ => return None,
-                }
+            (Dir::NegV, true) => match (d_u, d_v, next.vertical) {
+                (0, -1, false) => Dir::NegV,
+                (0, -2, true) => Dir::NegV,
+                (1, -1, false) => Dir::NegV,
+                (1, 0, false) => Dir::PosV,
+                (0, 0, true) => Dir::PosV,
+                _ => return None,
             },
-            (Dir::NegV, false) => {
-                match (d_u, d_v, next.vertical) {
-                    (-1,0,true) => Dir::PosV,
-                    (-1,0,false) => Dir::PosV,
-                    (-1,-1,false) => Dir::NegV,
-                    (-1,-2,true) => Dir::NegV,
-                    (0,-1,false) => Dir::NegV,
-                    _ => return None,
-                }
-            }
-(Dir::PosV, true)  => {
-                match (d_u, d_v, next.vertical) {
-            (0,1,false) => Dir::PosV,
-            (-1,1,true) => Dir::PosV,
-            (-1,1,false) => Dir::PosV,
-            (-1,0,false) => Dir::NegV,
-            (-1,-1,true) => Dir::NegV,
-                    _ => return None,
-                }
-            }
+            (Dir::NegV, false) => match (d_u, d_v, next.vertical) {
+                (-1, 0, true) => Dir::PosV,
+                (-1, 0, false) => Dir::PosV,
+                (-1, -1, false) => Dir::NegV,
+                (-1, -2, true) => Dir::NegV,
+                (0, -1, false) => Dir::NegV,
+                _ => return None,
+            },
+            (Dir::PosV, true) => match (d_u, d_v, next.vertical) {
+                (0, 1, false) => Dir::PosV,
+                (-1, 1, true) => Dir::PosV,
+                (-1, 1, false) => Dir::PosV,
+                (-1, 0, false) => Dir::NegV,
+                (-1, -1, true) => Dir::NegV,
+                _ => return None,
+            },
 
-(Dir::PosV, false) => {
-                match (d_u, d_v, next.vertical) {
-            (0,-1,true) => Dir::NegV,
-            (1,0,false) => Dir::NegV,
-            (1,1,false) => Dir::PosV,
-            (0,1,true) => Dir::PosV,
-            (0,1,false) => Dir::PosV,
-                    _ => return None,
-                }
-            }
+            (Dir::PosV, false) => match (d_u, d_v, next.vertical) {
+                (0, -1, true) => Dir::NegV,
+                (1, 0, false) => Dir::NegV,
+                (1, 1, false) => Dir::PosV,
+                (0, 1, true) => Dir::PosV,
+                (0, 1, false) => Dir::PosV,
+                _ => return None,
+            },
         };
 
         Some(dir)
@@ -421,11 +415,11 @@ impl Seg {
             return true;
         }
         // the triangle needs to be pointing in the same direction
-        return self.is_pointing_left() == other.is_pointing_left();
+        self.is_pointing_left() == other.is_pointing_left()
     }
 
-    /// Convert to a vertice
-    pub fn to_vert(&self, dir: Dir) -> (f64, f64) {
+    /// Convert segment to a vertice
+    pub fn get_vertice(&self, dir: Dir) -> (f64, f64) {
         // NOTE:
         // even though it's technically more precise
         // to multiply the unit here as we do the trignometry,
@@ -437,9 +431,9 @@ impl Seg {
             match dir {
                 Dir::NegV => {
                     if self.vertical {
-                        (self.u_plus1_cos30() ,self.v_sin30() + 1.)
+                        (self.u_plus1_cos30(), self.v_sin30() + 1.)
                     } else {
-                        (self.u_cos30() ,self.v_plus1_sin30())
+                        (self.u_cos30(), self.v_plus1_sin30())
                     }
                 }
                 Dir::PosV => {
@@ -450,12 +444,8 @@ impl Seg {
         } else {
             // cannot be vertical
             match dir {
-                Dir::NegV => {
-                    (self.u_plus1_cos30(), self.v_plus1_sin30())
-                }
-                Dir::PosV => {
-                    (self.u_cos30(), self.v_sin30())
-                }
+                Dir::NegV => (self.u_plus1_cos30(), self.v_plus1_sin30()),
+                Dir::PosV => (self.u_cos30(), self.v_sin30()),
             }
         }
     }
@@ -474,7 +464,7 @@ impl TreeUV {
     }
     #[inline]
     fn u_plus1_cos30(&self) -> f64 {
-        (self.u()+1) as f64 * 3_f64.sqrt() / 2.0
+        (self.u() + 1) as f64 * 3_f64.sqrt() / 2.0
     }
     #[inline]
     fn v_sin30(&self) -> f64 {
@@ -482,6 +472,6 @@ impl TreeUV {
     }
     #[inline]
     fn v_plus1_sin30(&self) -> f64 {
-        (self.v()+1) as f64 * 0.5
+        (self.v() + 1) as f64 * 0.5
     }
 }

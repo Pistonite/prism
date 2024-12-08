@@ -24,7 +24,11 @@ pub struct Svg {
 impl Svg {
     pub fn from_polygons(polygons: &[Polygon], unit: f64, force_square: bool) -> Self {
         let (shift_x, shift_y, width, height) = bounds(polygons, force_square);
-        let mut content = format!(r#"<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="{}" height="{}">"#, width*unit, height*unit);
+        let mut content = format!(
+            r#"<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="{}" height="{}">"#,
+            width * unit,
+            height * unit
+        );
         for polygon in polygons {
             let tag = make_polygon(polygon, shift_x, shift_y, unit);
             content.push_str(&tag);
@@ -70,7 +74,6 @@ fn bounds(polygons: &[Polygon], force_square: bool) -> (f64, f64, f64, f64) {
     let shift_y = shift_y + (side_length - height) / 2.0;
 
     (shift_x, shift_y, side_length, side_length)
-
 }
 
 fn make_polygon(polygon: &Polygon, shift_x: f64, shift_y: f64, unit: f64) -> String {
@@ -85,7 +88,11 @@ fn make_path(points: &[(f64, f64)], shift_x: f64, shift_y: f64, unit: f64) -> St
     let mut s = String::from("M");
 
     for (x, y) in points {
-        s.push_str(&format!("{} {}L", (x+shift_x)*unit, (y+shift_y)*unit));
+        s.push_str(&format!(
+            "{} {}L",
+            (x + shift_x) * unit,
+            (y + shift_y) * unit
+        ));
     }
 
     s.pop();

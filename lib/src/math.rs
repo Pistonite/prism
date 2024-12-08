@@ -20,11 +20,9 @@ macro_rules! nonneg_sub {
 }
 pub(crate) use nonneg_sub;
 
-
 /// Vector of 3 elements
 #[derive(
-    Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize,
-    Add, From , Into
+    Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Add, From, Into,
 )]
 pub struct Vec3<T>(pub T, pub T, pub T);
 
@@ -55,7 +53,7 @@ impl<T> Vec3<T> {
     }
 }
 
-impl<T : Copy> Vec3<T> {
+impl<T: Copy> Vec3<T> {
     #[inline]
     pub fn x(&self) -> T {
         self.0
@@ -79,7 +77,7 @@ impl<T: Num + PartialOrd> Vec3<T> {
 
 /// A 2D grid of (u, v) -> T
 #[derive(Derivative, Debug, Clone, Serialize, Deserialize)]
-#[derivative(Default(bound = "", new="true"))]
+#[derivative(Default(bound = "", new = "true"))]
 pub struct Grid2<T>(BTreeMap<(i32, i32), T>);
 impl<T> Grid2<T> {
     pub fn get(&self, u: i32, v: i32) -> Option<&T> {
@@ -143,7 +141,7 @@ impl From<&Color> for Rgba {
 
 impl Display for Rgba {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let [r,g,b,a] = self.0.to_be_bytes();
+        let [r, g, b, a] = self.0.to_be_bytes();
         match a {
             0 => write!(f, "#00000000"),
             255 => write!(f, "#{:02x}{:02x}{:02x}", r, g, b),
@@ -153,18 +151,17 @@ impl Display for Rgba {
 }
 
 #[derive(Debug, Derivative)]
-#[derivative(Default(bound = "", new="true"))]
+#[derivative(Default(bound = "", new = "true"))]
 pub struct VecMap<E: VecMapEntry>(Vec<E>);
 impl<E: VecMapEntry> VecMap<E> {
-
     pub fn get_mut<'s>(&'s mut self, k: &E::Key) -> &'s mut E::Value {
-    match self.0.iter().position(|e| e.key() == k) {
-        Some(index) => self.0[index].value_mut(),
-        None => {
-            self.0.push(E::new(k));
-            self.0.last_mut().unwrap().value_mut()
+        match self.0.iter().position(|e| e.key() == k) {
+            Some(index) => self.0[index].value_mut(),
+            None => {
+                self.0.push(E::new(k));
+                self.0.last_mut().unwrap().value_mut()
+            }
         }
-    }
     }
 
     pub fn len(&self) -> usize {
@@ -200,9 +197,9 @@ pub trait VecMapEntry {
 }
 
 impl<K: Clone + PartialEq, V: Default> VecMapEntry for (K, V) {
-    type Key=K;
+    type Key = K;
 
-    type Value=V;
+    type Value = V;
 
     fn key(&self) -> &Self::Key {
         &self.0
