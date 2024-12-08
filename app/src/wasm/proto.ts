@@ -1,4 +1,3 @@
-import { SvgResult } from "wasm/lib";
 import { WorkexPromise as Promise } from "./workex";
 
 /**
@@ -9,5 +8,5 @@ import { WorkexPromise as Promise } from "./workex";
  */
 export interface PrismApi {
     /** Signal that the worker is ready */
-    makeSvg(script: string, forceSquare: boolean): Promise<SvgResult>;
+    makeSvg(script: string, forceSquare: boolean): Promise<wasm_bindgen.SvgResult>;
 }

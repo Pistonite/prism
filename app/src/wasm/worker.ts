@@ -1,15 +1,16 @@
 console.log("initializing worker");
 
-import { make_svg, SvgResult } from "wasm/lib";
+// Vite currently has issues in bundling WASM in workers
+// (works with esbuild, but not with rollup)
+import "./lib/prism_app_wasm.js";
 
-import { hostFromDelegate, type Delegate } from "wasm/workex";
-import { bindPrismApiHost } from "wasm/sides/worker.ts";
-import type { PrismApi } from "wasm/proto.ts";
+import { hostFromDelegate, type Delegate } from "./workex";
+import { bindPrismApiHost } from "./sides/worker.ts";
+import type { PrismApi } from "./proto.ts";
 
 const handler = {
-    // eslint-disable-next-line @typescript-eslint/require-await
-    async makeSvg(script, forceSquare): Promise<SvgResult> {
-        return make_svg(script, forceSquare);
+    async makeSvg(script, forceSquare): Promise<wasm_bindgen.SvgResult> {
+        return wasm_bindgen.make_svg(script, forceSquare);
     },
 } satisfies Delegate<PrismApi>;
 

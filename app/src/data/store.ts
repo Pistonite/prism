@@ -1,11 +1,10 @@
 import { Debounce } from "Debounce";
 import { Latest } from "Latest";
 import { PrismApiClient } from "wasm/sides/app";
-import { SvgResult } from "wasm/lib";
 import { create } from "zustand";
 
 export type Store = {
-    svg: SvgResult;
+    svg: wasm_bindgen.SvgResult;
     script: string;
     forceSquare: boolean;
     showGrid: boolean;
