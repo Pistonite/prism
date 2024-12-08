@@ -68,7 +68,7 @@ export const Zoom: React.FC<ZoomProps> = ({ set }) => {
                 value={scaleToSlider(zoom, min, max) || 0}
                 min={-SLIDER_RANGE}
                 max={SLIDER_RANGE}
-                onChange={(_, data) => set(sliderToScale(data.value, min, max))}
+                onChange={(_, data) => {set(sliderToScale(data.value, min, max))}}
             />
             <Tooltip content={t("ui.zoom_in")} relationship="label">
                 <Button

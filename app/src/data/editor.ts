@@ -45,7 +45,7 @@ export class EditorState {
         }, 100);
 
         const resizeObserver = new ResizeObserver(() => {
-            resize.execute();
+            void resize.execute();
         });
 
         resizeObserver.observe(node);

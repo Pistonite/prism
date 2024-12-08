@@ -23,7 +23,7 @@ export const Editor: React.FC = () => {
     useEffect(() => {
         if (ref) {
             const editor = new EditorState(ref);
-            return () => editor.destroy();
+            return () => {editor.destroy()};
         }
     }, [ref]);
 

@@ -93,12 +93,12 @@ export function initStore(api: PrismApiClient): Store {
         useStore.setState({ svg: result.val });
     });
     useStore.subscribe((curr, prev) => {
-        save.execute();
+        void save.execute();
         if (
             curr.script !== prev.script ||
             curr.forceSquare !== prev.forceSquare
         ) {
-            makeSvg.execute();
+            void makeSvg.execute();
         }
     });
 

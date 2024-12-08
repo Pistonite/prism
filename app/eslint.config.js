@@ -29,6 +29,18 @@ const overrides = {
     "@typescript-eslint/consistent-type-imports": "warn",
     // too many false positives when required by contract
     "@typescript-eslint/require-await": "off",
+    "@typescript-eslint/no-misused-promises": "off",
+    // doesn't work with WASM type...
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    // ?
+    "@typescript-eslint/restrict-template-expressions": [
+        "warn",
+        {
+            allowNumber: true
+        }
+    ],
+    // we have TypeScript
+    "react/prop-types": "off",
 };
 
 const config = tseslint.config(

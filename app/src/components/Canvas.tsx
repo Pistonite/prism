@@ -104,6 +104,7 @@ export const Canvas = forwardRef<CanvasApi>((_, ref) => {
         </div>
     );
 });
+Canvas.displayName = "Canvas";
 
 
 const useUpdateSvg = () => {

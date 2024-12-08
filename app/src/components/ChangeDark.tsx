@@ -12,7 +12,7 @@ export const ChangeDark: React.FC = () => {
         <Button
             appearance="subtle"
             icon={dark ? <WeatherSunny20Regular /> : <WeatherMoon20Regular />}
-            onClick={() => setDark(!dark)}
+            onClick={() => {setDark(!dark)}}
         />
     );
 };
