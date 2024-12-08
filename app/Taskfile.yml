@@ -1,0 +1,31 @@
+version: '3'
+
+tasks:
+  dev:
+    desc: Run Vite Dev Server
+    cmds:
+      - deno run -A npm:vite dev --host
+
+  build:
+    desc: Build Client App
+    cmds:
+      - deno run -A npm:vite build
+
+  wasm:
+    desc: Build WASM Worker Module
+    cmds:
+      - workex -p app src/wasm/proto.ts
+      - wasm-pack build --out-dir src/wasm/lib --target bundler --release
+
+  check:
+    desc: Check for issues
+    cmds:
+      - deno run -A npm:typescript/tsc --build
+      - deno run -A npm:prettier . --check
+
+
+  fix:
+    desc: Fix issues
+    cmds:
+      - deno run -A npm:prettier . --write
+

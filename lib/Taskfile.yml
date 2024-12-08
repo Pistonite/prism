@@ -1,0 +1,7 @@
+version: '3'
+
+tasks:
+  dev:
+    desc: Run Tests in Watch Mode
+    cmds:
+      - cargo watch -x test
