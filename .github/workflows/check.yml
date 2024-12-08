@@ -20,7 +20,19 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v2.x
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+      - uses: baptiste0928/cargo-install@v3
+        with:
+          crate: workex
+          git: https://github.com/Pistonite/workex
+      - uses: baptiste0928/cargo-install@v3
+        with:
+          crate: wasm-pack
       - run: task app:ci
+      - run: task app:wasm
       - run: task app:check
 
   check-rust:

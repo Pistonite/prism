@@ -3,7 +3,6 @@ import { setScript, useStore } from "data/store";
 import { Debounce } from "Debounce";
 import * as monaco from "monaco-editor";
 import YamlWorker from "monaco-editor/esm/vs/basic-languages/yaml/yaml.js?worker";
-import { SvgResult } from "wasm/lib/prism_app_wasm";
 
 export async function initEditor() {
     self.MonacoEnvironment = {
@@ -61,7 +60,7 @@ export class EditorState {
         this.editor.layout();
     }
 
-    private updateMarkers(result: SvgResult) {
+    private updateMarkers(result: wasm_bindgen.SvgResult) {
         const markers = [];
         if ("err" in result) {
             const { message, line, column } = result.err;
