@@ -1,0 +1,18 @@
+version: '3'
+
+includes:
+  lib:
+    taskfile: ./lib
+    dir: ./lib
+
+  app:
+    taskfile: ./app
+    dir: ./app
+
+tasks:
+  check:
+    desc: Check Rust code
+    cmds:
+      - cargo clippy --all-targets --all-features -- -D warnings -D clippy::todo
+      - cargo fmt --check
+  

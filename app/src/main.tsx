@@ -27,4 +27,4 @@ async function boot() {
     initStore(api);
 }
 
-boot();
+void boot();

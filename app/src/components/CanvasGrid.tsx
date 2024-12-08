@@ -57,24 +57,22 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
                 translateX / Math.sqrt(3)) +
             translateY +
             ySpacing / 2;
+
         // The offset needed to maintain the grid angle
         const xLines = [];
         for (let x = xOrigin; x < width; x += xSpacing) {
             xLines.push(x);
         }
-        for (let x = xOrigin - xSpacing; x > -translateX; x -= xSpacing) {
+        for (let x = xOrigin - xSpacing; x > -Math.abs(translateX); x -= xSpacing) {
             xLines.push(x);
         }
 
-        // The * zoom part is a bit hacky
-        // I am unsure why some grid lines are missing
-        // with particular zoom and translate
 
         const y1Lines = [];
         for (let y = y1Origin; y < height + yOffset; y += ySpacing) {
             y1Lines.push(y);
         }
-        for (let y = y1Origin - ySpacing; y > -translateY - yOffset*zoom; y -= ySpacing) {
+        for (let y = y1Origin - ySpacing; y > -Math.abs(translateY); y -= ySpacing) {
             y1Lines.push(y);
         }
 
@@ -84,7 +82,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
         }
         for (
             let y = y2Origin - ySpacing;
-            y > -translateY - yOffset*zoom*2;
+            y > -Math.abs(translateY) - yOffset;
             y -= ySpacing
         ) {
             y2Lines.push(y);

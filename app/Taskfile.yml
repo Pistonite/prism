@@ -1,6 +1,10 @@
 version: '3'
 
 tasks:
+  ci:
+    cmds:
+      - deno install --frozen
+
   dev:
     desc: Run Vite Dev Server
     cmds:
@@ -8,6 +12,7 @@ tasks:
 
   build:
     desc: Build Client App
+    deps: [wasm]
     cmds:
       - deno run -A npm:vite build
 
@@ -21,8 +26,8 @@ tasks:
     desc: Check for issues
     cmds:
       - deno run -A npm:typescript/tsc --build
+      - deno run -A npm:eslint src --report-unused-disable-directives --max-warnings 0 --cache
       - deno run -A npm:prettier . --check
-
 
   fix:
     desc: Fix issues

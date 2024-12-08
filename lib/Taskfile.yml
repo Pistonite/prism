@@ -5,3 +5,8 @@ tasks:
     desc: Run Tests in Watch Mode
     cmds:
       - cargo watch -x test
+
+  test:
+    desc: Run Tests
+    cmds:
+      - cargo test

@@ -24,15 +24,15 @@ export const useStore = create<Store>()(() => ({
     translateY: 0,
 }));
 
-export const setForceSquare = (forceSquare: boolean) =>
-    useStore.setState({ forceSquare });
-export const setScript = (script: string) => useStore.setState({ script });
-export const setShowGrid = (showGrid: boolean) =>
-    useStore.setState({ showGrid });
-export const setTranslate = (x: number, y: number) =>
-    useStore.setState({ translateX: x, translateY: y });
-export const setZoomAndTranslate = (zoom: number, x: number, y: number) =>
-    useStore.setState({ zoom, translateX: x, translateY: y });
+export const setForceSquare = (forceSquare: boolean) => {
+    useStore.setState({ forceSquare }); }
+export const setScript = (script: string) => {useStore.setState({ script });}
+export const setShowGrid = (showGrid: boolean) => {
+    useStore.setState({ showGrid }); }
+export const setTranslate = (x: number, y: number) => {
+    useStore.setState({ translateX: x, translateY: y }); }
+export const setZoomAndTranslate = (zoom: number, x: number, y: number) => {
+    useStore.setState({ zoom, translateX: x, translateY: y }); }
 
 export const useSvgTransform = () => {
     const svgResult = useStore((state) => state.svg);

@@ -27,10 +27,14 @@ const overrides = {
     "@typescript-eslint/no-unused-vars": "off",
     // force type to be import as type
     "@typescript-eslint/consistent-type-imports": "warn",
+    // too many false positives when required by contract
+    "@typescript-eslint/require-await": "off",
 };
 
 const config = tseslint.config(
-    { ignores: ["dist"] },
+    { ignores: ["dist", 
+        "src/wasm/lib/*",
+        "src/wasm/interfaces/*", "src/wasm/sides/*", "src/wasm/workex/*"] },
     {
         extends: [
             js.configs.recommended,
@@ -40,6 +44,15 @@ const config = tseslint.config(
         languageOptions: {
             ecmaVersion: 2020,
             globals: globals.browser,
+            parserOptions: {
+                projectService: true,
+                tsconfigRootDir: import.meta.dirname,
+            }
+        },
+        settings: {
+            react: {
+                version: "18",
+            }
         },
         plugins: {
             "react-hooks": reactHooks,
