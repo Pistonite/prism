@@ -4,7 +4,8 @@ import tsConfigPaths from "vite-tsconfig-paths";
 import wasm from "vite-plugin-wasm";
 import yaml from "@modyfi/vite-plugin-yaml";
 import topLevelAwait from "vite-plugin-top-level-await";
-import deno from "@deno/vite-plugin";
+// having issue in GH action
+// import deno from "@deno/vite-plugin";
 
 const kebabCase = (x: string) =>
     x.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
@@ -14,7 +15,7 @@ export default defineConfig(({ command }) => {
     const createPlugins = (isWorker: boolean) => {
         const plugins = [tsConfigPaths(), wasm()];
         if (command === "build") {
-            plugins.push(deno());
+            // plugins.push(deno());
         }
 
         if (isWorker) {
