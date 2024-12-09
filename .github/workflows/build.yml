@@ -1,0 +1,59 @@
+name: Build
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: arduino/setup-task@v2
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v2.x
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+      - uses: baptiste0928/cargo-install@v3
+        with:
+          crate: workex
+          git: https://github.com/Pistonite/workex
+      - uses: baptiste0928/cargo-install@v3
+        with:
+          crate: wasm-pack
+      - run: task app:ci
+      - run: task app:build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: app/dist
+          retention-days: 3
+
+  deploy-docs:
+    name: Deploy
+    needs:
+      - build
+    if: github.event_name != 'pull_request'
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

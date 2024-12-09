@@ -1,0 +1,19 @@
+[package]
+name = "prism-app-wasm"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+serde = { version = "1.0.215", features = ["derive"] }
+tsify-next = { version = "0.5.4", default-features = false, features = ["js"] }
+wasm-bindgen = "0.2.97"
+
+[dependencies.prism-lib]
+path = "../lib"
+features = ["wasm"]
+
+[lib]
+crate-type = ["cdylib"]
+path = "src/wasm.rs"
+
