@@ -1,7 +1,8 @@
 import { Debounce, Latest } from "@pistonite/pure/sync";
-import { SvgResult } from "wasm/lib";
-import type { PrismApiClient } from "wasm/sides/app.ts";
 import { create } from "zustand";
+
+import type { SvgResult } from "wasm/lib";
+import type { PrismApiClient } from "wasm/sides/app.ts";
 
 export type Store = {
     svg: SvgResult;

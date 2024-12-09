@@ -11,7 +11,7 @@ import { getLocale, getLocalizedLanguageName } from "@pistonite/pure/pref";
 import { useState } from "react";
 import i18next from "i18next";
 
-import { SupportedLanguages } from "data/i18n";
+import { SupportedLanguages } from "data/i18n.ts";
 
 export const ChangeLanguage: React.FC = () => {
     const [locale, setLocale] = useState(getLocale);

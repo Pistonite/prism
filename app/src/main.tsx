@@ -1,11 +1,13 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { initDark } from "@pistonite/pure/pref";
-import { App } from "./App.tsx";
+
 import { initPrismApi } from "wasm/init.ts";
 import { initEditor } from "data/editor.ts";
 import { initStore } from "data/store.ts";
 import { initI18n } from "data/i18n.ts";
+
+import { App } from "./App.tsx";
 
 async function boot() {
     initDark();

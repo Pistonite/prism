@@ -6,13 +6,12 @@ import {
     useRef,
     useState,
 } from "react";
-
-import { useStore } from "data/store.ts";
-
 import { makeStyles } from "@fluentui/react-components";
-import { setTranslate } from "data/store";
-import { CanvasGrid } from "./CanvasGrid";
-import { useCanvas } from "data/useCanvas";
+
+import { useStore, setTranslate } from "data/store.ts";
+import { useCanvas } from "data/useCanvas.ts";
+
+import { CanvasGrid } from "./CanvasGrid.tsx";
 
 const useStyles = makeStyles({
     canvasContainer: {

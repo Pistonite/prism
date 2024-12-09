@@ -1,9 +1,10 @@
 import { addDarkSubscriber, isDark } from "@pistonite/pure/pref";
 import { Debounce } from "@pistonite/pure/sync";
-import { setScript, useStore } from "data/store";
 import * as monaco from "monaco-editor";
 import YamlWorker from "monaco-editor/esm/vs/basic-languages/yaml/yaml.js?worker";
-import { SvgResult } from "wasm/lib";
+
+import { setScript, useStore } from "data/store.ts";
+import type { SvgResult } from "wasm/lib";
 
 export async function initEditor() {
     self.MonacoEnvironment = {

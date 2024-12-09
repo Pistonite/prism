@@ -1,33 +1,57 @@
 {
   "version": "4",
   "specifiers": {
+    "jsr:@pistonite/pure-react@^0.0.4": "0.0.4",
+    "jsr:@pistonite/pure@^0.0.12": "0.0.12",
+    "npm:@deno/vite-plugin@^1.0.2": "1.0.2_vite@5.4.11",
     "npm:@eslint/js@^9.15.0": "9.16.0",
-    "npm:@fluentui/react-components@^9.56.3": "9.56.4_@types+react@18.3.14_@types+react-dom@18.3.2_react@18.3.1_react-dom@18.3.1__react@18.3.1",
+    "npm:@fluentui/react-components@^9.56.4": "9.56.4_@types+react@18.3.14_@types+react-dom@18.3.2_react@18.3.1_react-dom@18.3.1__react@18.3.1",
     "npm:@fluentui/react-icons@^2.0.266": "2.0.266_react@18.3.1",
-    "npm:@jsr/pistonite__pure-react@^0.0.4": "0.0.4",
-    "npm:@jsr/pistonite__pure@^0.0.12": "0.0.12",
     "npm:@modyfi/vite-plugin-yaml@^1.1.0": "1.1.0_vite@5.4.11",
     "npm:@types/react-dom@^18.3.1": "18.3.2",
     "npm:@types/react@^18.3.12": "18.3.14",
     "npm:@vitejs/plugin-react@^4.3.4": "4.3.4_vite@5.4.11_@babel+core@7.26.0",
+    "npm:denque@2.1.0": "2.1.0",
     "npm:eslint-plugin-react-hooks@5": "5.1.0_eslint@9.16.0",
     "npm:eslint-plugin-react-refresh@~0.4.14": "0.4.16_eslint@9.16.0",
     "npm:eslint-plugin-react@^7.37.2": "7.37.2_eslint@9.16.0",
+    "npm:eslint@*": "9.16.0",
     "npm:eslint@^9.15.0": "9.16.0",
+    "npm:file-saver@2.0.5": "2.0.5",
     "npm:globals@^15.12.0": "15.13.0",
     "npm:i18next@^24.0.5": "24.0.5_typescript@5.7.2",
     "npm:monaco-editor@0.52": "0.52.0",
+    "npm:prettier@*": "3.4.2",
     "npm:prettier@^3.4.2": "3.4.2",
     "npm:react-dom@^18.3.1": "18.3.1_react@18.3.1",
     "npm:react-i18next@^15.1.3": "15.1.3_i18next@24.0.5__typescript@5.7.2_react@18.3.1_typescript@5.7.2",
+    "npm:react@18": "18.3.1",
     "npm:react@^18.3.1": "18.3.1",
     "npm:typescript-eslint@^8.15.0": "8.17.0_eslint@9.16.0_@typescript-eslint+parser@8.17.0__eslint@9.16.0__typescript@5.7.2_typescript@5.7.2",
+    "npm:typescript@*": "5.7.2",
     "npm:typescript@^5.7.2": "5.7.2",
     "npm:vite-plugin-top-level-await@^1.4.4": "1.4.4_vite@5.4.11",
     "npm:vite-plugin-wasm@^3.3.0": "3.3.0_vite@5.4.11",
     "npm:vite-tsconfig-paths@^5.1.3": "5.1.4_vite@5.4.11_typescript@5.7.2",
+    "npm:vite@*": "5.4.11",
     "npm:vite@^5.4.11": "5.4.11",
     "npm:zustand@^5.0.2": "5.0.2_@types+react@18.3.14_react@18.3.1"
+  },
+  "jsr": {
+    "@pistonite/pure@0.0.12": {
+      "integrity": "5ba84f4cdbfc5d7522be70a58fd2d33016a47a9b58092566a73507075a760c57",
+      "dependencies": [
+        "npm:denque",
+        "npm:file-saver"
+      ]
+    },
+    "@pistonite/pure-react@0.0.4": {
+      "integrity": "42fea41187105477391a53eb5647e86955650e4d27d82c308660f8bb770cc3ca",
+      "dependencies": [
+        "jsr:@pistonite/pure",
+        "npm:react@18"
+      ]
+    }
   },
   "npm": {
     "@ampproject/remapping@2.3.0": {
@@ -174,6 +198,12 @@
       "dependencies": [
         "@babel/helper-string-parser",
         "@babel/helper-validator-identifier"
+      ]
+    },
+    "@deno/vite-plugin@1.0.2_vite@5.4.11": {
+      "integrity": "sha512-ZaC5W1yCb1xdRURU5qHFHrxZABr1tC68tS73/YhXUUbe9nuytCV4CG/dpLxMkxS64Fs3YwcqEz2k1eAqE9W5SQ==",
+      "dependencies": [
+        "vite"
       ]
     },
     "@emotion/hash@0.9.2": {
@@ -1522,20 +1552,6 @@
       "dependencies": [
         "@jridgewell/resolve-uri",
         "@jridgewell/sourcemap-codec"
-      ]
-    },
-    "@jsr/pistonite__pure-react@0.0.4": {
-      "integrity": "sha512-Tsv4py/0/zN+O2smcfzIjwEW3keHtXXGdQSaeiUZ6NvzAzO8yFa4cPVCMJGVHqohr+2mGIQcMjj9tt7CPp5aiQ==",
-      "dependencies": [
-        "@jsr/pistonite__pure",
-        "react"
-      ]
-    },
-    "@jsr/pistonite__pure@0.0.12": {
-      "integrity": "sha512-0KxoTKo/dYNEe6MktsuSn79kw0e/9hJleLy0SZbwiFngRbzGgOTLt5vHj4yxUtKXXrKG1pODak61AniUVkNMWA==",
-      "dependencies": [
-        "denque",
-        "file-saver"
       ]
     },
     "@modyfi/vite-plugin-yaml@1.1.0_vite@5.4.11": {
@@ -3456,36 +3472,35 @@
     }
   },
   "workspace": {
-    "packageJson": {
-      "dependencies": [
-        "npm:@eslint/js@^9.15.0",
-        "npm:@fluentui/react-components@^9.56.3",
-        "npm:@fluentui/react-icons@^2.0.266",
-        "npm:@jsr/pistonite__pure-react@^0.0.4",
-        "npm:@jsr/pistonite__pure@^0.0.12",
-        "npm:@modyfi/vite-plugin-yaml@^1.1.0",
-        "npm:@types/react-dom@^18.3.1",
-        "npm:@types/react@^18.3.12",
-        "npm:@vitejs/plugin-react@^4.3.4",
-        "npm:eslint-plugin-react-hooks@5",
-        "npm:eslint-plugin-react-refresh@~0.4.14",
-        "npm:eslint-plugin-react@^7.37.2",
-        "npm:eslint@^9.15.0",
-        "npm:globals@^15.12.0",
-        "npm:i18next@^24.0.5",
-        "npm:monaco-editor@0.52",
-        "npm:prettier@^3.4.2",
-        "npm:react-dom@^18.3.1",
-        "npm:react-i18next@^15.1.3",
-        "npm:react@^18.3.1",
-        "npm:typescript-eslint@^8.15.0",
-        "npm:typescript@^5.7.2",
-        "npm:vite-plugin-top-level-await@^1.4.4",
-        "npm:vite-plugin-wasm@^3.3.0",
-        "npm:vite-tsconfig-paths@^5.1.3",
-        "npm:vite@^5.4.11",
-        "npm:zustand@^5.0.2"
-      ]
-    }
+    "dependencies": [
+      "jsr:@pistonite/pure-react@^0.0.4",
+      "jsr:@pistonite/pure@^0.0.12",
+      "npm:@deno/vite-plugin@^1.0.2",
+      "npm:@eslint/js@^9.15.0",
+      "npm:@fluentui/react-components@^9.56.4",
+      "npm:@fluentui/react-icons@^2.0.266",
+      "npm:@modyfi/vite-plugin-yaml@^1.1.0",
+      "npm:@types/react-dom@^18.3.1",
+      "npm:@types/react@^18.3.12",
+      "npm:@vitejs/plugin-react@^4.3.4",
+      "npm:eslint-plugin-react-hooks@5",
+      "npm:eslint-plugin-react-refresh@~0.4.14",
+      "npm:eslint-plugin-react@^7.37.2",
+      "npm:eslint@^9.15.0",
+      "npm:globals@^15.12.0",
+      "npm:i18next@^24.0.5",
+      "npm:monaco-editor@0.52",
+      "npm:prettier@^3.4.2",
+      "npm:react-dom@^18.3.1",
+      "npm:react-i18next@^15.1.3",
+      "npm:react@^18.3.1",
+      "npm:typescript-eslint@^8.15.0",
+      "npm:typescript@^5.7.2",
+      "npm:vite-plugin-top-level-await@^1.4.4",
+      "npm:vite-plugin-wasm@^3.3.0",
+      "npm:vite-tsconfig-paths@^5.1.3",
+      "npm:vite@^5.4.11",
+      "npm:zustand@^5.0.2"
+    ]
   }
 }

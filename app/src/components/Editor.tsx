@@ -1,15 +1,15 @@
 import { makeStyles } from "@fluentui/react-components";
-import { EditorState } from "data/editor";
-import { LANDSCAPE_QUERY } from "data/media";
 import { useEffect, useState } from "react";
+
+import { EditorState } from "data/editor.ts";
+import { LANDSCAPE_QUERY } from "data/media.ts";
 
 const useStyles = makeStyles({
     editorContainer: {
         minHeight: 0,
         minWidth: 0,
-        flex: 1,
         [LANDSCAPE_QUERY]: {
-            maxWidth: "500px",
+            width: "500px",
         },
     },
 });

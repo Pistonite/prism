@@ -35,6 +35,7 @@ jobs:
       - uses: baptiste0928/cargo-install@v3
         with:
           crate: wasm-pack
+      - run: task app:deno-npm
       - run: task app:ci
       - run: task app:build
       - uses: actions/upload-pages-artifact@v3
