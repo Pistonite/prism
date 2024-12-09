@@ -1,5 +1,11 @@
 import { useRef } from "react";
-import { FluentProvider, makeStaticStyles, makeStyles, webDarkTheme, webLightTheme } from "@fluentui/react-components";
+import {
+    FluentProvider,
+    makeStaticStyles,
+    makeStyles,
+    webDarkTheme,
+    webLightTheme,
+} from "@fluentui/react-components";
 import { useDark } from "@pistonite/pure-react";
 
 import { Canvas, CanvasApi } from "components/Canvas";
@@ -9,14 +15,14 @@ import { LANDSCAPE_QUERY } from "data/media";
 
 const useStaticStyles = makeStaticStyles({
     ":root": {
-    fontSynthesis: "none",
-    textRendering: "optimizeLegibility",
-    "-webkit-font-smoothing": "antialiased",
-    "-moz-osx-font-smoothing": "grayscale",
+        fontSynthesis: "none",
+        textRendering: "optimizeLegibility",
+        "-webkit-font-smoothing": "antialiased",
+        "-moz-osx-font-smoothing": "grayscale",
     },
     body: {
         margin: 0,
-    }
+    },
 });
 
 const useStyles = makeStyles({
@@ -27,7 +33,7 @@ const useStyles = makeStyles({
         width: "100vw",
         [LANDSCAPE_QUERY]: {
             flexDirection: "row",
-        }
+        },
     },
     container: {
         position: "relative",
@@ -42,7 +48,7 @@ const useStyles = makeStyles({
     },
 });
 
-export const App:React.FC = () => {
+export const App: React.FC = () => {
     useStaticStyles();
     const styles = useStyles();
 
@@ -54,13 +60,17 @@ export const App:React.FC = () => {
         <FluentProvider theme={dark ? webDarkTheme : webLightTheme}>
             <div className={styles.root}>
                 <Editor />
-                    <div className={styles.container}>
-                        <div className={styles.toolbar}>
-                            <Toolbar setZoom={(x: number) => canvas.current?.setZoomAtCanvasCenter(x)}/>
-                        </div>
-                        <Canvas ref={canvas} />
+                <div className={styles.container}>
+                    <div className={styles.toolbar}>
+                        <Toolbar
+                            setZoom={(x: number) =>
+                                canvas.current?.setZoomAtCanvasCenter(x)
+                            }
+                        />
                     </div>
+                    <Canvas ref={canvas} />
+                </div>
             </div>
         </FluentProvider>
     );
-}
+};

@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import tsConfigPaths from "vite-tsconfig-paths";
 import wasm from "vite-plugin-wasm";
 import yaml from "@modyfi/vite-plugin-yaml";
+import topLevelAwait from "vite-plugin-top-level-await";
 
 const kebabCase = (x: string) =>
     x.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
@@ -10,6 +11,11 @@ const kebabCase = (x: string) =>
 // https://vite.dev/config/
 export default defineConfig({
     plugins: [react(), tsConfigPaths(), wasm(), yaml()],
+    worker: {
+        plugins: () => {
+            return [tsConfigPaths(), wasm(), topLevelAwait()];
+        },
+    },
     build: {
         rollupOptions: {
             output: {

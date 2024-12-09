@@ -18,7 +18,6 @@ const backend: BackendModule = {
 
         const locale = convertToSupportedLocale(language) || "en";
         const strings = await import(`./strings/${locale}.yaml`);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
         return strings.default;
     },
 };

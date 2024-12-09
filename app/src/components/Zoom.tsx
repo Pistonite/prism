@@ -1,4 +1,10 @@
-import { Slider, Text, Tooltip, Button, makeStyles } from "@fluentui/react-components";
+import {
+    Slider,
+    Text,
+    Tooltip,
+    Button,
+    makeStyles,
+} from "@fluentui/react-components";
 import { ZoomIn24Regular, ZoomOut24Regular } from "@fluentui/react-icons";
 import { useStore } from "data/store";
 import { MAX_ZOOM, MIN_ZOOM } from "data/useCanvas";
@@ -42,7 +48,7 @@ const useStyles = makeStyles({
     zoomLabel: {
         minWidth: "40px",
         textAlign: "end",
-    }
+    },
 });
 
 /** Zoom button and slider*/
@@ -68,7 +74,9 @@ export const Zoom: React.FC<ZoomProps> = ({ set }) => {
                 value={scaleToSlider(zoom, min, max) || 0}
                 min={-SLIDER_RANGE}
                 max={SLIDER_RANGE}
-                onChange={(_, data) => {set(sliderToScale(data.value, min, max))}}
+                onChange={(_, data) => {
+                    set(sliderToScale(data.value, min, max));
+                }}
             />
             <Tooltip content={t("ui.zoom_in")} relationship="label">
                 <Button
@@ -80,7 +88,9 @@ export const Zoom: React.FC<ZoomProps> = ({ set }) => {
                     disabled={zoom >= max}
                 />
             </Tooltip>
-            <Text block className={styles.zoomLabel}>{Math.round(zoom * 100)}%</Text>
+            <Text block className={styles.zoomLabel}>
+                {Math.round(zoom * 100)}%
+            </Text>
         </>
     );
 };

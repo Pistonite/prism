@@ -1,9 +1,12 @@
 version: '3'
 
 tasks:
+  install:
+    cmds:
+      - deno install --allow-scripts
   ci:
     cmds:
-      - deno install --frozen
+      - deno install --allow-scripts --frozen
 
   dev:
     desc: Run Vite Dev Server
@@ -20,7 +23,7 @@ tasks:
     desc: Build WASM Worker Module
     cmds:
       - workex -p app src/wasm/proto.ts
-      - wasm-pack build --out-dir src/wasm/lib --target no-modules --release
+      - wasm-pack build --out-dir src/wasm/lib --target bundler --release
 
   check:
     desc: Check for issues

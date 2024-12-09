@@ -6,15 +6,14 @@
     "dependencies": {
         "@fluentui/react-components": "^9.56.3",
         "@fluentui/react-icons": "^2.0.266",
-        "@pistonite/pure": "npm:@jsr/pistonite__pure@^0.0.11",
-        "@pistonite/pure-react": "npm:@jsr/pistonite__pure-react@^0.0.3",
-        "eslint-plugin-react": "^7.37.2",
+        "@pistonite/pure": "npm:@jsr/pistonite__pure@^0.0.12",
+        "@pistonite/pure-react": "npm:@jsr/pistonite__pure-react@^0.0.4",
         "i18next": "^24.0.5",
         "monaco-editor": "^0.52.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "react-i18next": "^15.1.3",
-        "vite-plugin-wasm": "^3.3.0",
+        "vite-plugin-top-level-await": "^1.4.4",
         "zustand": "^5.0.2"
     },
     "devDependencies": {
@@ -24,6 +23,7 @@
         "@types/react-dom": "^18.3.1",
         "@vitejs/plugin-react": "^4.3.4",
         "eslint": "^9.15.0",
+        "eslint-plugin-react": "^7.37.2",
         "eslint-plugin-react-hooks": "^5.0.0",
         "eslint-plugin-react-refresh": "^0.4.14",
         "globals": "^15.12.0",
@@ -31,6 +31,7 @@
         "typescript": "^5.7.2",
         "typescript-eslint": "^8.15.0",
         "vite": "^5.4.11",
+        "vite-plugin-wasm": "^3.3.0",
         "vite-tsconfig-paths": "^5.1.3"
     },
     "prettier": {

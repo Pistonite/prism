@@ -1,8 +1,4 @@
-import {
-    useCallback,
-    useMemo,
-    useRef,
-} from "react";
+import { useCallback, useMemo, useRef } from "react";
 
 import { setZoomAndTranslate, useStore } from "data/store.ts";
 
@@ -56,13 +52,11 @@ export const useCanvas = () => {
     );
 
     // stable reference
-    return useMemo(
-        () => {
+    return useMemo(() => {
         return {
             canvasRef,
             setZoomAtCanvasCenter,
             setZoomAtClientPoint,
-        }},
-        [setZoomAtCanvasCenter, setZoomAtClientPoint],
-    );
+        };
+    }, [setZoomAtCanvasCenter, setZoomAtClientPoint]);
 };

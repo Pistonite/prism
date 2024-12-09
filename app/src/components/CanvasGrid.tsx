@@ -22,7 +22,7 @@ const useStyles = makeStyles({
         left: 0,
         right: 0,
         backgroundColor: "transparent",
-    }
+    },
 });
 
 /** Grid lines for the canvas */
@@ -63,16 +63,23 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
         for (let x = xOrigin; x < width; x += xSpacing) {
             xLines.push(x);
         }
-        for (let x = xOrigin - xSpacing; x > -Math.abs(translateX); x -= xSpacing) {
+        for (
+            let x = xOrigin - xSpacing;
+            x > -Math.abs(translateX);
+            x -= xSpacing
+        ) {
             xLines.push(x);
         }
-
 
         const y1Lines = [];
         for (let y = y1Origin; y < height + yOffset; y += ySpacing) {
             y1Lines.push(y);
         }
-        for (let y = y1Origin - ySpacing; y > -Math.abs(translateY); y -= ySpacing) {
+        for (
+            let y = y1Origin - ySpacing;
+            y > -Math.abs(translateY);
+            y -= ySpacing
+        ) {
             y1Lines.push(y);
         }
 
@@ -108,7 +115,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
                         y2={height}
                         x1={x}
                         x2={x}
-                        stroke={i===1 ? axisColor : color}
+                        stroke={i === 1 ? axisColor : color}
                     />
                 ))}
                 {lines.y1.map((y, i) => (
@@ -118,7 +125,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
                         y2={y - yOffset}
                         x1={0}
                         x2={width}
-                        stroke={i===1 ? axisColor : color}
+                        stroke={i === 1 ? axisColor : color}
                     />
                 ))}
                 {lines.y2.map((y, i) => (
@@ -128,7 +135,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
                         y2={y + yOffset}
                         x1={0}
                         x2={width}
-                        stroke={i===0 ? axisColor : color}
+                        stroke={i === 0 ? axisColor : color}
                     />
                 ))}
             </svg>

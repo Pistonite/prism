@@ -8,9 +8,19 @@ import {
 import { fsSave } from "@pistonite/pure/fs";
 import { Zoom } from "./Zoom";
 import { useTranslation } from "react-i18next";
-import { ArrowDownload24Regular, Grid24Regular, Question24Regular, Square24Regular } from "@fluentui/react-icons";
+import {
+    ArrowDownload24Regular,
+    Grid24Regular,
+    Question24Regular,
+    Square24Regular,
+} from "@fluentui/react-icons";
 
-import { setForceSquare, setShowGrid, useStore, useSvgContent } from "data/store.ts";
+import {
+    setForceSquare,
+    setShowGrid,
+    useStore,
+    useSvgContent,
+} from "data/store.ts";
 import { useDark } from "@pistonite/pure-react";
 import { ChangeDark } from "./ChangeDark";
 import { ChangeLanguage } from "./ChangeLanguage";
@@ -30,11 +40,11 @@ const useStyles = makeStyles({
     },
     referenceText: {
         margin: "0",
-    }
+    },
 });
 
-export const Toolbar: React.FC<ToolbarProps> = ({setZoom}) => {
-    const {t} = useTranslation();
+export const Toolbar: React.FC<ToolbarProps> = ({ setZoom }) => {
+    const { t } = useTranslation();
     const showGrid = useStore((state) => state.showGrid);
     const forceSquare = useStore((state) => state.forceSquare);
     const styles = useStyles();
@@ -45,12 +55,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({setZoom}) => {
     return (
         <div
             style={{
-            backgroundColor: dark ? "#00000066" : "#ffffff66",
-        }}
+                backgroundColor: dark ? "#00000066" : "#ffffff66",
+            }}
         >
-            <div className={styles.toolbar}
-            >
-                <Text>{t("ui.size")}: {toHumanReadableBytes(svg.length)} </Text>
+            <div className={styles.toolbar}>
+                <Text>
+                    {t("ui.size")}: {toHumanReadableBytes(svg.length)}{" "}
+                </Text>
                 <Tooltip content={t("ui.download")} relationship="label">
                     <Button
                         appearance="subtle"
@@ -88,7 +99,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({setZoom}) => {
                         icon={<Question24Regular />}
                         checked={showReference}
                         onClick={() => {
-                            setShowReference(x => !x);
+                            setShowReference((x) => !x);
                         }}
                     />
                 </Tooltip>
@@ -100,7 +111,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({setZoom}) => {
                     appearance="subtle"
                     icon={
                         <img
-                            src={dark ? "/github-mark-white.svg" : "/github-mark.svg"}
+                            src={
+                                dark
+                                    ? "/github-mark-white.svg"
+                                    : "/github-mark.svg"
+                            }
                             width="20"
                         />
                     }
@@ -108,12 +123,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({setZoom}) => {
                     target="_blank"
                 />
             </div>
-            {
-                showReference && (
-                    <div>
-                        <Text font="monospace">
-                            <pre className={styles.referenceText}>
-                                {`unit: f64
+            {showReference && (
+                <div>
+                    <Text font="monospace">
+                        <pre className={styles.referenceText}>
+                            {`unit: f64
 shader?: [color?, color?, color?]
 color: color
 pos?: [i32, i32, i32]
@@ -125,12 +139,10 @@ prism:
     # One of:
     size: [i32, i32, i32]
     children: Prism[]`}
-                            </pre>
-                        </Text >
-                    </div>
-                )
-            }
-
+                        </pre>
+                    </Text>
+                </div>
+            )}
         </div>
     );
 };
@@ -140,7 +152,7 @@ const toHumanReadableBytes = (bytes: number): string => {
         return `${bytes.toString()} Bytes`;
     }
     if (bytes < 1000000) {
-        return `${(bytes/1000).toFixed(2)} KB`;
+        return `${(bytes / 1000).toFixed(2)} KB`;
     }
-    return `${(bytes/1000000).toFixed(2)} MB`;
-}
+    return `${(bytes / 1000000).toFixed(2)} MB`;
+};

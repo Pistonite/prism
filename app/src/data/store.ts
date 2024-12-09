@@ -1,10 +1,10 @@
-import { Debounce } from "Debounce";
-import { Latest } from "Latest";
-import { PrismApiClient } from "wasm/sides/app";
+import { Debounce, Latest } from "@pistonite/pure/sync";
+import { SvgResult } from "wasm/lib";
+import type { PrismApiClient } from "wasm/sides/app.ts";
 import { create } from "zustand";
 
 export type Store = {
-    svg: wasm_bindgen.SvgResult;
+    svg: SvgResult;
     script: string;
     forceSquare: boolean;
     showGrid: boolean;
@@ -24,14 +24,20 @@ export const useStore = create<Store>()(() => ({
 }));
 
 export const setForceSquare = (forceSquare: boolean) => {
-    useStore.setState({ forceSquare }); }
-export const setScript = (script: string) => {useStore.setState({ script });}
+    useStore.setState({ forceSquare });
+};
+export const setScript = (script: string) => {
+    useStore.setState({ script });
+};
 export const setShowGrid = (showGrid: boolean) => {
-    useStore.setState({ showGrid }); }
+    useStore.setState({ showGrid });
+};
 export const setTranslate = (x: number, y: number) => {
-    useStore.setState({ translateX: x, translateY: y }); }
+    useStore.setState({ translateX: x, translateY: y });
+};
 export const setZoomAndTranslate = (zoom: number, x: number, y: number) => {
-    useStore.setState({ zoom, translateX: x, translateY: y }); }
+    useStore.setState({ zoom, translateX: x, translateY: y });
+};
 
 export const useSvgTransform = () => {
     const svgResult = useStore((state) => state.svg);
@@ -89,7 +95,6 @@ export function initStore(api: PrismApiClient): Store {
             });
             return;
         }
-        console.log(result.val);
         useStore.setState({ svg: result.val });
     });
     useStore.subscribe((curr, prev) => {

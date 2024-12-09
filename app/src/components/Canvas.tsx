@@ -23,7 +23,7 @@ const useStyles = makeStyles({
     },
     svgContainer: {
         backgroundColor: "transparent",
-    }
+    },
 });
 
 export type CanvasApi = {
@@ -105,7 +105,6 @@ export const Canvas = forwardRef<CanvasApi>((_, ref) => {
     );
 });
 Canvas.displayName = "Canvas";
-
 
 const useUpdateSvg = () => {
     const svgRef = useRef<HTMLDivElement>(null);

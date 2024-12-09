@@ -1,8 +1,9 @@
 import { addDarkSubscriber, isDark } from "@pistonite/pure/pref";
+import { Debounce } from "@pistonite/pure/sync";
 import { setScript, useStore } from "data/store";
-import { Debounce } from "Debounce";
 import * as monaco from "monaco-editor";
 import YamlWorker from "monaco-editor/esm/vs/basic-languages/yaml/yaml.js?worker";
+import { SvgResult } from "wasm/lib";
 
 export async function initEditor() {
     self.MonacoEnvironment = {
@@ -60,7 +61,7 @@ export class EditorState {
         this.editor.layout();
     }
 
-    private updateMarkers(result: wasm_bindgen.SvgResult) {
+    private updateMarkers(result: SvgResult) {
         const markers = [];
         if ("err" in result) {
             const { message, line, column } = result.err;
