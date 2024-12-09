@@ -7,9 +7,8 @@ const useStyles = makeStyles({
     editorContainer: {
         minHeight: 0,
         minWidth: 0,
-        flex: 1,
         [LANDSCAPE_QUERY]: {
-            maxWidth: "500px",
+            width: "500px",
         },
     },
 });

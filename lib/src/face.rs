@@ -1,7 +1,6 @@
 use csscolorparser::Color;
-use derivative::Derivative;
 
-use crate::math::{Entry, Grid2, Vec3, VecMap, VecMapEntry};
+use crate::math::{Entry, Grid2, Vec3, VecMap};
 use crate::poly::Layer;
 
 /// A unit face with a position, color and a direction
@@ -19,6 +18,8 @@ pub struct Face<'c> {
     pub dir: FaceDir,
 }
 
+/// Sort the face by rendering order. Faces that should be
+/// rendered on top should be at the front of the list.
 pub fn sort_faces(faces: &mut [Face]) {
     faces.sort_by_key(|face| std::cmp::Reverse(face.layer()));
 }
@@ -95,17 +96,27 @@ pub enum FaceDir {
 }
 
 /// Grid for rendering faces
-#[derive(Debug, Clone, Derivative)]
-#[derivative(Default(bound = "", new = "true"))]
+#[derive(Debug, Clone)]
 pub struct Canvas<'c> {
+    /// The base shader in the config
+    ///
+    /// The shaders are used here to shade the alpha-composited faces,
+    /// then passed to the next step to shade opaque and top-most alpha faces
+    shader: Vec3<Color>,
     /// Direction of the face at each grid position
     grid: Grid2<CanvasPoint<'c>>,
 }
 
 impl<'c> Canvas<'c> {
+    pub fn new(shader: Vec3<Color>) -> Self {
+        Self {
+            shader,
+            grid: Grid2::new(),
+        }
+    }
     /// Convert the rendered data into layers by color
-    pub fn into_layers(self, shader: Vec3<Color>) -> Vec<Layer> {
-        let mut builder = LayerBuilder::new(shader);
+    pub fn into_layers(self) -> Vec<Layer> {
+        let mut builder = LayerBuilder::new(self.shader);
         for ((u, v), point) in self.grid {
             builder.render(u, v, point);
         }
@@ -124,7 +135,9 @@ impl<'c> Canvas<'c> {
             Entry::Occupied(mut point) => {
                 // if the grid already has a face above it,try
                 // to compose the color
-                point.get_mut().add_color(face.color);
+                point
+                    .get_mut()
+                    .add_color(face.dir, face.color, &self.shader);
             }
             Entry::Vacant(point) => {
                 point.insert(CanvasPoint::new(face.dir, face.color));
@@ -133,83 +146,112 @@ impl<'c> Canvas<'c> {
     }
 }
 /// Render faces into 2D colors
+#[derive(Debug)]
 struct LayerBuilder {
+    /// The original shader colors
+    shader: Vec3<Color>,
+    /// The opaque color layers
     opaque: VecMap<Layer>,
+    /// Shaders for the opaque layers
+    opaque_shaders: VecMap<Layer>,
+    /// The alpha-blended color layers, above the opaque layers
     alpha: VecMap<Layer>,
-    shade: Vec3<Layer>,
+    /// The alpha-blended shader layers
+    alpha_shaders: VecMap<Layer>,
 }
 
 impl LayerBuilder {
     pub fn new(shader: Vec3<Color>) -> Self {
-        let shade = (
-            Layer::new(&shader.x_ref().into()),
-            Layer::new(&shader.y_ref().into()),
-            Layer::new(&shader.z_ref().into()),
-        );
         Self {
-            opaque: Default::default(),
-            alpha: Default::default(),
-            shade: shade.into(),
+            shader,
+            opaque: VecMap::new(),
+            opaque_shaders: VecMap::new(),
+            alpha: VecMap::new(),
+            alpha_shaders: VecMap::new(),
         }
     }
+    /// Render the point into color layers
+    ///
+    /// Each (u, v) point should only be rendered once
     pub fn render(&mut self, u: i32, v: i32, point: CanvasPoint) {
+        // the shader need to be composed with the base color's alpha
+        // for example, in the extreme case,
+        // if the base color is transparent, then the shader should
+        // also not be applied
         if point.opaque_color.a == 1.0 {
             let color = point.opaque_color.into();
             self.opaque.get_mut(&color).set(u, v, ());
+
+            // set opaque shader
+            let shader_color = match point.opaque_face {
+                FaceDir::Front => self.shader.x_ref(),
+                FaceDir::Side => self.shader.y_ref(),
+                FaceDir::Top => self.shader.z_ref(),
+            };
+            if shader_color.a > 0.0 {
+                let color = shader_color.into();
+                self.opaque_shaders.get_mut(&color).set(u, v, ());
+            }
         }
-        if point.alpha_blend.a > 0.0 {
-            let color = point.alpha_blend.into();
+        if point.top_alpha > 0.0 {
+            let color = point.alpha_color.into();
             self.alpha.get_mut(&color).set(u, v, ());
+
+            // set alpha shader
+            let shader_color = match point.alpha_face {
+                FaceDir::Front => self.shader.x_ref(),
+                FaceDir::Side => self.shader.y_ref(),
+                FaceDir::Top => self.shader.z_ref(),
+            };
+
+            // if the shader is transparent, we don't need to apply
+            if shader_color.a > 0.0 {
+                let mut color = shader_color.clone();
+                color.a *= point.top_alpha;
+                let color = color.into();
+                self.alpha_shaders.get_mut(&color).set(u, v, ());
+            }
         }
-        match point.face {
-            FaceDir::Front => {
-                if !self.shade.x_ref().color.is_transparent() {
-                    self.shade.x_mut().grid.set(u, v, ());
-                }
-            }
-            FaceDir::Side => {
-                if !self.shade.y_ref().color.is_transparent() {
-                    self.shade.y_mut().grid.set(u, v, ());
-                }
-            }
-            FaceDir::Top => {
-                if !self.shade.z_ref().color.is_transparent() {
-                    self.shade.z_mut().grid.set(u, v, ());
-                }
-            }
-        };
     }
     pub fn build(self) -> Vec<Layer> {
         // The output will be smaller if we compose (blend) all layers.
         // However, there might be gaps between polygons at shape edges.
         // So, we separate the opaque, alpha, and shader layers to prevent
         // that. All alpha layers are blended together to keep the output small.
-        let mut layers: Vec<_> = self.opaque.into();
-        layers.reserve(self.alpha.len() + 3);
-        layers.extend(self.alpha);
-
-        let (shade_x, shade_y, shade_z) = self.shade.into();
-        if !shade_x.grid.is_empty() {
-            layers.push(shade_x);
-        }
-        if !shade_y.grid.is_empty() {
-            layers.push(shade_y);
-        }
-        if !shade_z.grid.is_empty() {
-            layers.push(shade_z);
-        }
-        layers
+        self.opaque
+            .into_iter()
+            .chain(self.opaque_shaders)
+            .chain(self.alpha)
+            .chain(self.alpha_shaders)
+            .collect()
     }
 }
 
 #[derive(Debug, Clone)]
 pub struct CanvasPoint<'c> {
-    /// Direction of the face at this point, used to apply shading
-    pub face: FaceDir,
+    /// Direction of the face at this point on the opaque color.
+    ///
+    /// This is used to apply shading to the opaque layer
+    pub opaque_face: FaceDir,
+    /// Direction of the top most alpha face at this point.
+    ///
+    /// This is used to apply shading to the alpha layer
+    pub alpha_face: FaceDir,
     /// Opaque color at the bottom of the layer
     pub opaque_color: &'c Color,
-    /// Colors at the point, in order of above -> below
-    pub alpha_blend: Color,
+    /// The alpha-blended color
+    ///
+    /// This includes the color of the top-most alpha face,
+    /// blended with all the alpha faces AND their shader colors
+    /// below it
+    pub alpha_color: Color,
+
+    /// The top-most alpha value. Used to blend with the alpha shader when
+    /// making layers.
+    ///
+    /// Since the alpha color is already blended, we have to track this
+    /// separately to be accurate
+    pub top_alpha: f32,
 }
 
 const TRANSPARENT: Color = Color {
@@ -223,29 +265,54 @@ impl<'c> CanvasPoint<'c> {
     pub fn new(face: FaceDir, color: &'c Color) -> Self {
         if color.a < 1.0 {
             Self {
-                face,
+                opaque_face: face,
+                alpha_face: face,
                 opaque_color: &TRANSPARENT,
-                alpha_blend: color.clone(),
+                alpha_color: color.clone(),
+                top_alpha: color.a,
             }
         } else {
             Self {
-                face,
+                opaque_face: face,
+                alpha_face: face,
                 opaque_color: color,
-                alpha_blend: TRANSPARENT,
+                alpha_color: TRANSPARENT,
+                top_alpha: 0.0,
             }
         }
     }
-    pub fn add_color(&mut self, color: &'c Color) {
+    pub fn add_color(&mut self, face: FaceDir, color: &'c Color, shader: &Vec3<Color>) {
         // if self already has a base opaque color,
         // anything added below will be invisible
         if self.opaque_color.a >= 1.0 {
             return;
         }
         if color.a < 1.0 {
-            // blend with current color (self on top of color)
-            self.alpha_blend = blend(&self.alpha_blend, color);
+            if color.a <= 0.0 {
+                // transparent color, skip
+                return;
+            }
+            // blend with current color (self over shade over color)
+            let shader_color = match face {
+                FaceDir::Front => shader.x_ref(),
+                FaceDir::Side => shader.y_ref(),
+                FaceDir::Top => shader.z_ref(),
+            };
+            if shader_color.a > 0.0 {
+                // compose the shader's alpha value with the color's alpha value
+                let mut shader_color = shader_color.clone();
+                shader_color.a *= color.a;
+                // then, blend with color
+                let temp = blend(&shader_color, color);
+                // finally blend with the current alpha color
+                self.alpha_color = blend(&self.alpha_color, &temp);
+            } else {
+                // shader is transparent, no shading needed
+                self.alpha_color = blend(&self.alpha_color, color);
+            }
         } else {
             self.opaque_color = color;
+            self.opaque_face = face;
         }
     }
 }

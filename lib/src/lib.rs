@@ -36,12 +36,14 @@ impl tree::PrismTree {
         }
         face::sort_faces(&mut faces);
 
-        let mut canvas = face::Canvas::new();
+        let shader = self.get_shader();
+
+        let mut canvas = face::Canvas::new(shader);
         for face in &faces {
             canvas.render_face(face);
         }
 
-        let layers = canvas.into_layers(self.get_shader());
+        let layers = canvas.into_layers();
 
         let mut polygons = Vec::new();
         for layer in layers {

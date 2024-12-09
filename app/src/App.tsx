@@ -37,14 +37,18 @@ const useStyles = makeStyles({
     },
     container: {
         position: "relative",
-        width: "100%",
-        height: "100%",
+        minWidth: 0,
+        minHeight: 0,
         flex: 1,
     },
     toolbar: {
         position: "absolute",
         right: 0,
         zIndex: 100,
+    },
+    canvas: {
+        width: "100%",
+        height: "100%",
     },
 });
 
@@ -68,7 +72,9 @@ export const App: React.FC = () => {
                             }
                         />
                     </div>
-                    <Canvas ref={canvas} />
+                    <div className={styles.canvas}>
+                        <Canvas ref={canvas} />
+                    </div>
                 </div>
             </div>
         </FluentProvider>
