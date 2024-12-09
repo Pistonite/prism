@@ -10,14 +10,9 @@ tasks:
     cmds:
       - deno install --allow-scripts --frozen
 
-  ci-npm:
-    deps: [deno-npm]
-    cmds:
-      - deno install --allow-scripts --frozen
-
   deno-npm:
     cmds:
-      - deno run -A https://gist.githubusercontent.com/Pistonight/06cf44fae070664d82c9d099c32a0952/raw/6f32609773cad32a8ffec3bc2c443cdfb24c5040/deno-install.ts --allow-scripts --no-lock
+      - deno run -A https://gist.githubusercontent.com/Pistonight/06cf44fae070664d82c9d099c32a0952/raw/deno-install.ts --allow-scripts --no-lock
 
   dev:
     desc: Run Vite Dev Server
