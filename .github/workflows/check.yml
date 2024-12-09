@@ -31,7 +31,7 @@ jobs:
       - uses: baptiste0928/cargo-install@v3
         with:
           crate: wasm-pack
-      - run: task app:ci
+      - run: task app:ci-npm
       - run: task app:wasm
       - run: task app:check
 
