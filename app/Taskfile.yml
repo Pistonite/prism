@@ -3,7 +3,7 @@ version: '3'
 tasks:
   install:
     cmds:
-      - deno install --allow-scripts
+      - deno run -A https://gist.githubusercontent.com/Pistonight/06cf44fae070664d82c9d099c32a0952/raw/6f32609773cad32a8ffec3bc2c443cdfb24c5040/deno-install.ts --allow-scripts
   ci:
     cmds:
       - deno install --allow-scripts --frozen
@@ -30,10 +30,23 @@ tasks:
     cmds:
       - deno run -A npm:typescript/tsc --build
       - deno run -A npm:eslint src --report-unused-disable-directives --max-warnings 0 --cache
-      - deno run -A npm:prettier . --check
+      - task: prettier
+        vars:
+          MODE: --check
 
   fix:
     desc: Fix issues
     cmds:
-      - deno run -A npm:prettier . --write
+      - task: prettier
+        vars:
+          MODE: --write
+
+  prettier:
+    vars:
+      CONFIG: >
+        --tab-width 4
+        --end-of-line auto
+    cmds:
+      - deno run -A npm:prettier . {{.MODE}} {{.CONFIG}}
+
 

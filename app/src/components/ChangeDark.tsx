@@ -8,7 +8,6 @@ import { useDark } from "@pistonite/pure-react";
 
 export const ChangeDark: React.FC = () => {
     const dark = useDark();
-    console.log(dark);
     return (
         <Button
             appearance="subtle"
