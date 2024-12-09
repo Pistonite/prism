@@ -123,17 +123,21 @@ impl TreeNode {
         let offset = self.pos + offset;
         match &self.tree {
             TreeType::Group(children) => {
+                // sub tree must be treated separately
+                // otherwise cuts will also affect other already rendered prisms
+                let mut child_out = Vec::new();
                 for child in children {
                     if child.cut {
                         // for cuts, it needs to be put into a separate buffer,
                         // so we can run the subtration
                         let mut cut = Vec::new();
                         child.render_into(offset, color, &mut cut);
-                        Prism::vec_subtract(out, &cut);
+                        Prism::vec_subtract(&mut child_out, &cut);
                     } else {
-                        child.render_into(offset, color, out);
+                        child.render_into(offset, color, &mut child_out);
                     }
                 }
+                out.extend(child_out);
             }
             TreeType::Size(size) => {
                 if !size.all_positive() {
