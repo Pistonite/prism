@@ -27,9 +27,6 @@ const overrides = {
     "@typescript-eslint/no-unused-vars": "off",
     // force type to be import as type
     "@typescript-eslint/consistent-type-imports": "warn",
-    // // too many false positives when required by contract
-    // "@typescript-eslint/require-await": "off",
-    // "@typescript-eslint/no-misused-promises": "off",
     "@typescript-eslint/restrict-template-expressions": [
         "warn",
         {
