@@ -6,7 +6,6 @@ import {
     Button,
 } from "@fluentui/react-components";
 import { fsSave } from "@pistonite/pure/fs";
-import { Zoom } from "./Zoom";
 import { useTranslation } from "react-i18next";
 import {
     ArrowDownload24Regular,
@@ -14,6 +13,8 @@ import {
     Question24Regular,
     Square24Regular,
 } from "@fluentui/react-icons";
+import { useState } from "react";
+import { useDark } from "@pistonite/pure-react";
 
 import {
     setForceSquare,
@@ -21,10 +22,10 @@ import {
     useStore,
     useSvgContent,
 } from "data/store.ts";
-import { useDark } from "@pistonite/pure-react";
-import { ChangeDark } from "./ChangeDark";
-import { ChangeLanguage } from "./ChangeLanguage";
-import { useState } from "react";
+
+import { ChangeDark } from "./ChangeDark.tsx";
+import { ChangeLanguage } from "./ChangeLanguage.tsx";
+import { Zoom } from "./Zoom.tsx";
 
 export type ToolbarProps = {
     setZoom: (zoom: number) => void;

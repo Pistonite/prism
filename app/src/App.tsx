@@ -8,10 +8,10 @@ import {
 } from "@fluentui/react-components";
 import { useDark } from "@pistonite/pure-react";
 
-import { Canvas, CanvasApi } from "components/Canvas";
-import { Editor } from "components/Editor";
-import { Toolbar } from "components/Toolbar";
-import { LANDSCAPE_QUERY } from "data/media";
+import { Canvas, CanvasApi } from "components/Canvas.tsx";
+import { Editor } from "components/Editor.tsx";
+import { Toolbar } from "components/Toolbar.tsx";
+import { LANDSCAPE_QUERY } from "data/media.ts";
 
 const useStaticStyles = makeStaticStyles({
     ":root": {

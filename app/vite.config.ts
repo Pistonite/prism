@@ -10,12 +10,9 @@ const kebabCase = (x: string) =>
     x.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
 
 // https://vite.dev/config/
-export default defineConfig(({command}) => {
+export default defineConfig(({ command }) => {
     const createPlugins = (isWorker: boolean) => {
-        const plugins = [
-            tsConfigPaths(),
-            wasm(),
-        ];
+        const plugins = [tsConfigPaths(), wasm()];
         if (command === "build") {
             plugins.push(deno());
         }
@@ -42,7 +39,9 @@ export default defineConfig(({command}) => {
                 output: {
                     chunkFileNames: (info) => {
                         for (let i = 0; i < info.moduleIds.length; i++) {
-                            if (info.moduleIds[i].includes("vs/basic-languages")) {
+                            if (
+                                info.moduleIds[i].includes("vs/basic-languages")
+                            ) {
                                 return `assets/monaco-editor/basic-languages/${info.name}-[hash].js`;
                             }
                             if (info.moduleIds[i].includes("vs/language")) {
@@ -55,5 +54,5 @@ export default defineConfig(({command}) => {
                 },
             },
         },
-    }
+    };
 });
