@@ -5,6 +5,8 @@ edition = "2021"
 publish = false
 
 [dependencies]
+boa_engine = "0.20.0"
+boa_gc = "0.20.0"
 csscolorparser = { version = "0.7.0", features = ["serde"] }
 derivative = "2.2.0"
 derive_more = { version = "1.0.0", features = ["full"] }
@@ -18,3 +20,7 @@ wasm-bindgen = { version = "0.2.97", optional = true }
 
 [features]
 wasm = ["dep:wasm-bindgen", "dep:tsify-next"]
+
+[[bin]]
+name = "testboa"
+path = "src/testboa.rs"

@@ -1,6 +1,7 @@
 /// Low-level or shared math utils
 mod math;
-pub use math::*;
+
+mod shape;
 
 /// Tree-representation of prism shapes
 ///
@@ -23,6 +24,8 @@ mod face;
 /// shading, and perspectives accordingly
 mod poly;
 pub use poly::Polygon;
+
+pub mod runtime;
 
 impl tree::PrismTree {
     /// Render the prism object into a list of polygons.
