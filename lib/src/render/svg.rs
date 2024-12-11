@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::Polygon;
+use super::Polygon;
 
 /// SVG image rendered from polygons
 #[derive(Debug, Clone, Serialize, Deserialize)]

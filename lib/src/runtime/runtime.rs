@@ -1,7 +1,7 @@
 use boa_engine::vm::RuntimeLimits;
 use boa_engine::{Context, Source};
 
-use crate::poly::Layer;
+use crate::render::Layer;
 
 use super::builtin::Builtin;
 
@@ -32,28 +32,31 @@ impl Runtime {
         }
     }
 
+    /// Execute the rendering script
     pub fn execute(mut self, source: &str) -> RunResult {
-        match self.context.eval(Source::from_bytes(source)) {
+        let message = match self.context.eval(Source::from_bytes(source)) {
             Ok(_) => {
-                let layers = self.binding.render_layers();
-                let mut messages = self.binding.get_logs();
-                messages.push("render ok".to_string());
-                RunResult { layers, messages }
+                "render ok".to_string()
             },
             Err(e) => {
-                let layers = self.binding.render_layers();
-                let mut messages = self.binding.get_logs();
-                messages.push(format!("runtime error: {}", e));
-                RunResult {
-                    layers,
-                    messages,
-                }
+                format!("runtime error: {}", e)
             }
+        };
+        let unit = self.binding.get_unit();
+        let layers = self.binding.render_layers();
+        let mut messages = self.binding.get_logs();
+        messages.push(message);
+        RunResult { 
+            unit,
+            layers, 
+            messages
         }
     }
 }
 
 pub struct RunResult {
+    /// Unit for rendering the SVG
+    pub unit: f64,
     /// The rendering result
     pub layers: Vec<Layer>,
     /// The debug and error messages

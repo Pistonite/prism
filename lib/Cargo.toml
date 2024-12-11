@@ -6,22 +6,24 @@ publish = false
 
 [dependencies]
 boa_engine = "0.20.0"
+# boa_engine = { version = "0.20.0", features = ["js"] }
 boa_gc = "0.20.0"
 csscolorparser = { version = "0.7.0", features = ["serde"] }
 derivative = "2.2.0"
 derive_more = { version = "1.0.0", features = ["full"] }
 num-traits = "0.2.19"
 serde = { version = "1.0.215", features = ["derive"] }
-serde_yaml_ng = "0.10.0"
 thiserror = "2.0.6"
 
 # WASM stuff
 tsify-next = { version = "0.5.4", default-features = false, features = ["js"], optional = true }
 wasm-bindgen = { version = "0.2.97", optional = true }
+# BOA dependency, needs the feature flag
+getrandom = { version = "*", optional = true, features = ["js"] }
 
 [features]
-wasm = ["dep:wasm-bindgen", "dep:tsify-next"]
-
-[[bin]]
-name = "testboa"
-path = "src/testboa.rs"
+wasm = [
+    "dep:wasm-bindgen", 
+    "dep:tsify-next", 
+    "dep:getrandom"
+]

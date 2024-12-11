@@ -2,28 +2,27 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, RwLock};
 
 use boa_engine::object::builtins::JsArray;
-use boa_engine::{Context, JsArgs, JsError, JsValue};
+use boa_engine::{Context, JsArgs, JsError, JsResult, JsValue};
 use csscolorparser::{Color, ParseColorError};
 
-use crate::face::{self, Canvas, Face};
 use crate::math::{Vec3, AtomicF64};
-use crate::poly::Layer;
+use crate::render::{Layer, Canvas, Face, self};
 use crate::shape::ShapeVec;
 
 /// Builtin bindings for the rendering script engine
 pub struct Builtin {
     /// Unit length of the shape
-    pub unit: Arc<AtomicF64>,
+    unit: Arc<AtomicF64>,
     /// The canvas for rendering
-    pub canvas: Arc<RwLock<Canvas>>,
+    canvas: Arc<RwLock<Canvas>>,
     /// Object ID counter for debugging
-    pub obj_id: Arc<AtomicU64>,
+    obj_id: Arc<AtomicU64>,
     /// Ids logged by debug calls
-    pub logs: Arc<RwLock<Vec<String>>>,
+    logs: Arc<RwLock<Vec<String>>>,
     /// Shapes in the scene
-    pub shapes: ShapeVec,
+    shapes: ShapeVec,
     /// Rendered faces
-    pub faces: Arc<RwLock<Vec<Face>>>,
+    faces: Arc<RwLock<Vec<Face>>>,
 }
 const DEFAULT_SHADER_X: Color = Color {
     r: 0.0,
@@ -69,7 +68,7 @@ impl Builtin {
     pub fn render_layers(&self) -> Vec<Layer> {
         {
             let mut faces = self.faces.write().unwrap();
-            face::sort_faces(&mut faces);
+            render::sort_faces(&mut faces);
         }
         {
             let faces = self.faces.read().unwrap();
@@ -86,6 +85,10 @@ impl Builtin {
 
     pub fn get_logs(&self) -> Vec<String> {
         self.logs.read().unwrap().clone()
+    }
+
+    pub fn get_unit(&self) -> f64 {
+        self.unit.load(Ordering::SeqCst)
     }
 }
 
@@ -106,7 +109,7 @@ macro_rules! define_builtin {
             .length($arg_len)
             .constructor(false)
             .build();
-        $context.register_global_property(name, function, attribute);
+        $context.register_global_property(name, function, attribute)
     }}
 }
 
@@ -149,12 +152,9 @@ macro_rules! arg_axis {
 }
 
 impl Builtin {
-    pub fn new() -> Self {
-        Self::default()
-    }
 
     /// Bind the builtin functions to the JS engine
-    pub fn bind_to_engine(&self, context: &mut Context) {
+    pub fn bind_to_engine(&self, context: &mut Context) -> JsResult<()> {
         {
             let logs = Arc::clone(&self.logs);
             define_builtin!(context, "log", 0, |args, ctx| {
@@ -163,7 +163,7 @@ impl Builtin {
                 logs.push(value);
 
                 Ok(JsValue::undefined())
-            });
+            })?;
         }
         {
             let unit = Arc::clone(&self.unit);
@@ -171,7 +171,7 @@ impl Builtin {
                 let value = args.get_or_undefined(0).to_f32(ctx)?;
                 unit.store(value as f64, Ordering::SeqCst);
                 Ok(JsValue::undefined())
-            });
+            })?;
         }
         {
             let canvas = Arc::clone(&self.canvas);
@@ -201,7 +201,7 @@ impl Builtin {
                 let mut write = canvas.write().map_err(|e| JsError::from_rust(&e))?;
                 write.set_shader(Vec3(x, y, z));
                 Ok(JsValue::undefined())
-            });
+            })?;
         }
         {
             let obj_id = Arc::clone(&self.obj_id);
@@ -211,14 +211,14 @@ impl Builtin {
                 let mut logs = debug_logs.write().map_err(|e| JsError::from_rust(&e))?;
                 logs.push(format!("debug: next object id is {}", id));
                 Ok(JsValue::undefined())
-            });
+            })?;
         }
         {
             let obj_id = Arc::clone(&self.obj_id);
             define_builtin!(context, "nextid", 0, |_args, _ctx| {
                 let id = obj_id.fetch_add(1, Ordering::SeqCst);
                 Ok(id.into())
-            });
+            })?;
         }
         {
             let shapes = self.shapes.clone();
@@ -227,7 +227,7 @@ impl Builtin {
                 let size = shape.size();
                 let value = JsArray::from_iter([size.x(), size.y(), size.z()].into_iter().map(JsValue::from), ctx);
                 Ok(value.into())
-            });
+            })?;
         }
         {
             let shapes = self.shapes.clone();
@@ -237,7 +237,7 @@ impl Builtin {
                 let min = shape.min(axis)
                     .ok_or_else(|| Error::MinOfEmptyShape.to_js_error())?;
                 Ok(min.into())
-            });
+            })?;
         }
         {
             let shapes = self.shapes.clone();
@@ -247,7 +247,7 @@ impl Builtin {
                 let min = shape.max(axis)
                     .ok_or_else(|| Error::MaxOfEmptyShape.to_js_error())?;
                 Ok(min.into())
-            });
+            })?;
         }
         {
             let shapes = self.shapes.clone();
@@ -259,7 +259,7 @@ impl Builtin {
                     arg_i32!(args, ctx, 3)?,
                 );
                 Ok(shape.with_min(point).idx.into())
-            });
+            })?;
         }
         {
             let shapes = self.shapes.clone();
@@ -268,7 +268,7 @@ impl Builtin {
                 let axis = arg_axis!(args, ctx, 1)?;
                 let offset = arg_i32!(args, ctx, 2)?;
                 Ok(shape.with_axis_off(axis, offset).idx.into())
-            });
+            })?;
         }
         {
             let shapes = self.shapes.clone();
@@ -280,7 +280,7 @@ impl Builtin {
                     arg_i32!(args, ctx, 3)?,
                 );
                 Ok(shape.translate(offset).idx.into())
-            });
+            })?;
         }
         {
             let shapes = self.shapes.clone();
@@ -289,7 +289,7 @@ impl Builtin {
                 let axis = arg_axis!(args, ctx, 1)?;
                 let offset = arg_i32!(args, ctx, 2)?;
                 Ok(shape.translate_axis(axis, offset).idx.into())
-            });
+            })?;
         }
         {
             let shapes = self.shapes.clone();
@@ -297,7 +297,7 @@ impl Builtin {
                 let a = arg_shape!(args, shapes, ctx, 0)?;
                 let b = arg_shape!(args, shapes, ctx, 1)?;
                 Ok(a.union(&b).idx.into())
-            });
+            })?;
         }
         {
             let shapes = self.shapes.clone();
@@ -305,7 +305,7 @@ impl Builtin {
                 let a = arg_shape!(args, shapes, ctx, 0)?;
                 let b = arg_shape!(args, shapes, ctx, 1)?;
                 Ok(a.intersection(&b).idx.into())
-            });
+            })?;
         }
         {
             let shapes = self.shapes.clone();
@@ -313,7 +313,7 @@ impl Builtin {
                 let a = arg_shape!(args, shapes, ctx, 0)?;
                 let b = arg_shape!(args, shapes, ctx, 1)?;
                 Ok(a.difference(&b).idx.into())
-            });
+            })?;
         }
         {
             let shapes = self.shapes.clone();
@@ -329,7 +329,7 @@ impl Builtin {
                     arg_u32!(args, ctx, 5)?,
                 );
                 Ok(shapes.add_prism(pos, size).into())
-            });
+            })?;
         }
         {
             let shapes = self.shapes.clone();
@@ -342,8 +342,10 @@ impl Builtin {
                 write.extend(new_faces);
 
                 Ok(JsValue::undefined())
-            });
+            })?;
         }
+
+        Ok(())
     }
 }
 

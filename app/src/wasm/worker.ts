@@ -1,13 +1,13 @@
 console.log("initializing worker");
 
-import { make_svg, SvgResult } from "./lib";
+import { run_prism_script, PrismOutput } from "./lib";
 import { hostFromDelegate, type Delegate } from "./workex";
 import { bindPrismApiHost } from "./sides/worker.ts";
 import type { PrismApi } from "./proto.ts";
 
 const handler = {
-    async makeSvg(script, forceSquare): Promise<SvgResult> {
-        return make_svg(script, forceSquare);
+    async runScript(script, forceSquare): Promise<PrismOutput> {
+        return run_prism_script(script, forceSquare);
     },
 } satisfies Delegate<PrismApi>;
 

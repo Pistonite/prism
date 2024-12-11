@@ -3,7 +3,7 @@ use std::sync::Arc;
 use csscolorparser::Color;
 
 use crate::math::{Entry, Grid2, Vec3, VecMap};
-use crate::poly::Layer;
+use super::Layer;
 
 /// A unit face with a position, color and a direction
 ///

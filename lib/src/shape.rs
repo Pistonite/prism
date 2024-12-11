@@ -2,8 +2,8 @@ use std::sync::{Arc, RwLock, RwLockWriteGuard};
 
 use csscolorparser::Color;
 
-use crate::{face::{Canvas, Face}, math::{nonneg, Axis, Geom3, Vec3}};
-
+use crate::render::Face;
+use crate::math::{nonneg, Axis, Geom3, Vec3};
 
 /// 3D geometry
 pub enum Shape {
@@ -128,15 +128,6 @@ impl ShapeRef {
     {
         let shapes = self.v.shapes.read().unwrap();
         f(&shapes[self.idx])
-    }
-
-    #[inline]
-    fn write<T, F>(&self, f: F) -> T
-    where
-        F: FnOnce(&mut Shape) -> T,
-    {
-        let mut shapes = self.v.shapes.write().unwrap();
-        f(&mut shapes[self.idx])
     }
 
     pub fn is_empty(&self) -> bool {
