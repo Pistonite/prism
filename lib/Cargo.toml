@@ -13,6 +13,7 @@ derive_more = { version = "1.0.0", features = ["full"] }
 num-traits = "0.2.19"
 serde = { version = "1.0.215", features = ["derive"] }
 serde_yaml_ng = "0.10.0"
+thiserror = "2.0.6"
 
 # WASM stuff
 tsify-next = { version = "0.5.4", default-features = false, features = ["js"], optional = true }

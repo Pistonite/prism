@@ -2,6 +2,12 @@
  * Type definitions for the Runtime library for rendering script
  */
 
+declare const console: {
+    log(msg: any): void
+    warn(msg: any): void
+    error(msg: any): void
+}
+
 /**
  * Set the global unit length
  */

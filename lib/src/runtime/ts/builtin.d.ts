@@ -3,6 +3,7 @@
 declare type i32 = number;
 declare type u32 = number;
 declare type AxisEnum = 0 | 1 | 2;
+declare function __builtin_log(msg: string): void;
 declare function __builtin_set_unit(unit: number): void;
 declare function __builtin_set_shader(x: string, y: string, z: string): void;
 declare function __builtin_debug(): void;
@@ -21,4 +22,3 @@ declare function __builtin_shape_difference(idx_a: number, idx_b: number): numbe
 declare function __builtin_shape_from_prism(x: i32, y: i32, z: i32, dx: u32, dy: u32, dz: u32): number;
 
 declare function __builtin_render(idx: number, color: string): void;
-declare function __builtin_render_prism(x: i32, y: i32, z: i32, dx: u32, dy: u32, dz: u32, color: string): void;

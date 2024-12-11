@@ -66,97 +66,96 @@ impl Prism {
     /// Only positive volume prisms are emitted. The results
     /// are pushed to the out vec.
     fn subtract_into(&self, operand: &Self, out: &mut Vec<Self>) {
-        todo!()
-        // // this ensures we are subtracting a prism that
-        // // has no parts outside of self, to simplify the math
-        // let b = self.intersection(operand);
-        // if !b.has_positive_volume() {
-        //     // nothing to subtract
-        //     out.push(self.clone());
-        //     return;
-        // }
-        // let color = &self.color;
-        // // top
-        // prism_subtraction_part! {
-        //     out, color,
-        //     pos: Vec3(
-        //         self.pos.x(),
-        //         self.pos.y(),
-        //         b.z_end(),
-        //     ),
-        //     size: [
-        //         self.size.x(),
-        //         self.size.y(),
-        //         nonneg_sub!(self.z_end(), b.z_end()),
-        //     ]
-        // };
-        // // +x
-        // prism_subtraction_part! {
-        //     out, color,
-        //     pos: Vec3(
-        //         b.x_end(),
-        //         self.pos.y(),
-        //         b.pos.z(),
-        //     ),
-        //     size: [
-        //         nonneg_sub!(self.x_end(), b.x_end()),
-        //         self.size.y(),
-        //         b.size.z(),
-        //     ]
-        // };
-        //
-        // // -x
-        // prism_subtraction_part! {
-        //     out, color,
-        //     pos: Vec3(
-        //         self.pos.x(),
-        //         self.pos.y(),
-        //         b.pos.z(),
-        //     ),
-        //     size: [
-        //         nonneg_sub!(b.pos.x(), self.pos.x()),
-        //         self.size.y(),
-        //         b.size.z(),
-        //     ]
-        // };
-        // // +y
-        // prism_subtraction_part! {
-        //     out, color,
-        //     pos: Vec3(
-        //         b.pos.x(),
-        //         b.y_end(),
-        //         b.pos.z(),
-        //     ),
-        //     size: [
-        //         b.size.x(),
-        //         nonneg_sub!(self.y_end(), b.y_end()),
-        //         b.size.z(),
-        //     ]
-        // };
-        // // -y
-        // prism_subtraction_part! {
-        //     out, color,
-        //     pos: Vec3(
-        //         b.pos.x(),
-        //         self.pos.y(),
-        //         b.pos.z(),
-        //     ),
-        //     size: [
-        //         b.size.x(),
-        //         nonneg_sub!(b.pos.y(), self.pos.y()),
-        //         b.size.z(),
-        //     ]
-        // };
-        // // bottom
-        // prism_subtraction_part! {
-        //     out, color,
-        //     pos: self.pos,
-        //     size: [
-        //         self.size.x(),
-        //         self.size.y(),
-        //         nonneg_sub!(b.pos.z(), self.pos.z())
-        //     ]
-        // };
+        // this ensures we are subtracting a prism that
+        // has no parts outside of self, to simplify the math
+        let b = self.intersection(operand);
+        if !b.has_positive_volume() {
+            // nothing to subtract
+            out.push(self.clone());
+            return;
+        }
+        let color = &self.color;
+        // top
+        prism_subtraction_part! {
+            out, color,
+            pos: Vec3(
+                self.pos.x(),
+                self.pos.y(),
+                b.z_end(),
+            ),
+            size: [
+                self.size.x(),
+                self.size.y(),
+                nonneg_sub!(self.z_end(), b.z_end()),
+            ]
+        };
+        // +x
+        prism_subtraction_part! {
+            out, color,
+            pos: Vec3(
+                b.x_end(),
+                self.pos.y(),
+                b.pos.z(),
+            ),
+            size: [
+                nonneg_sub!(self.x_end(), b.x_end()),
+                self.size.y(),
+                b.size.z(),
+            ]
+        };
+        
+        // -x
+        prism_subtraction_part! {
+            out, color,
+            pos: Vec3(
+                self.pos.x(),
+                self.pos.y(),
+                b.pos.z(),
+            ),
+            size: [
+                nonneg_sub!(b.pos.x(), self.pos.x()),
+                self.size.y(),
+                b.size.z(),
+            ]
+        };
+        // +y
+        prism_subtraction_part! {
+            out, color,
+            pos: Vec3(
+                b.pos.x(),
+                b.y_end(),
+                b.pos.z(),
+            ),
+            size: [
+                b.size.x(),
+                nonneg_sub!(self.y_end(), b.y_end()),
+                b.size.z(),
+            ]
+        };
+        // -y
+        prism_subtraction_part! {
+            out, color,
+            pos: Vec3(
+                b.pos.x(),
+                self.pos.y(),
+                b.pos.z(),
+            ),
+            size: [
+                b.size.x(),
+                nonneg_sub!(b.pos.y(), self.pos.y()),
+                b.size.z(),
+            ]
+        };
+        // bottom
+        prism_subtraction_part! {
+            out, color,
+            pos: self.pos,
+            size: [
+                self.size.x(),
+                self.size.y(),
+                nonneg_sub!(b.pos.z(), self.pos.z())
+            ]
+        };
     }
     /// Render the prism into a list of faces
     pub fn render_faces<'c>(&'c self, out: &mut Vec<Face<'c>>) {
@@ -187,64 +186,6 @@ impl Prism {
     }
 }
 
-/// Geometry in 3D space (position and size)
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Geom3 {
-    pub size: Vec3<u32>,
-    pub pos: Vec3<i32>,
-}
-
-impl Geom3 {
-    pub fn new(pos: impl Into<Vec3<i32>>, size: impl Into<Vec3<u32>>) -> Self {
-        Self {
-            pos: pos.into(),
-            size: size.into(),
-        }
-    }
-
-    /// Returns the intersection of this prism with another prism
-    ///
-    /// If the prisms do not intersect, A 0-volume prism is returned.
-    pub fn intersection(&self, other: &Self) -> Self {
-        let pos = Vec3::from((
-            self.pos.x().max(other.pos.x()),
-            self.pos.y().max(other.pos.y()),
-            self.pos.z().max(other.pos.z()),
-        ));
-        Self::new(
-            pos,
-            (
-                nonneg!(self.x_end().min(other.x_end()) - pos.x()),
-                nonneg!(self.y_end().min(other.y_end()) - pos.y()),
-                nonneg!(self.z_end().min(other.z_end()) - pos.z()),
-            ),
-        )
-    }
-
-    /// The end of the prism in the x direction
-    #[inline]
-    pub fn x_end(&self) -> i32 {
-        self.pos.x() + self.size.x() as i32
-    }
-
-    /// The end of the prism in the y direction
-    #[inline]
-    pub fn y_end(&self) -> i32 {
-        self.pos.y() + self.size.y() as i32
-    }
-
-    /// The end of the prism in the z direction
-    #[inline]
-    pub fn z_end(&self) -> i32 {
-        self.pos.z() + self.size.z() as i32
-    }
-
-    /// Checks if the prism has positive volume
-    #[inline]
-    pub fn has_positive_volume(&self) -> bool {
-        self.size.x() > 0 && self.size.y() > 0 && self.size.z() > 0
-    }
-}
 
 /// Geometry in XY plane (position and size)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
