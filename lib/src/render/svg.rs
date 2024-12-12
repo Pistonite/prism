@@ -46,6 +46,9 @@ impl Svg {
 
 /// Returns shift_x, shift_y, width, height
 fn bounds(polygons: &[Polygon], force_square: bool) -> (f64, f64, f64, f64) {
+    if polygons.is_empty() {
+        return (0.0, 0.0, 0.0, 0.0);
+    }
     let mut min_x = f64::INFINITY;
     let mut min_y = f64::INFINITY;
     let mut max_x = f64::NEG_INFINITY;

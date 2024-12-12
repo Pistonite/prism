@@ -108,17 +108,16 @@ Canvas.displayName = "Canvas";
 const useUpdateSvg = () => {
     const svgRef = useRef<HTMLDivElement>(null);
 
-    const svgResult = useStore((state) => state.svg);
+    const svg = useStore((state) => state.output?.svg);
     useEffect(() => {
         if (!svgRef.current) {
             return;
         }
         // only update if we have a valid svg
-        if ("val" in svgResult) {
-            const svg = svgResult.val;
+        if (svg && svg.content) {
             svgRef.current.innerHTML = svg.content;
         }
-    }, [svgResult]);
+    }, [svg]);
 
     return svgRef;
 };

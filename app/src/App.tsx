@@ -23,6 +23,9 @@ const useStaticStyles = makeStaticStyles({
     body: {
         margin: 0,
     },
+    "*": {
+        minWidth: 0,
+    }
 });
 
 const useStyles = makeStyles({
@@ -31,6 +34,7 @@ const useStyles = makeStyles({
         flexDirection: "column",
         height: "100vh",
         width: "100vw",
+        overflow: "hidden",
         [LANDSCAPE_QUERY]: {
             flexDirection: "row",
         },

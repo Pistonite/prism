@@ -336,9 +336,9 @@ impl ShapeRef {
         match &guard[idx] {
             Shape::Translated(inner, offset) => {
                 let offset = *offset;
-                let idx = inner.idx;
-                Self::resolve_translation_recur(guard, idx);
-                let arb = match &guard[idx] {
+                let inner_idx = inner.idx;
+                Self::resolve_translation_recur(guard, inner_idx);
+                let arb = match &guard[inner_idx] {
                     Shape::Arbitrary(arb) => {
                         Some(arb.translated(offset))
                     }

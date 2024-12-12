@@ -49,7 +49,7 @@ impl Default for Builtin {
     fn default() -> Self {
         let shader = (DEFAULT_SHADER_X, DEFAULT_SHADER_Y, DEFAULT_SHADER_Z).into();
         Self {
-            unit: Arc::new(AtomicF64::new(2.0)),
+            unit: Arc::new(AtomicF64::new(20.)),
             canvas: Arc::new(RwLock::new(Canvas::new(shader))),
             obj_id: Arc::new(AtomicU64::new(1)),
             logs: Arc::new(RwLock::new(Vec::new())),

@@ -8,7 +8,7 @@ use wasm_bindgen::prelude::*;
 #[serde(rename_all = "camelCase")]
 pub struct PrismOutput {
     /// If the script has thrown an error
-    has_errpr: bool,
+    has_error: bool,
     /// The resulting SVG content and metadata
     svg: Svg,
     /// The debug and error messages
@@ -22,7 +22,7 @@ pub fn run_prism_script(script: String, force_square: bool) -> PrismOutput {
     let svg = Svg::from_polygons(&polygons, result.unit, force_square);
 
     PrismOutput {
-        has_errpr: result.has_js_error,
+        has_error: result.has_js_error,
         svg,
         messages: result.messages,
     }
