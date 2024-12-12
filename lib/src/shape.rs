@@ -2,8 +2,8 @@ use std::sync::{Arc, RwLock, RwLockWriteGuard};
 
 use csscolorparser::Color;
 
-use crate::render::Face;
 use crate::math::{nonneg, Axis, Geom3, Vec3};
+use crate::render::Face;
 
 /// 3D geometry
 pub enum Shape {
@@ -20,7 +20,7 @@ impl Shape {
     pub fn size(&self) -> Vec3<u32> {
         match self {
             Self::Empty => (0, 0, 0).into(),
-            Self::Arbitrary(Arbitrary { bound, ..}) => bound.size,
+            Self::Arbitrary(Arbitrary { bound, .. }) => bound.size,
             Self::Translated(shape, _) => shape.size(),
         }
     }
@@ -38,9 +38,7 @@ impl Shape {
         match self {
             Self::Empty => None,
             Self::Arbitrary(shape) => shape.min(axis),
-            Self::Translated(shape, offset) => {
-                shape.min(axis).map(|x| x + offset.on(axis))
-            },
+            Self::Translated(shape, offset) => shape.min(axis).map(|x| x + offset.on(axis)),
         }
     }
 
@@ -131,23 +129,23 @@ impl ShapeRef {
     }
 
     pub fn is_empty(&self) -> bool {
-        self.read(|x|x.is_empty())
+        self.read(|x| x.is_empty())
     }
 
     pub fn size(&self) -> Vec3<u32> {
-        self.read(|x|x.size())
+        self.read(|x| x.size())
     }
 
     pub fn min(&self, axis: Axis) -> Option<i32> {
-        self.read(|x|x.min(axis))
+        self.read(|x| x.min(axis))
     }
 
     pub fn pos(&self) -> Option<Vec3<i32>> {
-        self.read(|x|x.pos())
+        self.read(|x| x.pos())
     }
 
     pub fn max(&self, axis: Axis) -> Option<i32> {
-        self.read(|x|x.max(axis))
+        self.read(|x| x.max(axis))
     }
 
     /// Get a shape with the min position put at the given position
@@ -158,30 +156,28 @@ impl ShapeRef {
             New(Shape),
         }
         let min = min.into();
-        let shape = self.read(|x| {
-            match x {
-                Shape::Empty => WithMinResult::Empty,
-                Shape::Arbitrary(shape) => {
-                    let pos = match shape.pos() {
-                        Some(x) => x,
-                        None => return WithMinResult::Empty,
-                    };
-                    if min == pos {
-                        WithMinResult::SameAsSelf
-                    } else {
-                        WithMinResult::New(self.do_translate(min - pos))
-                    }
+        let shape = self.read(|x| match x {
+            Shape::Empty => WithMinResult::Empty,
+            Shape::Arbitrary(shape) => {
+                let pos = match shape.pos() {
+                    Some(x) => x,
+                    None => return WithMinResult::Empty,
+                };
+                if min == pos {
+                    WithMinResult::SameAsSelf
+                } else {
+                    WithMinResult::New(self.do_translate(min - pos))
                 }
-                Shape::Translated(inner, _) => {
-                    let pos = match inner.pos() {
-                        Some(x) => x,
-                        None => return WithMinResult::Empty,
-                    };
-                    if min == pos {
-                        WithMinResult::SameAsSelf
-                    } else {
-                        WithMinResult::New(inner.do_translate(min - pos))
-                    }
+            }
+            Shape::Translated(inner, _) => {
+                let pos = match inner.pos() {
+                    Some(x) => x,
+                    None => return WithMinResult::Empty,
+                };
+                if min == pos {
+                    WithMinResult::SameAsSelf
+                } else {
+                    WithMinResult::New(inner.do_translate(min - pos))
                 }
             }
         });
@@ -210,23 +206,21 @@ impl ShapeRef {
     /// Get a shape translated by the given offset on each axis
     pub fn translate(&self, offset: impl Into<Vec3<i32>>) -> Self {
         let offset = offset.into();
-        let shape = self.read(|x| {
-            match x {
-                Shape::Empty => None,
-                Shape::Arbitrary(_) => {
-                    if offset == (0, 0, 0).into() {
-                        None
-                    } else {
-                        Some(self.do_translate(offset))
-                    }
+        let shape = self.read(|x| match x {
+            Shape::Empty => None,
+            Shape::Arbitrary(_) => {
+                if offset == (0, 0, 0).into() {
+                    None
+                } else {
+                    Some(self.do_translate(offset))
                 }
-                Shape::Translated(inner, old_offset) => {
-                    let offset = *old_offset + offset;
-                    if offset == (0, 0, 0).into() {
-                        None
-                    } else {
-                        Some(inner.do_translate(offset))
-                    }
+            }
+            Shape::Translated(inner, old_offset) => {
+                let offset = *old_offset + offset;
+                if offset == (0, 0, 0).into() {
+                    None
+                } else {
+                    Some(inner.do_translate(offset))
                 }
             }
         });
@@ -333,24 +327,19 @@ impl ShapeRef {
 
     // this is needed so we don't recursively lock the RwLock
     fn resolve_translation_recur(guard: &mut RwLockWriteGuard<Vec<Shape>>, idx: usize) {
-        match &guard[idx] {
-            Shape::Translated(inner, offset) => {
-                let offset = *offset;
-                let inner_idx = inner.idx;
-                Self::resolve_translation_recur(guard, inner_idx);
-                let arb = match &guard[inner_idx] {
-                    Shape::Arbitrary(arb) => {
-                        Some(arb.translated(offset))
-                    }
-                    _ => None,
-                };
-                let shape = &mut guard[idx];
-                match arb {
-                    None => *shape = Shape::Empty,
-                    Some(arb) => *shape = Shape::Arbitrary(arb),
-                }
+        if let Shape::Translated(inner, offset) = &guard[idx] {
+            let offset = *offset;
+            let inner_idx = inner.idx;
+            Self::resolve_translation_recur(guard, inner_idx);
+            let arb = match &guard[inner_idx] {
+                Shape::Arbitrary(arb) => Some(arb.translated(offset)),
+                _ => None,
+            };
+            let shape = &mut guard[idx];
+            match arb {
+                None => *shape = Shape::Empty,
+                Some(arb) => *shape = Shape::Arbitrary(arb),
             }
-            _ => {}
         }
     }
 
@@ -359,14 +348,11 @@ impl ShapeRef {
     where
         F: FnOnce(Option<&Arbitrary>) -> T,
     {
-        self.read(|x| {
-            match x {
-                Shape::Arbitrary(x) => f(Some(x)),
-                _ => f(None),
-            }
+        self.read(|x| match x {
+            Shape::Arbitrary(x) => f(Some(x)),
+            _ => f(None),
         })
     }
-
 
     fn do_translate(&self, offset: Vec3<i32>) -> Shape {
         Shape::Translated(self.clone(), offset)
@@ -460,7 +446,7 @@ impl Arbitrary {
             (min, max)
         };
         for p in &other.prisms {
-            self.prisms.push(p.clone());
+            self.prisms.push(*p);
             Self::update_bound(&mut min, &mut max, p);
         }
         self.set_bound(min, max);
@@ -475,7 +461,7 @@ impl Arbitrary {
         let a_prisms = std::mem::take(&mut self.prisms);
         let mut min = (i32::MAX, i32::MAX, i32::MAX).into();
         let mut max = (i32::MIN, i32::MIN, i32::MIN).into();
-        
+
         for a in &a_prisms {
             for b in &other.prisms {
                 let intersection = a.intersection(b);
@@ -494,7 +480,7 @@ impl Arbitrary {
         let a_prisms = std::mem::take(&mut self.prisms);
         let mut min = (i32::MAX, i32::MAX, i32::MAX).into();
         let mut max = (i32::MIN, i32::MIN, i32::MIN).into();
-        
+
         for a in &a_prisms {
             for b in &other.prisms {
                 a.difference(b, &mut self.prisms);
@@ -519,7 +505,7 @@ impl Arbitrary {
         if self.prisms.is_empty() {
             return;
         }
-        let size  = (
+        let size = (
             nonneg!(max.x() - min.x()),
             nonneg!(max.y() - min.y()),
             nonneg!(max.z() - min.z()),

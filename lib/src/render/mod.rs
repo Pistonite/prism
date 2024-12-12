@@ -1,4 +1,3 @@
-
 /// Shapes broken down into faces, each with a unit size,
 /// a position, and a direction
 mod face;

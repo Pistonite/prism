@@ -1,7 +1,7 @@
-use std::sync::atomic::Ordering;
 use std::collections::BTreeMap;
-use std::sync::atomic::AtomicU64;
 use std::fmt::Display;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 
 use csscolorparser::Color;
 use derivative::Derivative;
@@ -24,8 +24,23 @@ pub(crate) use nonneg_sub;
 
 /// Vector of 3 elements
 #[derive(
-    Debug, Clone, Copy, PartialEq, PartialOrd, Ord, Eq, Hash, Default, Serialize, Deserialize, Add, Sub, From, Into,
-    AddAssign, SubAssign,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    PartialOrd,
+    Ord,
+    Eq,
+    Hash,
+    Default,
+    Serialize,
+    Deserialize,
+    Add,
+    Sub,
+    From,
+    Into,
+    AddAssign,
+    SubAssign,
 )]
 pub struct Vec3<T>(pub T, pub T, pub T);
 
@@ -154,7 +169,7 @@ impl Geom3 {
         let b = self.intersection(operand);
         if !b.has_positive_volume() {
             // nothing to subtract
-            out.push(self.clone());
+            out.push(*self);
             return;
         }
         // top
@@ -185,7 +200,7 @@ impl Geom3 {
                 b.size.z(),
             ]
         };
-        
+
         // -x
         geom3_sub_part! {
             out,
@@ -269,9 +284,9 @@ impl Geom3 {
     pub fn contains_unit_cube(&self, pos: Vec3<i32>) -> bool {
         self.pos.x() <= pos.x()
             && pos.x() < self.x_end()
-        && self.pos.y() <= pos.y()
+            && self.pos.y() <= pos.y()
             && pos.y() < self.y_end()
-        && self.pos.z() <= pos.z()
+            && self.pos.z() <= pos.z()
             && pos.z() < self.z_end()
     }
 }
@@ -449,7 +464,9 @@ pub struct AtomicF64 {
 impl AtomicF64 {
     pub fn new(value: f64) -> Self {
         let as_u64 = value.to_bits();
-        Self { storage: AtomicU64::new(as_u64) }
+        Self {
+            storage: AtomicU64::new(as_u64),
+        }
     }
     pub fn store(&self, value: f64, ordering: Ordering) {
         let as_u64 = value.to_bits();

@@ -2,8 +2,8 @@ use std::sync::Arc;
 
 use csscolorparser::Color;
 
-use crate::math::{Entry, Grid2, Vec3, VecMap};
 use super::Layer;
+use crate::math::{Entry, Grid2, Vec3, VecMap};
 
 /// A unit face with a position, color and a direction
 ///
@@ -110,6 +110,7 @@ pub enum Side {
     /// The positive X direction
     Front,
     /// The positive Y direction
+    #[allow(clippy::enum_variant_names)]
     Side,
     /// The positive Z direction
     Top,

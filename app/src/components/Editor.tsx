@@ -14,9 +14,6 @@ const useStyles = makeStyles({
             width: "40%",
             flexDirection: "column",
         },
-        // flex: 1,
-        // flexGrow: 0.5,
-        // flexShrink: 2,
     },
     editor: {
         flex: 1,

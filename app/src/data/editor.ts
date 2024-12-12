@@ -1,13 +1,9 @@
 import { addDarkSubscriber, isDark } from "@pistonite/pure/pref";
-// import { Debounce } from "@pistonite/pure/sync";
 import * as monaco from "monaco-editor";
-// import YamlWorker from "monaco-editor/esm/vs/basic-languages/yaml/yaml.js?worker";
 import TypeScriptWorker from "monaco-editor/esm/vs/language/typescript/ts.worker.js?worker";
 
 import { setScript, useStore } from "data/store.ts";
 import SCRIPT_LIB from "wasm/lib/scriptLib.ts?raw";
-// import type { PrismOutput } from "wasm/lib";
-//
 
 export async function initEditor() {
     self.MonacoEnvironment = {
@@ -58,21 +54,9 @@ export class EditorState {
             if (state.script !== model.getValue()) {
                 model.setValue(state.script);
             }
-            // this.updateMarkers(state.svg);
         });
 
-        // const resize = new Debounce(async () => {
-        //     this.onSizeChange();
-        // }, 100);
-        //
-        // const resizeObserver = new ResizeObserver(() => {
-        //     void resize.execute();
-        // });
-        //
-        // resizeObserver.observe(node);
-
         this.cleanup = () => {
-            // resizeObserver.disconnect();
             unsubscribe();
         };
 
@@ -83,48 +67,4 @@ export class EditorState {
         this.model.dispose();
         this.cleanup();
     }
-
-    // private onSizeChange() {
-    //     this.editor.layout();
-    // }
-
-    // private updateMarkers(result: SvgResult) {
-    //     const markers = [];
-    //     if ("err" in result) {
-    //         const { message, line, column } = result.err;
-    //         const marker = this.createMarker(message, line, column);
-    //         if (marker) {
-    //             markers.push(marker);
-    //         }
-    //     }
-    //     monaco.editor.setModelMarkers(this.model, "prism", markers);
-    // }
-    //
-    // private createMarker(
-    //     message: string,
-    //     line: number,
-    //     column: number,
-    // ): monaco.editor.IMarkerData | undefined {
-    //     const value = this.model.getValue();
-    //     if (!value || line <= 0 || line > this.model.getLineCount()) {
-    //         // don't add error if there is no content
-    //         return undefined;
-    //     }
-    //     // get the word at the marker
-    //     const range = {
-    //         startLineNumber: line,
-    //         startColumn: column,
-    //         endLineNumber: line,
-    //         endColumn: this.model.getLineLength(line) + 1,
-    //     };
-    //     const content = this.model.getValueInRange(range).split(" ", 2)[0];
-    //     return {
-    //         message,
-    //         severity: monaco.MarkerSeverity.Error,
-    //         startLineNumber: line,
-    //         startColumn: column,
-    //         endLineNumber: line,
-    //         endColumn: column + content.length,
-    //     };
-    // }
 }

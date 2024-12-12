@@ -1,5 +1,3 @@
-
-
 use boa_engine::vm::RuntimeLimits;
 use boa_engine::{Context, JsResult, Source};
 
@@ -18,15 +16,11 @@ pub fn execute_script(source: &str) -> ScriptResult {
     let mut context = Context::default();
     context.set_runtime_limits(limits);
 
-let binding = Builtin::default();
+    let binding = Builtin::default();
 
     let (output_message, has_js_error) = match execute_internal(&mut context, &binding, source) {
-            Ok(_) => {
-            ("render ok".to_string(), false)
-            },
-            Err(e) => {
-            (format!("runtime error: {}", e), true)
-            }
+        Ok(_) => ("render ok".to_string(), false),
+        Err(e) => (format!("runtime error: {}", e), true),
     };
 
     let unit = binding.get_unit();
@@ -36,12 +30,12 @@ let binding = Builtin::default();
     if layers.is_empty() {
         messages.push("no layers rendered".to_string());
     }
-        ScriptResult { 
-            unit,
-            has_js_error,
-            layers, 
-            messages
-        }
+    ScriptResult {
+        unit,
+        has_js_error,
+        layers,
+        messages,
+    }
 }
 
 fn execute_internal(context: &mut Context, binding: &Builtin, source: &str) -> JsResult<()> {

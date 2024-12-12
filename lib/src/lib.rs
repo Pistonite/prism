@@ -10,6 +10,5 @@ mod render;
 /// Script runtime
 mod runtime;
 
+pub use render::{polygons_from_layers, Svg};
 pub use runtime::{execute_script, ScriptResult};
-pub use render::{Svg, polygons_from_layers};
-

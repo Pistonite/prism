@@ -5,8 +5,8 @@ use boa_engine::object::builtins::JsArray;
 use boa_engine::{Context, JsArgs, JsError, JsResult, JsValue};
 use csscolorparser::{Color, ParseColorError};
 
-use crate::math::{Vec3, AtomicF64};
-use crate::render::{Layer, Canvas, Face, self};
+use crate::math::{AtomicF64, Vec3};
+use crate::render::{self, Canvas, Face, Layer};
 use crate::shape::ShapeVec;
 
 /// Builtin bindings for the rendering script engine
@@ -97,11 +97,12 @@ macro_rules! define_builtin {
     ($context:ident, $name:literal, $arg_len:literal, | $args:ident, $ctx:ident | $block:block) => {{
         let name = ::boa_engine::js_string!(concat!("__builtin_", $name));
         let function = {
-            let func = move |_: &::boa_engine::JsValue, $args: &[::boa_engine::JsValue], $ctx: &mut ::boa_engine::Context| 
-                -> ::boa_engine::JsResult<::boa_engine::JsValue> { $block };
-            unsafe {
-                ::boa_engine::NativeFunction::from_closure(func)
-            }
+            let func =
+                move |_: &::boa_engine::JsValue,
+                      $args: &[::boa_engine::JsValue],
+                      $ctx: &mut ::boa_engine::Context|
+                      -> ::boa_engine::JsResult<::boa_engine::JsValue> { $block };
+            unsafe { ::boa_engine::NativeFunction::from_closure(func) }
         };
         let attribute = ::boa_engine::property::Attribute::default();
         let function = ::boa_engine::object::FunctionObjectBuilder::new($context.realm(), function)
@@ -110,12 +111,15 @@ macro_rules! define_builtin {
             .constructor(false)
             .build();
         $context.register_global_property(name, function, attribute)
-    }}
+    }};
 }
 
 macro_rules! arg_string {
     ($args:ident, $ctx:ident, $index:literal) => {
-        $args.get_or_undefined($index).to_string($ctx).map(|s| s.to_std_string_lossy())
+        $args
+            .get_or_undefined($index)
+            .to_string($ctx)
+            .map(|s| s.to_std_string_lossy())
     };
 }
 
@@ -133,26 +137,23 @@ macro_rules! arg_u32 {
 
 macro_rules! arg_shape {
     ($args:ident, $shapes:ident, $ctx:ident, $index:literal) => {
-        $args.get_or_undefined($index).to_u32($ctx)
-            .and_then(|idx| {
-                $shapes.get(idx as usize)
-                    .ok_or_else(|| Error::InvalidShapeHandle(idx).to_js_error())
-            })
+        $args.get_or_undefined($index).to_u32($ctx).and_then(|idx| {
+            $shapes
+                .get(idx as usize)
+                .ok_or_else(|| Error::InvalidShapeHandle(idx).into_js())
+        })
     };
 }
 
 macro_rules! arg_axis {
     ($args:ident, $ctx:ident, $index:literal) => {
-        $args.get_or_undefined($index).to_u32($ctx)
-            .and_then(|idx| {
-                $crate::math::Axis::from_u32(idx)
-                    .ok_or_else(|| Error::InvalidAxisEnum(idx).to_js_error())
-            })
+        $args.get_or_undefined($index).to_u32($ctx).and_then(|idx| {
+            $crate::math::Axis::from_u32(idx).ok_or_else(|| Error::InvalidAxisEnum(idx).into_js())
+        })
     };
 }
 
 impl Builtin {
-
     /// Bind the builtin functions to the JS engine
     pub fn bind_to_engine(&self, context: &mut Context) -> JsResult<()> {
         {
@@ -225,7 +226,12 @@ impl Builtin {
             define_builtin!(context, "shape_size", 1, |args, ctx| {
                 let shape = arg_shape!(args, shapes, ctx, 0)?;
                 let size = shape.size();
-                let value = JsArray::from_iter([size.x(), size.y(), size.z()].into_iter().map(JsValue::from), ctx);
+                let value = JsArray::from_iter(
+                    [size.x(), size.y(), size.z()]
+                        .into_iter()
+                        .map(JsValue::from),
+                    ctx,
+                );
                 Ok(value.into())
             })?;
         }
@@ -234,8 +240,9 @@ impl Builtin {
             define_builtin!(context, "shape_min", 2, |args, ctx| {
                 let shape = arg_shape!(args, shapes, ctx, 0)?;
                 let axis = arg_axis!(args, ctx, 1)?;
-                let min = shape.min(axis)
-                    .ok_or_else(|| Error::MinOfEmptyShape.to_js_error())?;
+                let min = shape
+                    .min(axis)
+                    .ok_or_else(|| Error::MinOfEmptyShape.into_js())?;
                 Ok(min.into())
             })?;
         }
@@ -244,8 +251,9 @@ impl Builtin {
             define_builtin!(context, "shape_max", 2, |args, ctx| {
                 let shape = arg_shape!(args, shapes, ctx, 0)?;
                 let axis = arg_axis!(args, ctx, 1)?;
-                let min = shape.max(axis)
-                    .ok_or_else(|| Error::MaxOfEmptyShape.to_js_error())?;
+                let min = shape
+                    .max(axis)
+                    .ok_or_else(|| Error::MaxOfEmptyShape.into_js())?;
                 Ok(min.into())
             })?;
         }
@@ -350,7 +358,7 @@ impl Builtin {
 }
 
 fn parse_color(s: &str) -> Result<Color, JsError> {
-    s.parse().map_err(|e| Error::InvalidColor(e).to_js_error())
+    s.parse().map_err(|e| Error::InvalidColor(e).into_js())
 }
 
 /// Error thrown to the JS side if something happens
@@ -365,11 +373,11 @@ pub enum Error {
     #[error("native: cannot access max of a shape with 0 volume")]
     MaxOfEmptyShape,
     #[error("native: invalid color: {0}")]
-    InvalidColor(ParseColorError),
+    InvalidColor(#[from] ParseColorError),
 }
 
 impl Error {
-    pub fn to_js_error(self) -> JsError {
+    pub fn into_js(self) -> JsError {
         JsError::from_rust(self)
     }
 }
