@@ -1,9 +1,11 @@
 use std::collections::BTreeMap;
 use std::fmt::Display;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 
 use csscolorparser::Color;
 use derivative::Derivative;
-use derive_more::derive::{Add, From, Into};
+use derive_more::derive::{Add, AddAssign, From, Into, Sub, SubAssign};
 use num_traits::Num;
 use serde::{Deserialize, Serialize};
 
@@ -22,7 +24,23 @@ pub(crate) use nonneg_sub;
 
 /// Vector of 3 elements
 #[derive(
-    Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Add, From, Into,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    PartialOrd,
+    Ord,
+    Eq,
+    Hash,
+    Default,
+    Serialize,
+    Deserialize,
+    Add,
+    Sub,
+    From,
+    Into,
+    AddAssign,
+    SubAssign,
 )]
 pub struct Vec3<T>(pub T, pub T, pub T);
 
@@ -51,6 +69,23 @@ impl<T> Vec3<T> {
     pub fn z_mut(&mut self) -> &mut T {
         &mut self.2
     }
+    #[inline]
+    pub fn on_ref(&self, axis: Axis) -> &T {
+        match axis {
+            Axis::X => self.x_ref(),
+            Axis::Y => self.y_ref(),
+            Axis::Z => self.z_ref(),
+        }
+    }
+
+    #[inline]
+    pub fn on_mut(&mut self, axis: Axis) -> &mut T {
+        match axis {
+            Axis::X => self.x_mut(),
+            Axis::Y => self.y_mut(),
+            Axis::Z => self.z_mut(),
+        }
+    }
 }
 
 impl<T: Copy> Vec3<T> {
@@ -66,12 +101,216 @@ impl<T: Copy> Vec3<T> {
     pub fn z(&self) -> T {
         self.2
     }
+    #[inline]
+    pub fn on(&self, axis: Axis) -> T {
+        match axis {
+            Axis::X => self.x(),
+            Axis::Y => self.y(),
+            Axis::Z => self.z(),
+        }
+    }
 }
 
 impl<T: Num + PartialOrd> Vec3<T> {
     /// If all three components are positive
     pub fn all_positive(&self) -> bool {
         self.0 > T::zero() && self.1 > T::zero() && self.2 > T::zero()
+    }
+}
+
+/// Geometry in 3D space (position and size)
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct Geom3 {
+    pub size: Vec3<u32>,
+    pub pos: Vec3<i32>,
+}
+
+macro_rules! geom3_sub_part {
+    ($out:ident, pos: $pos:expr, size: [$x_size:expr, $y_size:expr, $z_size:expr $(,)?]) => {{
+        let size = ($x_size, $y_size, $z_size);
+        if size.0 > 0 && size.1 > 0 && size.2 > 0 {
+            $out.push($crate::math::Geom3::new($pos, size))
+        }
+    }};
+}
+
+impl Geom3 {
+    pub fn new(pos: impl Into<Vec3<i32>>, size: impl Into<Vec3<u32>>) -> Self {
+        Self {
+            pos: pos.into(),
+            size: size.into(),
+        }
+    }
+
+    /// Returns the intersection of this prism with another prism
+    ///
+    /// If the prisms do not intersect, A 0-volume prism is returned.
+    pub fn intersection(&self, other: &Self) -> Self {
+        let pos = Vec3::from((
+            self.pos.x().max(other.pos.x()),
+            self.pos.y().max(other.pos.y()),
+            self.pos.z().max(other.pos.z()),
+        ));
+        Self::new(
+            pos,
+            (
+                nonneg!(self.x_end().min(other.x_end()) - pos.x()),
+                nonneg!(self.y_end().min(other.y_end()) - pos.y()),
+                nonneg!(self.z_end().min(other.z_end()) - pos.z()),
+            ),
+        )
+    }
+
+    /// Subtract other from self, putting resulting non-zero-volume
+    /// shapes into out
+    pub fn difference(&self, operand: &Self, out: &mut Vec<Self>) {
+        // this ensures we are subtracting a prism that
+        // has no parts outside of self, to simplify the math
+        let b = self.intersection(operand);
+        if !b.has_positive_volume() {
+            // nothing to subtract
+            out.push(*self);
+            return;
+        }
+        // top
+        geom3_sub_part! {
+            out,
+            pos: Vec3(
+                self.pos.x(),
+                self.pos.y(),
+                b.z_end(),
+            ),
+            size: [
+                self.size.x(),
+                self.size.y(),
+                nonneg_sub!(self.z_end(), b.z_end()),
+            ]
+        };
+        // +x
+        geom3_sub_part! {
+            out,
+            pos: Vec3(
+                b.x_end(),
+                self.pos.y(),
+                b.pos.z(),
+            ),
+            size: [
+                nonneg_sub!(self.x_end(), b.x_end()),
+                self.size.y(),
+                b.size.z(),
+            ]
+        };
+
+        // -x
+        geom3_sub_part! {
+            out,
+            pos: Vec3(
+                self.pos.x(),
+                self.pos.y(),
+                b.pos.z(),
+            ),
+            size: [
+                nonneg_sub!(b.pos.x(), self.pos.x()),
+                self.size.y(),
+                b.size.z(),
+            ]
+        };
+        // +y
+        geom3_sub_part! {
+            out,
+            pos: Vec3(
+                b.pos.x(),
+                b.y_end(),
+                b.pos.z(),
+            ),
+            size: [
+                b.size.x(),
+                nonneg_sub!(self.y_end(), b.y_end()),
+                b.size.z(),
+            ]
+        };
+        // -y
+        geom3_sub_part! {
+            out,
+            pos: Vec3(
+                b.pos.x(),
+                self.pos.y(),
+                b.pos.z(),
+            ),
+            size: [
+                b.size.x(),
+                nonneg_sub!(b.pos.y(), self.pos.y()),
+                b.size.z(),
+            ]
+        };
+        // bottom
+        geom3_sub_part! {
+            out,
+            pos: self.pos,
+            size: [
+                self.size.x(),
+                self.size.y(),
+                nonneg_sub!(b.pos.z(), self.pos.z())
+            ]
+        };
+    }
+
+    /// The end of the prism in the x direction
+    #[inline]
+    pub fn x_end(&self) -> i32 {
+        self.pos.x() + self.size.x() as i32
+    }
+
+    /// The end of the prism in the y direction
+    #[inline]
+    pub fn y_end(&self) -> i32 {
+        self.pos.y() + self.size.y() as i32
+    }
+
+    /// The end of the prism in the z direction
+    #[inline]
+    pub fn z_end(&self) -> i32 {
+        self.pos.z() + self.size.z() as i32
+    }
+
+    /// Checks if the prism has positive volume
+    #[inline]
+    pub fn has_positive_volume(&self) -> bool {
+        self.size.x() > 0 && self.size.y() > 0 && self.size.z() > 0
+    }
+
+    /// Check if the prism contains a unit cube at the position
+    #[inline]
+    pub fn contains_unit_cube(&self, pos: Vec3<i32>) -> bool {
+        self.pos.x() <= pos.x()
+            && pos.x() < self.x_end()
+            && self.pos.y() <= pos.y()
+            && pos.y() < self.y_end()
+            && self.pos.z() <= pos.z()
+            && pos.z() < self.z_end()
+    }
+}
+
+/// Axis in 3D space
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Axis {
+    X = 0,
+    Y = 1,
+    Z = 2,
+}
+impl From<Axis> for u32 {
+    fn from(axis: Axis) -> u32 {
+        axis as u32
+    }
+}
+impl Axis {
+    pub fn from_u32(axis: u32) -> Option<Self> {
+        match axis {
+            0 => Some(Self::X),
+            1 => Some(Self::Y),
+            2 => Some(Self::Z),
+            _ => None,
+        }
     }
 }
 
@@ -104,6 +343,9 @@ impl<T> Grid2<T> {
     }
     pub fn remove(&mut self, u: i32, v: i32) -> Option<T> {
         self.0.remove(&(u, v))
+    }
+    pub fn iter(&self) -> std::collections::btree_map::Iter<(i32, i32), T> {
+        self.0.iter()
     }
 }
 
@@ -211,5 +453,27 @@ impl<K: Clone + PartialEq, V: Default> VecMapEntry for (K, V) {
 
     fn new(key: &Self::Key) -> Self {
         (key.clone(), Default::default())
+    }
+}
+
+// https://github.com/rust-lang/rust/issues/72353
+#[repr(transparent)]
+pub struct AtomicF64 {
+    storage: AtomicU64,
+}
+impl AtomicF64 {
+    pub fn new(value: f64) -> Self {
+        let as_u64 = value.to_bits();
+        Self {
+            storage: AtomicU64::new(as_u64),
+        }
+    }
+    pub fn store(&self, value: f64, ordering: Ordering) {
+        let as_u64 = value.to_bits();
+        self.storage.store(as_u64, ordering)
+    }
+    pub fn load(&self, ordering: Ordering) -> f64 {
+        let as_u64 = self.storage.load(ordering);
+        f64::from_bits(as_u64)
     }
 }

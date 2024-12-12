@@ -8,6 +8,7 @@
     "npm:@fluentui/react-components@^9.56.4": "9.56.4_@types+react@18.3.14_@types+react-dom@18.3.2_react@18.3.1_react-dom@18.3.1__react@18.3.1",
     "npm:@fluentui/react-icons@^2.0.266": "2.0.266_react@18.3.1",
     "npm:@modyfi/vite-plugin-yaml@^1.1.0": "1.1.0_vite@5.4.11",
+    "npm:@swc/wasm-web@^1.10.1": "1.10.1",
     "npm:@types/react-dom@^18.3.1": "18.3.2",
     "npm:@types/react@^18.3.12": "18.3.14",
     "npm:@vitejs/plugin-react@^4.3.4": "4.3.4_vite@5.4.11_@babel+core@7.26.0",
@@ -27,6 +28,7 @@
     "npm:react-i18next@^15.1.3": "15.1.3_i18next@24.0.5__typescript@5.7.2_react@18.3.1_typescript@5.7.2",
     "npm:react@18": "18.3.1",
     "npm:react@^18.3.1": "18.3.1",
+    "npm:strip-ansi@^7.1.0": "7.1.0",
     "npm:typescript-eslint@^8.15.0": "8.17.0_eslint@9.16.0_@typescript-eslint+parser@8.17.0__eslint@9.16.0__typescript@5.7.2_typescript@5.7.2",
     "npm:typescript@*": "5.7.2",
     "npm:typescript@^5.7.2": "5.7.2",
@@ -1710,6 +1712,9 @@
         "@swc/counter"
       ]
     },
+    "@swc/wasm-web@1.10.1": {
+      "integrity": "sha512-b3SfbFaiOovRy+TcEIu4hk1XAThTm8HKz4a4lonZcj7Hjxh3axFPDx0HjeLO/OM4LzsJwyAyTN4mGG594ZcvaA=="
+    },
     "@types/babel__core@7.20.5": {
       "integrity": "sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==",
       "dependencies": [
@@ -1866,6 +1871,9 @@
         "json-schema-traverse",
         "uri-js"
       ]
+    },
+    "ansi-regex@6.1.0": {
+      "integrity": "sha512-7HSX4QQb4CspciLpVFwyRe79O3xsIZDDLER21kERQ71oaPodF8jL725AgJMFAYbooIqolJoRLuM81SpeUkpkvA=="
     },
     "ansi-styles@4.3.0": {
       "integrity": "sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==",
@@ -3219,6 +3227,12 @@
         "es-object-atoms"
       ]
     },
+    "strip-ansi@7.1.0": {
+      "integrity": "sha512-iq6eVVI64nQQTRYq2KtEg2d2uU7LElhTJwsH4YzIHZshxlgZms/wIc4VoDQTlG/IvVIrBKG06CrZnp0qv7hkcQ==",
+      "dependencies": [
+        "ansi-regex"
+      ]
+    },
     "strip-json-comments@3.1.1": {
       "integrity": "sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig=="
     },
@@ -3480,6 +3494,7 @@
       "npm:@fluentui/react-components@^9.56.4",
       "npm:@fluentui/react-icons@^2.0.266",
       "npm:@modyfi/vite-plugin-yaml@^1.1.0",
+      "npm:@swc/wasm-web@^1.10.1",
       "npm:@types/react-dom@^18.3.1",
       "npm:@types/react@^18.3.12",
       "npm:@vitejs/plugin-react@^4.3.4",
@@ -3494,6 +3509,7 @@
       "npm:react-dom@^18.3.1",
       "npm:react-i18next@^15.1.3",
       "npm:react@^18.3.1",
+      "npm:strip-ansi@^7.1.0",
       "npm:typescript-eslint@^8.15.0",
       "npm:typescript@^5.7.2",
       "npm:vite-plugin-top-level-await@^1.4.4",

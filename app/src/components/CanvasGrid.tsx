@@ -30,7 +30,6 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
     width,
     height,
     color,
-    axisColor,
 }) => {
     const zoom = useStore((state) => state.zoom);
     const translateX = useStore((state) => state.translateX);
@@ -41,8 +40,16 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
 
     const lines = useMemo(() => {
         // Unit lengths (spacing between lines)
-        const xSpacing = ((unit * Math.sqrt(3)) / 2) * zoom;
-        const ySpacing = unit * zoom;
+        let xSpacing = ((unit * Math.sqrt(3)) / 2) * zoom;
+        let ySpacing = unit * zoom;
+        if (xSpacing === 0 || ySpacing === 0) {
+            return { x: [], y1: [], y2: [] };
+        }
+        // cap how many lines are drawn if the units are too small
+        while (xSpacing < 10 || ySpacing < 10) {
+            xSpacing *= 2;
+            ySpacing *= 2;
+        }
         // This is one line of the grid
         const xOrigin = -shiftX * unit * zoom + translateX;
         const y1Origin =
@@ -115,7 +122,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
                         y2={height}
                         x1={x}
                         x2={x}
-                        stroke={i === 1 ? axisColor : color}
+                        stroke={color}
                     />
                 ))}
                 {lines.y1.map((y, i) => (
@@ -125,7 +132,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
                         y2={y - yOffset}
                         x1={0}
                         x2={width}
-                        stroke={i === 1 ? axisColor : color}
+                        stroke={color}
                     />
                 ))}
                 {lines.y2.map((y, i) => (
@@ -135,7 +142,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
                         y2={y + yOffset}
                         x1={0}
                         x2={width}
-                        stroke={i === 0 ? axisColor : color}
+                        stroke={color}
                     />
                 ))}
             </svg>

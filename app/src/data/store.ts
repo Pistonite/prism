@@ -1,11 +1,12 @@
 import { Debounce, Latest } from "@pistonite/pure/sync";
 import { create } from "zustand";
 
-import type { SvgResult } from "wasm/lib";
+import type { PrismOutput } from "wasm/lib";
 import type { PrismApiClient } from "wasm/sides/app.ts";
 
 export type Store = {
-    svg: SvgResult;
+    output: PrismOutput | undefined;
+    scriptError: string;
     script: string;
     forceSquare: boolean;
     showGrid: boolean;
@@ -15,7 +16,8 @@ export type Store = {
 };
 
 export const useStore = create<Store>()(() => ({
-    svg: { err: { message: "", line: 0, column: 0, index: 0 } },
+    output: undefined,
+    scriptError: "",
     script: "",
     forceSquare: false,
     showGrid: false,
@@ -41,9 +43,8 @@ export const setZoomAndTranslate = (zoom: number, x: number, y: number) => {
 };
 
 export const useSvgTransform = () => {
-    const svgResult = useStore((state) => state.svg);
-    if ("val" in svgResult) {
-        const svg = svgResult.val;
+    const svg = useStore((state) => state.output?.svg);
+    if (svg) {
         return {
             unit: svg.unit,
             shiftX: svg.shift_x,
@@ -58,18 +59,17 @@ export const useSvgTransform = () => {
 };
 
 export const useSvgContent = () => {
-    const svgResult = useStore((state) => state.svg);
-    if ("val" in svgResult) {
-        return svgResult.val.content;
+    const svg = useStore((state) => state.output?.svg);
+    if (svg) {
+        return svg.content;
     }
     return "";
 };
 
 const STATE_KEY = "Prism.State";
-const DEFAULT_SCRIPT = `color: "#ff0000"
-prism:
-  - pos: [0, 0, 0]
-    size: [16, 16, 16]`;
+const DEFAULT_SCRIPT = `size(16, 16, 16)
+    .at(0, 0, 0)
+    .render("red");`;
 
 export function initStore(api: PrismApiClient): Store {
     const save = new Debounce(async () => {
@@ -79,24 +79,17 @@ export function initStore(api: PrismApiClient): Store {
             JSON.stringify({ script, showGrid, forceSquare }),
         );
     }, 1000);
-    const makeSvg = new Latest(async () => {
+    const runScript = new Latest(async () => {
         const { script, forceSquare } = useStore.getState();
-        const result = await api.makeSvg(script, forceSquare);
+        const result = await api.runScript(script, forceSquare);
         if (result.err) {
-            console.error(result.err);
             useStore.setState({
-                svg: {
-                    err: {
-                        message: result.err.message,
-                        line: 1,
-                        column: 1,
-                        index: 0,
-                    },
-                },
+                output: undefined,
+                scriptError: result.err.message,
             });
             return;
         }
-        useStore.setState({ svg: result.val });
+        useStore.setState({ output: result.val, scriptError: "" });
     });
     useStore.subscribe((curr, prev) => {
         void save.execute();
@@ -104,7 +97,7 @@ export function initStore(api: PrismApiClient): Store {
             curr.script !== prev.script ||
             curr.forceSquare !== prev.forceSquare
         ) {
-            void makeSvg.execute();
+            void runScript.execute();
         }
     });
 

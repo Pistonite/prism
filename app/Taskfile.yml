@@ -30,6 +30,11 @@ tasks:
     cmds:
       - workex -p app src/wasm/proto.ts
       - wasm-pack build --out-dir src/wasm/lib --target bundler --release
+      - task: wasm-script-lib
+
+  wasm-script-lib:
+    cmds:
+      - cp ../lib/src/runtime/ts/index.d.ts src/wasm/lib/scriptLib.ts
 
   check:
     desc: Check for issues
