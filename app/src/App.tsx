@@ -25,7 +25,7 @@ const useStaticStyles = makeStaticStyles({
     },
     "*": {
         minWidth: 0,
-    }
+    },
 });
 
 const useStyles = makeStyles({

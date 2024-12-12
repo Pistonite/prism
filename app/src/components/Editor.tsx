@@ -1,4 +1,9 @@
-import { makeStyles, Text, MessageBar, MessageBarBody } from "@fluentui/react-components";
+import {
+    makeStyles,
+    Text,
+    MessageBar,
+    MessageBarBody,
+} from "@fluentui/react-components";
 import { useEffect, useState } from "react";
 
 import { EditorState } from "data/editor.ts";
@@ -43,24 +48,17 @@ export const Editor: React.FC = () => {
         <div className={styles.editorContainer}>
             <div className={styles.editor} ref={ref} />
             <div className={styles.console}>
-                {
-                    !!scriptError && (
-                    <MessageBar intent="error"
-                        >
-                            <MessageBarBody>
-                                {scriptError}
-                            </MessageBarBody>
+                {!!scriptError && (
+                    <MessageBar intent="error">
+                        <MessageBarBody>{scriptError}</MessageBarBody>
                     </MessageBar>
-                    )
-                }
+                )}
                 <div className={styles.consoleScroll}>
-                    {
-                        messages?.map((message, i) => (
-                            <Text key={i} font="monospace" block wrap>
-                                {message}
-                            </Text>
-                        ))
-                    }
+                    {messages?.map((message, i) => (
+                        <Text key={i} font="monospace" block wrap>
+                            {message}
+                        </Text>
+                    ))}
                 </div>
             </div>
         </div>
@@ -80,4 +78,4 @@ const useMonacoEditor = () => {
     }, [ref]);
 
     return setRef;
-}
+};

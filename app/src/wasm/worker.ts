@@ -25,14 +25,14 @@ async function boot() {
                 throw new Error("Transpile error");
             }
             return run_prism_script(code, forceSquare);
-
         },
     } satisfies Delegate<PrismApi>;
 
     // Now we bind the handler to the worker
-    const handshake = bindPrismApiHost(hostFromDelegate(handler), { worker: self });
+    const handshake = bindPrismApiHost(hostFromDelegate(handler), {
+        worker: self,
+    });
 
     await handshake.initiate();
 }
 boot();
-

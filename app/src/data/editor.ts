@@ -20,7 +20,10 @@ export async function initEditor() {
         noFallthroughCasesInSwitch: true,
     });
 
-    monaco.languages.typescript.typescriptDefaults.addExtraLib(SCRIPT_LIB ,"file:///lib.ts");
+    monaco.languages.typescript.typescriptDefaults.addExtraLib(
+        SCRIPT_LIB,
+        "file:///lib.ts",
+    );
 }
 
 export class EditorState {
@@ -59,7 +62,6 @@ export class EditorState {
         this.cleanup = () => {
             unsubscribe();
         };
-
     }
 
     public destroy() {
