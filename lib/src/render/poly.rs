@@ -1,3 +1,5 @@
+use std::{cell::RefCell, collections::VecDeque, rc::Rc};
+
 use derive_more::derive::{Deref, DerefMut};
 
 use crate::math::{Grid2, Rgba, VecMapEntry};
@@ -59,7 +61,7 @@ impl Layer {
     pub fn into_polygons(mut self, out: &mut Vec<Polygon>) {
         let trees = self.make_trees();
         for tree in trees {
-            let segs = tree.into_segments();
+            let segs = tree.to_segments();
             let verts = create_vertices(&segs);
             out.push(Polygon::new(self.color, verts));
         }
@@ -71,18 +73,60 @@ impl Layer {
     /// disjoint trees
     fn make_trees(&mut self) -> Vec<Tree3> {
         let mut trees = Vec::new();
+        let mut queue = VecDeque::new();
+        struct SearchNode {
+            /// where to put the output tree
+            out: Rc<RefCell<Option<Tree3>>>,
+            u: i32,
+            v: i32,
+        }
         while let Some((u, v, _)) = self.grid.remove_one() {
-            trees.push(make_tree_recur(&mut self.grid, 0, u, v));
+            let root_cell = Rc::new(RefCell::new(None));
+            queue.push_back(SearchNode {
+                out: Rc::clone(&root_cell),
+                u,
+                v,
+            });
+
+            while let Some(SearchNode { out, u, v }) = queue.pop_front() {
+                let curr = Tree3::new(u, v);
+                // Get top subtree if possible
+                let (u_top, v_top) = curr.uv_top();
+                if self.grid.remove(u_top, v_top).is_some() {
+                    queue.push_back(SearchNode {
+                        out: Rc::clone(&curr.top),
+                        u: u_top,
+                        v: v_top,
+                    });
+                }
+                // Get bottom subtree if possible
+                let (u_bottom, v_bottom) = curr.uv_bottom();
+                if self.grid.remove(u_bottom, v_bottom).is_some() {
+                    queue.push_back(SearchNode {
+                        out: Rc::clone(&curr.bottom),
+                        u: u_bottom,
+                        v: v_bottom,
+                    });
+                }
+                // Get side subtree if possible
+                let (u_side, v_side) = curr.uv_side();
+                if self.grid.remove(u_side, v_side).is_some() {
+                    queue.push_back(SearchNode {
+                        out: Rc::clone(&curr.side),
+                        u: u_side,
+                        v: v_side,
+                    });
+                }
+                out.replace(Some(curr));
+            }
+
+            // queue is empty, so we must be the only one owning the root
+            let root = root_cell.borrow_mut().take().unwrap();
+            trees.push(root);
         }
         trees
     }
 }
-
-/// This is to prevent stack overflow
-///
-/// possibly can get rid of this if BFS is used instead of DFS
-/// which might have better result as well
-const MAX_TREE_DEPTH: usize = 2048;
 
 #[derive(Debug, Clone, Deref, DerefMut)]
 struct Tree3 {
@@ -90,10 +134,21 @@ struct Tree3 {
     #[deref]
     #[deref_mut]
     uv: TreeUV,
-    top: Option<Box<Tree3>>,
-    bottom: Option<Box<Tree3>>,
+    top: Rc<RefCell<Option<Tree3>>>,
+    bottom: Rc<RefCell<Option<Tree3>>>,
     /// Left or right side, depends on the center
-    side: Option<Box<Tree3>>,
+    side: Rc<RefCell<Option<Tree3>>>,
+}
+
+impl Tree3 {
+    pub fn new(u: i32, v: i32) -> Self {
+        Self {
+            uv: TreeUV(u, v),
+            top: Rc::new(RefCell::new(None)),
+            bottom: Rc::new(RefCell::new(None)),
+            side: Rc::new(RefCell::new(None)),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -123,34 +178,6 @@ impl TreeUV {
     }
 }
 
-fn make_tree_recur(grid: &mut Grid2<()>, depth: usize, u: i32, v: i32) -> Tree3 {
-    let mut tree = Tree3 {
-        uv: TreeUV(u, v),
-        top: None,
-        bottom: None,
-        side: None,
-    };
-    if depth >= MAX_TREE_DEPTH {
-        return tree;
-    }
-    // Get top subtree if possible
-    let (u, v) = tree.uv_top();
-    if grid.remove(u, v).is_some() {
-        tree.top = Some(Box::new(make_tree_recur(grid, depth + 1, u, v)));
-    }
-    // Get bottom subtree if possible
-    let (u, v) = tree.uv_bottom();
-    if grid.remove(u, v).is_some() {
-        tree.bottom = Some(Box::new(make_tree_recur(grid, depth + 1, u, v)));
-    }
-    // Get side subtree if possible
-    let (u, v) = tree.uv_side();
-    if grid.remove(u, v).is_some() {
-        tree.side = Some(Box::new(make_tree_recur(grid, depth + 1, u, v)));
-    }
-    tree
-}
-
 /// A segment (edge) of a polygon
 #[derive(Debug, Clone, Copy, PartialEq, Deref, DerefMut)]
 struct Seg {
@@ -171,52 +198,52 @@ impl Tree3 {
     ///
     /// Internal borders are removed, but outer borders
     /// are kept even if they are internal to the polygon
-    fn into_segments(self) -> Vec<Seg> {
+    fn to_segments(&self) -> Vec<Seg> {
         let mut segs = Vec::new();
         self.add_to_segments(&mut segs, None);
         segs
     }
 
-    fn add_to_segments(self, segs: &mut Vec<Seg>, from_side: Option<TreeSide>) {
+    fn add_to_segments(&self, segs: &mut Vec<Seg>, from_side: Option<TreeSide>) {
         let is_pointing_left = self.is_pointing_left();
         // we want to keep the order consistent when traversing the tree,
         // so the segment list are connected
         match (from_side, is_pointing_left) {
             // from root, add all 3 directions
             (None, _) => {
-                self.uv.add_top(self.top, segs);
+                self.uv.add_top(&self.top, segs);
                 if is_pointing_left {
-                    self.uv.add_side(self.side, segs);
-                    self.uv.add_bottom(self.bottom, segs);
+                    self.uv.add_side(&self.side, segs);
+                    self.uv.add_bottom(&self.bottom, segs);
                 } else {
-                    self.uv.add_bottom(self.bottom, segs);
-                    self.uv.add_side(self.side, segs);
+                    self.uv.add_bottom(&self.bottom, segs);
+                    self.uv.add_side(&self.side, segs);
                 }
             }
             // add 2 directions based on coming from which side
             (Some(TreeSide::Top), true) => {
-                self.uv.add_side(self.side, segs);
-                self.uv.add_bottom(self.bottom, segs);
+                self.uv.add_side(&self.side, segs);
+                self.uv.add_bottom(&self.bottom, segs);
             }
             (Some(TreeSide::Bottom), true) => {
-                self.uv.add_top(self.top, segs);
-                self.uv.add_side(self.side, segs);
+                self.uv.add_top(&self.top, segs);
+                self.uv.add_side(&self.side, segs);
             }
             (Some(TreeSide::Side), true) => {
-                self.uv.add_bottom(self.bottom, segs);
-                self.uv.add_top(self.top, segs);
+                self.uv.add_bottom(&self.bottom, segs);
+                self.uv.add_top(&self.top, segs);
             }
             (Some(TreeSide::Top), false) => {
-                self.uv.add_bottom(self.bottom, segs);
-                self.uv.add_side(self.side, segs);
+                self.uv.add_bottom(&self.bottom, segs);
+                self.uv.add_side(&self.side, segs);
             }
             (Some(TreeSide::Bottom), false) => {
-                self.uv.add_side(self.side, segs);
-                self.uv.add_top(self.top, segs);
+                self.uv.add_side(&self.side, segs);
+                self.uv.add_top(&self.top, segs);
             }
             (Some(TreeSide::Side), false) => {
-                self.uv.add_top(self.top, segs);
-                self.uv.add_bottom(self.bottom, segs);
+                self.uv.add_top(&self.top, segs);
+                self.uv.add_bottom(&self.bottom, segs);
             }
         }
     }
@@ -224,8 +251,8 @@ impl Tree3 {
 
 impl TreeUV {
     #[inline]
-    fn add_top(&self, top: Option<Box<Tree3>>, segs: &mut Vec<Seg>) {
-        match top {
+    fn add_top(&self, top: &Rc<RefCell<Option<Tree3>>>, segs: &mut Vec<Seg>) {
+        match top.borrow().as_ref() {
             None => {
                 segs.push(Seg {
                     uv: *self,
@@ -239,8 +266,8 @@ impl TreeUV {
     }
 
     #[inline]
-    fn add_bottom(&self, bottom: Option<Box<Tree3>>, segs: &mut Vec<Seg>) {
-        match bottom {
+    fn add_bottom(&self, bottom: &Rc<RefCell<Option<Tree3>>>, segs: &mut Vec<Seg>) {
+        match bottom.borrow().as_ref() {
             None => {
                 segs.push(Seg {
                     uv: TreeUV(self.u(), self.v() + 1),
@@ -254,8 +281,8 @@ impl TreeUV {
     }
 
     #[inline]
-    fn add_side(&self, side: Option<Box<Tree3>>, segs: &mut Vec<Seg>) {
-        match side {
+    fn add_side(&self, side: &Rc<RefCell<Option<Tree3>>>, segs: &mut Vec<Seg>) {
+        match side.borrow().as_ref() {
             None => {
                 let uv = if self.is_pointing_left() {
                     *self
