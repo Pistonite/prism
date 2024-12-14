@@ -21,9 +21,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: denoland/setup-deno@v1
-        with:
-          deno-version: v2.x
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
@@ -35,7 +32,6 @@ jobs:
       - uses: baptiste0928/cargo-install@v3
         with:
           crate: wasm-pack
-      - run: task app:deno-npm
       - run: task app:ci
       - run: task app:build
       - uses: actions/upload-pages-artifact@v3
