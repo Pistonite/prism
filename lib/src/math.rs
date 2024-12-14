@@ -15,12 +15,6 @@ macro_rules! nonneg {
     };
 }
 pub(crate) use nonneg;
-macro_rules! nonneg_sub {
-    ($x:expr, $y:expr) => {
-        nonneg!($x).saturating_sub(nonneg!($y))
-    };
-}
-pub(crate) use nonneg_sub;
 
 /// Vector of 3 elements
 #[derive(
@@ -183,7 +177,7 @@ impl Geom3 {
             size: [
                 self.size.x(),
                 self.size.y(),
-                nonneg_sub!(self.z_end(), b.z_end()),
+                nonneg!(self.z_end() - b.z_end()),
             ]
         };
         // +x
@@ -195,7 +189,7 @@ impl Geom3 {
                 b.pos.z(),
             ),
             size: [
-                nonneg_sub!(self.x_end(), b.x_end()),
+                nonneg!(self.x_end() - b.x_end()),
                 self.size.y(),
                 b.size.z(),
             ]
@@ -210,7 +204,7 @@ impl Geom3 {
                 b.pos.z(),
             ),
             size: [
-                nonneg_sub!(b.pos.x(), self.pos.x()),
+                nonneg!(b.pos.x() - self.pos.x()),
                 self.size.y(),
                 b.size.z(),
             ]
@@ -225,7 +219,7 @@ impl Geom3 {
             ),
             size: [
                 b.size.x(),
-                nonneg_sub!(self.y_end(), b.y_end()),
+                nonneg!(self.y_end() - b.y_end()),
                 b.size.z(),
             ]
         };
@@ -239,7 +233,7 @@ impl Geom3 {
             ),
             size: [
                 b.size.x(),
-                nonneg_sub!(b.pos.y(), self.pos.y()),
+                nonneg!(b.pos.y() - self.pos.y()),
                 b.size.z(),
             ]
         };
@@ -250,7 +244,7 @@ impl Geom3 {
             size: [
                 self.size.x(),
                 self.size.y(),
-                nonneg_sub!(b.pos.z(), self.pos.z())
+                nonneg!(b.pos.z() - self.pos.z())
             ]
         };
     }

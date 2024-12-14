@@ -476,20 +476,21 @@ impl Arbitrary {
 
     /// Self = Self - other
     pub fn difference(&mut self, other: &Self) {
-        // same math as intersection
-        let a_prisms = std::mem::take(&mut self.prisms);
-        let mut min = (i32::MAX, i32::MAX, i32::MAX).into();
-        let mut max = (i32::MIN, i32::MIN, i32::MIN).into();
+        // Note the A - (B U C) is not the same as (A - B) U (A - C)
+        // there might be a more efficient way to do this...
+        for b in &other.prisms {
+            let a_prisms = std::mem::take(&mut self.prisms);
+            let mut min = (i32::MAX, i32::MAX, i32::MAX).into();
+            let mut max = (i32::MIN, i32::MIN, i32::MIN).into();
 
-        for a in &a_prisms {
-            for b in &other.prisms {
+            for a in &a_prisms {
                 a.difference(b, &mut self.prisms);
             }
+            for p in &self.prisms {
+                Self::update_bound(&mut min, &mut max, p);
+            }
+            self.set_bound(min, max);
         }
-        for p in &self.prisms {
-            Self::update_bound(&mut min, &mut max, p);
-        }
-        self.set_bound(min, max);
     }
 
     fn update_bound(min: &mut Vec3<i32>, max: &mut Vec3<i32>, new_bound: &Geom3) {
