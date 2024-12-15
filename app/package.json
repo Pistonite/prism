@@ -3,7 +3,7 @@
     "dependencies": {
         "@fluentui/react-components": "^9.56.5",
         "@fluentui/react-icons": "^2.0.269",
-        "@pistonite/pure": "^0.0.12",
+        "@pistonite/pure": "^0.0.13",
         "@pistonite/pure-react": "^0.0.4",
         "@swc/wasm-web": "^1.10.1",
         "i18next": "^24.1.0",
@@ -32,7 +32,7 @@
         "vite-plugin-wasm": "^3.3.0",
         "vite-tsconfig-paths": "^5.1.4"
     },
-    "pretter": {
+    "prettier": {
         "tabWidth": 4,
         "endOfLine": "auto"
     }

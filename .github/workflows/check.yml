@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: arduino/setup-task@v2
         with:
           version: 3.x
@@ -29,7 +31,7 @@ jobs:
         with:
           crate: wasm-pack
       - run: task app:ci
-      - run: task app:wasm
+      - run: task app:wasm-debug
       - run: task app:check
 
   check-rust:
@@ -37,6 +39,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: arduino/setup-task@v2
         with:
           version: 3.x
