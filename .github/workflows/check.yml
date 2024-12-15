@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: arduino/setup-task@v2
         with:
           version: 3.x
@@ -17,9 +19,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-      - uses: denoland/setup-deno@v1
-        with:
-          deno-version: v2.x
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
@@ -31,9 +30,8 @@ jobs:
       - uses: baptiste0928/cargo-install@v3
         with:
           crate: wasm-pack
-      - run: task app:deno-npm
       - run: task app:ci
-      - run: task app:wasm
+      - run: task app:wasm-debug
       - run: task app:check
 
   check-rust:
@@ -41,6 +39,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: arduino/setup-task@v2
         with:
           version: 3.x

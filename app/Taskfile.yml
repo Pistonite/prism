@@ -1,63 +1,58 @@
 version: '3'
 
 tasks:
-  install:
-    desc: Install deno packages in npm-compatible way
-    deps: [deno-npm]
-    cmds:
-      - deno install --allow-scripts
   ci:
     cmds:
-      - deno install --allow-scripts --frozen
-
-  deno-npm:
-    cmds:
-      - deno run -A https://gist.githubusercontent.com/Pistonight/06cf44fae070664d82c9d099c32a0952/raw/deno-install.ts --allow-scripts --no-lock
+      - npm ci
 
   dev:
     desc: Run Vite Dev Server
     cmds:
-      - deno run -A npm:vite dev --host
+      - npx vite --host
 
   build:
     desc: Build Client App
     deps: [wasm]
     cmds:
-      - deno run -A npm:vite build
+      - npx vite build
 
   wasm:
     desc: Build WASM Worker Module
     cmds:
-      - workex -p app src/wasm/proto.ts
-      - wasm-pack build --out-dir src/wasm/lib --target bundler --release
+      - task: workex
+      - task: wasm-pack
+        vars:
+          WASM_PACK_ARGS: --release
       - task: wasm-script-lib
+
+  wasm-debug:
+    cmds:
+      - task: workex
+      - task: wasm-pack
+        vars:
+          WASM_PACK_ARGS: --dev
+      - task: wasm-script-lib
+
+  workex:
+    cmds:
+      - workex -p app src/wasm/proto.ts
 
   wasm-script-lib:
     cmds:
       - cp ../lib/src/runtime/ts/index.d.ts src/wasm/lib/scriptLib.ts
 
+  wasm-pack:
+    cmds:
+      - wasm-pack build --out-dir src/wasm/lib --target bundler {{.WASM_PACK_ARGS}}
+
   check:
     desc: Check for issues
     cmds:
-      - deno run -A npm:typescript/tsc --build
-      - deno run -A npm:eslint src --report-unused-disable-directives --max-warnings 0 --cache
-      - task: prettier
-        vars:
-          MODE: --check
+      - npx tsc --build
+      - npx eslint src --report-unused-disable-directives --max-warnings 0 --cache
+      - npx prettier . --check
 
   fix:
     desc: Fix issues
     cmds:
-      - task: prettier
-        vars:
-          MODE: --write
-
-  prettier:
-    vars:
-      CONFIG: >
-        --tab-width 4
-        --end-of-line auto
-    cmds:
-      - deno run -A npm:prettier . {{.MODE}} {{.CONFIG}}
-
-
+      - npx prettier . --write
