@@ -16,7 +16,7 @@ to keep track of the source code after the design is made. Therefore,
 prism is also a CLI tool to help with just that!
 
 ```
-cargo install prism --git https://github.com/Pistonite/prism
+cargo install prism-cli --git https://github.com/Pistonite/prism
 ```
 
 The CLI tool has the same functionality as the web app, but exposed as CLI.
