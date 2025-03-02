@@ -57,7 +57,7 @@ fn main() -> ExitCode {
         transpiled_script.push('\n');
         if command.trim() == "-" {
             let mut input = String::new();
-            if let Err(_) = std::io::stdin().read_to_string(&mut input) {
+            if std::io::stdin().read_to_string(&mut input).is_err() {
                 eprintln!("Failed to read from stdin");
                 return ExitCode::FAILURE;
             }

@@ -26,16 +26,7 @@ const useStaticStyles = makeStaticStyles({
 });
 
 const useStyles = makeStyles({
-    root: {
-        // display: "flex",
-        // flexDirection: "column",
-        height: "100vh",
-        width: "100vw",
-        // overflow: "hidden",
-        // [LANDSCAPE_QUERY]: {
-        //     flexDirection: "row",
-        // },
-    },
+    root: { height: "100vh", width: "100vw" },
     container: { width: "100%", height: "100%" },
     toolbar: { position: "absolute", right: 0, zIndex: 100 },
     canvas: { width: "100%", height: "100%" },

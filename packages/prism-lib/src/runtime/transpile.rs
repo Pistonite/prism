@@ -21,7 +21,7 @@ pub fn ts_files_to_js(files: &[impl AsRef<Path>]) -> Result<String, String> {
         ts_source.push_str(&format!("import \"{}\";\n", file.display()));
     }
     let virtual_file = Path::new("./virtual");
-    to_js_internal(&ts_source, Some(&virtual_file), true)
+    to_js_internal(&ts_source, Some(virtual_file), true)
 }
 
 /// Load a TypeScript source file and transform it into JS,
@@ -43,7 +43,11 @@ pub fn standalone_to_js(source: &str) -> Result<String, String> {
 /// Transpile TypeScript source code to JavaScript
 ///
 /// import script statements can be resolved if file path is given
-fn to_js_internal(ts_source: &str, file: Option<&Path>, virtual_file: bool) -> Result<String, String> {
+fn to_js_internal(
+    ts_source: &str,
+    file: Option<&Path>,
+    virtual_file: bool,
+) -> Result<String, String> {
     let mut imported = BTreeSet::new();
     if let Some(file) = file {
         if !virtual_file {
