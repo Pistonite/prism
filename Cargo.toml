@@ -1,6 +1,7 @@
 [workspace]
-members = [
-    "app",
-    "lib"
+members = [ 
+    "packages/prism-cli",
+    "packages/prism-lib",
+    "packages/prism-wasm"
 ]
 resolver = "2"

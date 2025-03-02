@@ -1,0 +1,44 @@
+version: '3'
+
+includes:
+  ecma:
+    taskfile: ../mono-dev/task/ecma.yaml
+    internal: true
+  cargo:
+    taskfile: ../mono-dev/task/cargo.yaml
+    internal: true
+
+tasks:
+  build:
+    cmds:
+      - task: cargo:wasm-pack-build
+        vars:
+          PACKAGE: prism_wasm
+          WASM_PACK_ARGS: -t bundler --out-dir src/pkg --no-pack
+
+  wasm-dev-build:
+    cmds:
+      - task: cargo:wasm-pack-build
+        vars:
+          PACKAGE: prism_wasm
+          WASM_PACK_ARGS: -t bundler --out-dir src/pkg --no-pack --no-opt
+      
+
+  install:
+    cmds:
+      - workex -p prism src/proto.ts
+
+  check:
+    cmds:
+      - task: cargo:clippy-all
+      - task: cargo:fmt-check
+      - task: wasm-dev-build # need to generate the types
+      - task: ecma:tsc-check
+      - task: ecma:eslint-check
+      - task: ecma:prettier-check
+
+  fix:
+    cmds:
+      - task: cargo:fmt-fix
+      - task: ecma:eslint-fix
+      - task: ecma:prettier-fix
