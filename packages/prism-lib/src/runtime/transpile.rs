@@ -1,12 +1,12 @@
 use std::collections::BTreeSet;
 use std::path::Path;
 
-use swc::config::IsModule;
 use swc::Compiler;
+use swc::config::IsModule;
 use swc_common::errors::Handler;
 use swc_common::source_map::SourceMap;
 use swc_common::sync::Lrc;
-use swc_common::{FileName, FilePathMapping, Mark, GLOBALS};
+use swc_common::{FileName, FilePathMapping, GLOBALS, Mark};
 use swc_ecma_ast::{EsVersion, ModuleDecl, ModuleItem, Pass, Program};
 use swc_ecma_parser::Syntax;
 

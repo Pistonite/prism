@@ -2,7 +2,7 @@ use std::sync::{Arc, RwLock, RwLockWriteGuard};
 
 use csscolorparser::Color;
 
-use crate::math::{nonneg, Axis, Geom3, Vec3};
+use crate::math::{Axis, Geom3, Vec3, nonneg};
 use crate::render::Face;
 
 /// 3D geometry
