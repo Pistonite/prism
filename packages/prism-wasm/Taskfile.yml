@@ -32,6 +32,7 @@ tasks:
     cmds:
       - task: cargo:clippy-all
       - task: cargo:fmt-check
+      - task: wasm-dev-build # need to generate the types
       - task: ecma:tsc-check
       - task: ecma:eslint-check
       - task: ecma:prettier-check
