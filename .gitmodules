@@ -1,0 +1,8 @@
+[submodule "mono-dev"]
+	path = packages/mono-dev
+	url = https://github.com/Pistonight/mono-dev
+	branch = main
+[submodule "intwc"]
+	path = packages/intwc
+	url = https://github.com/Pistonight/intwc
+	branch = main
