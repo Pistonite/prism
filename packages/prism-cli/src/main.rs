@@ -2,7 +2,7 @@ use std::io::Read as _;
 use std::process::ExitCode;
 
 use clap::Parser;
-use prism_lib::{transpile, Svg};
+use prism_lib::{Svg, transpile};
 
 mod png;
 

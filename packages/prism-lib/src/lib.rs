@@ -10,8 +10,8 @@ mod render;
 /// Script runtime
 mod runtime;
 
-pub use render::{polygons_from_layers, Svg};
-pub use runtime::{execute_script, transpile, ScriptResult};
+pub use render::{Svg, polygons_from_layers};
+pub use runtime::{ScriptResult, execute_script, transpile};
 
 pub fn lib_d_ts() -> &'static str {
     include_str!("runtime/ts/index.d.ts")

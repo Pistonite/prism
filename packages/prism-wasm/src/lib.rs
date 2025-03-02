@@ -1,4 +1,4 @@
-use prism_lib::{transpile, Svg};
+use prism_lib::{Svg, transpile};
 use serde::{Deserialize, Serialize};
 use tsify_next::Tsify;
 use wasm_bindgen::prelude::*;
