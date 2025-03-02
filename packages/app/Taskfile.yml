@@ -1,0 +1,34 @@
+version: '3'
+
+includes:
+  ecma:
+    taskfile: ../mono-dev/task/ecma.yaml
+    internal: true
+
+tasks:
+  dev:
+    desc: Run Vite Dev Server
+    cmds:
+      - task: ecma:vite-dev
+
+  build:
+    desc: Build Client App
+    cmds:
+      - task: ecma:vite-build
+
+  check:
+    desc: Check for issues
+    cmds:
+      - task: ecma:tsc-check-build
+      - task: ecma:eslint-check
+      - task: ecma:prettier-check
+
+  fix:
+    desc: Fix issues
+    cmds:
+      - task: ecma:eslint-fix
+      - task: ecma:prettier-fix
+
+  install:
+    cmds:
+      - cp ../prism-lib/src/runtime/ts/index.d.ts src/PrismLib.ts

@@ -1,18 +1,84 @@
 version: '3'
 
 includes:
-  lib:
-    taskfile: ./lib
-    dir: ./lib
+  common:
+    taskfile: ./packages/mono-dev/task/common.yaml
+    flatten: true
+    optional: true
+
+  intwc:
+    taskfile: ./packages/intwc
+    dir: ./packages/intwc
+    internal: true
 
   app:
-    taskfile: ./app
-    dir: ./app
+    taskfile: ./packages/app
+    dir: ./packages/app
+    internal: true
+
+  lib:
+    taskfile: ./packages/prism-lib
+    dir: ./packages/prism-lib
+    internal: true
+
+  wasm:
+    taskfile: ./packages/prism-wasm
+    dir: ./packages/prism-wasm
+
+  cli:
+    taskfile: ./packages/prism-cli
+    dir: ./packages/prism-cli
+  
 
 tasks:
-  check:
-    desc: Check Rust code
+  install-cargo-extra-tools:
+    aliases: [icets]
     cmds:
-      - cargo clippy --all-targets --all-features -- -D warnings -D clippy::todo
-      - cargo fmt --check
+      - cargo install magoo wasm-pack
+      - cargo install workex --git https://github.com/Pistonite/workex
+
+  install:
+    desc: Install dependencies for local development
+    cmds:
+      - magoo install
+      - pnpm install
+      - task: post-install
+
+  install-ci:
+    cmds:
+      - pnpm install --frozen-lockfile
+      - task: post-install
+
+  post-install:
+    cmds:
+      - task: intwc:install
+      - task: app:install
+      - task: wasm:install
+
+  check:
+    desc: Run checks
+    cmds:
+      - task: lib:check
+      - task: wasm:check
+      - task: cli:check
+      - task: app:check
+
+  test:
+    desc: Run tests
+    cmds:
+      - task: lib:test
+
+  build-dev:
+    desc: Sanity build pass
+    cmds:
+      - task: cli:build
+      - task: wasm:wasm-dev-build
+      - task: app:build
+
+  build:
+    desc: Build for production
+    cmds:
+      - task: wasm:build
+      - task: app:build
+
   

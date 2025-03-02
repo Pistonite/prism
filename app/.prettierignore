@@ -1,7 +1,0 @@
-*.toml
-*.yml
-*.yaml
-*.lock
-src/wasm/interfaces/**
-src/wasm/lib/**
-src/wasm/workex/**
