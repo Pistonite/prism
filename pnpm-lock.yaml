@@ -13,17 +13,17 @@ catalogs:
       specifier: ^2.0.274
       version: 2.0.274
     '@pistonite/pure':
-      specifier: ^0.22.3
-      version: 0.22.3
+      specifier: ^0.23.1
+      version: 0.23.1
     '@pistonite/pure-i18next':
-      specifier: ^0.3.1
-      version: 0.3.1
+      specifier: ^0.3.2
+      version: 0.3.2
     '@pistonite/pure-react':
-      specifier: ^0.7.0
-      version: 0.7.0
+      specifier: ^0.7.1
+      version: 0.7.1
     '@pistonite/workex':
-      specifier: ^0.0.5
-      version: 0.0.5
+      specifier: ^0.0.6
+      version: 0.0.6
     '@types/react':
       specifier: ^18
       version: 18.3.18
@@ -43,8 +43,8 @@ catalogs:
       specifier: '=5.7.2'
       version: 5.7.2
     vite:
-      specifier: ^6.2.0
-      version: 6.2.0
+      specifier: ^6.2.2
+      version: 6.2.2
 
 patchedDependencies:
   monaco-editor@0.52.2:
@@ -68,13 +68,13 @@ importers:
         version: link:../intwc
       '@pistonite/pure':
         specifier: 'catalog:'
-        version: 0.22.3
+        version: 0.23.1
       '@pistonite/pure-i18next':
         specifier: 'catalog:'
-        version: 0.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.7.2)
+        version: 0.3.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.7.2)
       '@pistonite/pure-react':
         specifier: 'catalog:'
-        version: 0.7.0(react@18.3.1)
+        version: 0.7.1(react@18.3.1)
       '@pistonite/shared-controls':
         specifier: workspace:*
         version: link:../shared-controls
@@ -117,13 +117,13 @@ importers:
         version: 5.7.2
       vite:
         specifier: 'catalog:'
-        version: 6.2.0
+        version: 6.2.2
 
   packages/intwc:
     dependencies:
       '@pistonite/pure':
         specifier: 'catalog:'
-        version: 0.22.3
+        version: 0.23.1
       monaco-editor:
         specifier: 0.52.2
         version: 0.52.2(patch_hash=789e917d911899942d0d30033e21cd0f6720af75845df5b971a6594d398e368e)
@@ -148,7 +148,7 @@ importers:
         version: 5.7.2
       vite:
         specifier: 'catalog:'
-        version: 6.2.0
+        version: 6.2.2
 
   packages/intwc/vite-plugin:
     devDependencies:
@@ -157,7 +157,7 @@ importers:
         version: 4.34.9
       vite:
         specifier: 'catalog:'
-        version: 6.2.0
+        version: 6.2.2
 
   packages/mono-dev:
     dependencies:
@@ -166,13 +166,13 @@ importers:
         version: 9.21.0
       '@modyfi/vite-plugin-yaml':
         specifier: ^1.1.1
-        version: 1.1.1(rollup@4.34.9)(vite@6.2.0)
+        version: 1.1.1(rollup@4.34.9)(vite@6.2.2)
       '@prettier/cli':
         specifier: ^0.6.0
         version: 0.6.0(prettier@3.5.2)
       '@vitejs/plugin-react':
         specifier: ^4.3.4
-        version: 4.3.4(vite@6.2.0)
+        version: 4.3.4(vite@6.2.2)
       eslint-plugin-react:
         specifier: ^7.37.3
         version: 7.37.4(eslint@9.21.0)
@@ -190,16 +190,16 @@ importers:
         version: 8.25.0(eslint@9.21.0)(typescript@5.7.2)
       vite-plugin-wasm:
         specifier: ^3.4.1
-        version: 3.4.1(vite@6.2.0)
+        version: 3.4.1(vite@6.2.2)
       vite-tsconfig-paths:
         specifier: ^5.1.4
-        version: 5.1.4(typescript@5.7.2)(vite@6.2.0)
+        version: 5.1.4(typescript@5.7.2)(vite@6.2.2)
 
   packages/prism-wasm:
     dependencies:
       '@pistonite/workex':
         specifier: 'catalog:'
-        version: 0.0.5
+        version: 0.0.6
     devDependencies:
       eslint:
         specifier: 'catalog:'
@@ -221,10 +221,10 @@ importers:
         version: 2.0.274(react@18.3.1)
       '@pistonite/pure':
         specifier: 'catalog:'
-        version: 0.22.3
+        version: 0.23.1
       '@pistonite/pure-react':
         specifier: 'catalog:'
-        version: 0.7.0(react@18.3.1)
+        version: 0.7.1(react@18.3.1)
       react:
         specifier: 'catalog:'
         version: 18.3.1
@@ -249,7 +249,7 @@ importers:
         version: 5.7.2
       vite:
         specifier: 'catalog:'
-        version: 6.2.0
+        version: 6.2.2
 
 packages:
 
@@ -1113,27 +1113,24 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@pistonite/pure-i18next@0.3.1':
-    resolution: {integrity: sha512-2uli80K4Siv/QGxBvS9FCJba6NiwxUpPPB9ZcXpM7mrVmLpbePUsxSjiiIfj74shJOoJIGI1lDjDrdyVa5ooQA==}
+  '@pistonite/pure-i18next@0.3.2':
+    resolution: {integrity: sha512-+xVq1kxgko8x16YPfbof75gME9RTkvQ1+a7JBywGuOQwTAf7Ec8TIORWQyvM9YKfhdf2ZHPhVasjdhQjFZ7jPg==}
     peerDependencies:
       react: ^18
 
-  '@pistonite/pure-react@0.7.0':
-    resolution: {integrity: sha512-gU+kG3v2/abprRpzMDHHB4QXPCRhfYvslndYg+aHEpmDeHZ4c/qS/1M5REg2skbym3/do0rc8T4EjTXEHDKMoA==}
+  '@pistonite/pure-react@0.7.1':
+    resolution: {integrity: sha512-fnULAqmyY8UgeIu3rhn1NxCxINZgW2DjLe4A5867kkCc1R+RH2XStALlO/WQ7/ulwLoOlEcydqW3CsM7YzanYg==}
     peerDependencies:
       react: ^18
 
-  '@pistonite/pure@0.0.18':
-    resolution: {integrity: sha512-1oqnyD5TLWfjK0eh61uiKi+q6gTCr6fjbsEEY9Vp3OuUyo24GvJDAC+SkGS3Ul10z881QaGRY0UiDTUS6IeDTQ==}
+  '@pistonite/pure@0.23.0':
+    resolution: {integrity: sha512-rbP7/PfGNzdpggor6icD7UKgo0RIQ9LLRseaxBH0d+HQq5yE0RwDugnjjsAPngXrldKlqphoJM2R6pMRZ/l48w==}
 
-  '@pistonite/pure@0.21.0':
-    resolution: {integrity: sha512-HfzyS8aMihkECu8j3a72OFIclcadaJHiRNuc7/Ok+yB9McPaZRhiOBZyDxVOlAAX2segK6y14Ob+e1X8/gQdTA==}
+  '@pistonite/pure@0.23.1':
+    resolution: {integrity: sha512-SoewVFO0W5xWNcAnZdByGU+uDGJ1Lxyics8LrkCt2D2f24MT4FhSwPnRRLr8WG+jbqxR9fpSb+WkU5GpOFIoOg==}
 
-  '@pistonite/pure@0.22.3':
-    resolution: {integrity: sha512-r+oZyPYRZ7nLaTce/Wh/FWXpXivbGe1Y8phHnEns8twN8mhqVAtXShaqn530IWmZgKfxefGrPL2E7kbTkxge8g==}
-
-  '@pistonite/workex@0.0.5':
-    resolution: {integrity: sha512-eYeIPFaFaVJs/Vxx9bx7CcwFUHNwxSWd+P82vN6/18hhdIBCcO89LboV+4mfh6iOee0LhopuU9Bz+/a+R5MPVQ==}
+  '@pistonite/workex@0.0.6':
+    resolution: {integrity: sha512-b9LHIQueaKu4CovhlgoaT1cOIXhkdvPeCxh+d1QN9I6MGnJmPEJPuaQ2MhKudiFYOxRZ2a3AAeU/30hJgW7v9g==}
 
   '@prettier/cli@0.6.0':
     resolution: {integrity: sha512-kPQDTB+FPjvj23SmBH4T9uGCxMVS1cyJSY9dbOHGOC29nL9gR5gwZ4b4uMj4QRB0uE5K9c7avbAo+gvUbcZb4Q==}
@@ -1262,9 +1259,6 @@ packages:
 
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
-
-  '@types/file-saver@2.0.7':
-    resolution: {integrity: sha512-dNKVfHd/jk0SkR/exKGj2ggkB45MAkzvWCaqLUUgkyjITkGNzH8H+yUwr+BLJUBjZOe9w8X3wgmXhZDRg1ED6A==}
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -2457,8 +2451,8 @@ packages:
       vite:
         optional: true
 
-  vite@6.2.0:
-    resolution: {integrity: sha512-7dPxoo+WsT/64rDcwoOjk76XHj+TqNTIvHKcuMQ1k4/SeHDaQt5GFAeLYzrimZrMpn/O6DtdI03WUjdxuPM0oQ==}
+  vite@6.2.2:
+    resolution: {integrity: sha512-yW7PeMM+LkDzc7CgJuRLMW2Jz0FxMOsVJ8Lv3gpgW9WLcb9cTW+121UEr1hvmfR7w3SegR5ItvYyzVz1vxNJgQ==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
     peerDependencies:
@@ -3983,12 +3977,12 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@modyfi/vite-plugin-yaml@1.1.1(rollup@4.34.9)(vite@6.2.0)':
+  '@modyfi/vite-plugin-yaml@1.1.1(rollup@4.34.9)(vite@6.2.2)':
     dependencies:
       '@rollup/pluginutils': 5.1.0(rollup@4.34.9)
       js-yaml: 4.1.0
       tosource: 2.0.0-alpha.3
-      vite: 6.2.0
+      vite: 6.2.2
     transitivePeerDependencies:
       - rollup
 
@@ -4004,9 +3998,9 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.19.1
 
-  '@pistonite/pure-i18next@0.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.7.2)':
+  '@pistonite/pure-i18next@0.3.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.7.2)':
     dependencies:
-      '@pistonite/pure': 0.22.3
+      '@pistonite/pure': 0.23.0
       i18next: 24.2.2(typescript@5.7.2)
       react: 18.3.1
       react-i18next: 15.4.1(i18next@24.2.2(typescript@5.7.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -4015,30 +4009,24 @@ snapshots:
       - react-native
       - typescript
 
-  '@pistonite/pure-react@0.7.0(react@18.3.1)':
+  '@pistonite/pure-react@0.7.1(react@18.3.1)':
     dependencies:
-      '@pistonite/pure': 0.21.0
+      '@pistonite/pure': 0.23.0
       react: 18.3.1
 
-  '@pistonite/pure@0.0.18':
-    dependencies:
-      '@types/file-saver': 2.0.7
-      denque: 2.1.0
-      file-saver: 2.0.5
-
-  '@pistonite/pure@0.21.0':
+  '@pistonite/pure@0.23.0':
     dependencies:
       denque: 2.1.0
       file-saver: 2.0.5
 
-  '@pistonite/pure@0.22.3':
+  '@pistonite/pure@0.23.1':
     dependencies:
       denque: 2.1.0
       file-saver: 2.0.5
 
-  '@pistonite/workex@0.0.5':
+  '@pistonite/workex@0.0.6':
     dependencies:
-      '@pistonite/pure': 0.0.18
+      '@pistonite/pure': 0.23.1
 
   '@prettier/cli@0.6.0(prettier@3.5.2)':
     dependencies:
@@ -4159,8 +4147,6 @@ snapshots:
 
   '@types/estree@1.0.6': {}
 
-  '@types/file-saver@2.0.7': {}
-
   '@types/json-schema@7.0.15': {}
 
   '@types/prop-types@15.7.14': {}
@@ -4251,14 +4237,14 @@ snapshots:
       '@typescript-eslint/types': 8.25.0
       eslint-visitor-keys: 4.2.0
 
-  '@vitejs/plugin-react@4.3.4(vite@6.2.0)':
+  '@vitejs/plugin-react@4.3.4(vite@6.2.2)':
     dependencies:
       '@babel/core': 7.26.9
       '@babel/plugin-transform-react-jsx-self': 7.25.9(@babel/core@7.26.9)
       '@babel/plugin-transform-react-jsx-source': 7.25.9(@babel/core@7.26.9)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.2
-      vite: 6.2.0
+      vite: 6.2.2
     transitivePeerDependencies:
       - supports-color
 
@@ -5608,22 +5594,22 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  vite-plugin-wasm@3.4.1(vite@6.2.0):
+  vite-plugin-wasm@3.4.1(vite@6.2.2):
     dependencies:
-      vite: 6.2.0
+      vite: 6.2.2
 
-  vite-tsconfig-paths@5.1.4(typescript@5.7.2)(vite@6.2.0):
+  vite-tsconfig-paths@5.1.4(typescript@5.7.2)(vite@6.2.2):
     dependencies:
       debug: 4.4.0
       globrex: 0.1.2
       tsconfck: 3.1.5(typescript@5.7.2)
     optionalDependencies:
-      vite: 6.2.0
+      vite: 6.2.2
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  vite@6.2.0:
+  vite@6.2.2:
     dependencies:
       esbuild: 0.25.0
       postcss: 8.5.3
