@@ -15,7 +15,7 @@ export async function bootPrismWasmWorker() {
     const result = await wxWorkerGlobal()({
         app: bindPrismApi(handler),
     });
-    
+
     if (result.err) {
         console.error(result.err);
         throw new Error("Failed to bind PrismApi");

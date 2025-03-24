@@ -12,5 +12,8 @@
     },
     "devDependencies": {
         "mono-dev": "workspace:*"
-    }
+    },
+    "nocheck": [
+        "/src/interfaces"
+    ]
 }
