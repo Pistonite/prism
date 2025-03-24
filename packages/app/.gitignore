@@ -26,3 +26,7 @@ dist-ssr
 .eslintcache
 .npmrc
 /src/PrismLib.ts
+
+/.prettierignore
+/eslint.config.js
+/tsconfig*.json

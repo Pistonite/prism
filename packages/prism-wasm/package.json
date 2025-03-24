@@ -3,7 +3,7 @@
     "version": "0.0.0",
     "type": "module",
     "exports": {
-        "./app": "./src/sides/app.ts",
+        ".": "./src/index.ts",
         "./lib": "./src/pkg/prism_wasm.d.ts",
         "./worker": "./src/worker.ts"
     },
@@ -11,8 +11,9 @@
         "@pistonite/workex": "catalog:"
     },
     "devDependencies": {
-        "typescript": "catalog:",
-        "mono-dev": "workspace:*",
-        "eslint": "catalog:"
-    }
+        "mono-dev": "workspace:*"
+    },
+    "nocheck": [
+        "/src/interfaces"
+    ]
 }

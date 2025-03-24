@@ -8,9 +8,9 @@ import {
 } from "react";
 import { makeStyles } from "@fluentui/react-components";
 
-import { useStore, setTranslate } from "data/store.ts";
-import { useCanvas } from "data/useCanvas.ts";
+import { useStore, setTranslate } from "self::store";
 
+import { useCanvas } from "./useCanvas.ts";
 import { CanvasGrid } from "./CanvasGrid.tsx";
 
 const useStyles = makeStyles({

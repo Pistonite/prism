@@ -1,7 +1,7 @@
 import { makeStyles } from "@fluentui/react-components";
 import { useMemo } from "react";
 
-import { useStore, useSvgTransform } from "data/store.ts";
+import { useStore, useSvgTransform } from "self::store";
 
 type CanvasGridProps = {
     /// The canvas width

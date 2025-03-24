@@ -7,27 +7,20 @@ includes:
 
 tasks:
   dev:
-    desc: Run Vite Dev Server
     cmds:
       - task: ecma:vite-dev
 
   build:
-    desc: Build Client App
     cmds:
       - task: ecma:vite-build
 
   check:
-    desc: Check for issues
     cmds:
-      - task: ecma:tsc-check-build
-      - task: ecma:eslint-check
-      - task: ecma:prettier-check
+      - task: ecma:mono-check
 
   fix:
-    desc: Fix issues
     cmds:
-      - task: ecma:eslint-fix
-      - task: ecma:prettier-fix
+      - task: ecma:mono-fix
 
   install:
     cmds:

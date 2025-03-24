@@ -7,7 +7,7 @@ import {
 import { ResizeLayout } from "@pistonite/shared-controls";
 import { CodeEditor } from "@pistonite/intwc";
 
-import { setCodeWindowPercentage, setScript, useStore } from "data/store.ts";
+import { setCodeWindowPercentage, setScript, useStore } from "self::store";
 
 const useStyles = makeStyles({
     container: { width: "100%", height: "100%" },

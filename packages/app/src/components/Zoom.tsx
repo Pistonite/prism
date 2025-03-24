@@ -8,8 +8,9 @@ import {
 import { ZoomIn24Regular, ZoomOut24Regular } from "@fluentui/react-icons";
 import { useTranslation } from "react-i18next";
 
-import { useStore } from "data/store.ts";
-import { MAX_ZOOM, MIN_ZOOM } from "data/useCanvas.ts";
+import { useStore } from "self::store";
+
+import { MAX_ZOOM, MIN_ZOOM } from "./useCanvas.ts";
 
 /// The visual range of the control. 0 is in the middle. 100 means -100 to 100
 const SLIDER_RANGE = 100;

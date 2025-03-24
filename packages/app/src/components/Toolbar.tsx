@@ -13,20 +13,20 @@ import {
     Square24Regular,
 } from "@fluentui/react-icons";
 import { useDark } from "@pistonite/pure-react";
+import {
+    DarkToggle,
+    GitHubLink,
+    LanguagePicker,
+} from "@pistonite/shared-controls";
 
 import {
     setForceSquare,
     setShowGrid,
     useStore,
     useSvgContent,
-} from "data/store.ts";
+} from "self::store";
 
 import { Zoom } from "./Zoom.tsx";
-import {
-    DarkToggle,
-    GitHubLink,
-    LanguagePicker,
-} from "@pistonite/shared-controls";
 
 export type ToolbarProps = { setZoom: (zoom: number) => void };
 

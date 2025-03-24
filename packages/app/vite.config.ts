@@ -3,8 +3,6 @@ import intwc from "@pistonite/vite-plugin-intwc";
 import monodev from "mono-dev/vite";
 
 const monodevConfig = monodev({
-    react: true,
-    yaml: true,
     wasm: true,
     worker: "es",
 });
