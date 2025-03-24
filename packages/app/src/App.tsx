@@ -9,10 +9,8 @@ import {
 import { useDark } from "@pistonite/pure-react";
 import { ResizeLayout } from "@pistonite/shared-controls";
 
-import { Canvas, type CanvasApi } from "components/Canvas.tsx";
-import { Editor } from "components/Editor.tsx";
-import { Toolbar } from "components/Toolbar.tsx";
-import { setSideWindowPercentage, useStore } from "data/store.ts";
+import { Canvas, type CanvasApi, Editor, Toolbar } from "self::components";
+import { setSideWindowPercentage, useStore } from "self::store";
 
 const useStaticStyles = makeStaticStyles({
     ":root": {

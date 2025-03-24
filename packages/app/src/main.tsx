@@ -3,11 +3,11 @@ import { createRoot } from "react-dom/client";
 import { initDark } from "@pistonite/pure/pref";
 import { initCodeEditor } from "@pistonite/intwc";
 
-import { initStore } from "data/store.ts";
-import { initI18n } from "data/i18n.ts";
+import { initStore } from "self::store";
+import { initI18n } from "self::i18n";
+import { initPrismApi } from "self::worker";
 
 import { App } from "./App.tsx";
-import { initPrismApi } from "./worker";
 import PrismLibTs from "./PrismLib.ts?raw";
 
 async function boot() {

@@ -2,7 +2,7 @@ import { debounce, latest } from "@pistonite/pure/sync";
 import { create } from "zustand";
 
 import type { PrismOutput } from "prism-wasm/lib";
-import type { PrismApiClient } from "prism-wasm/app";
+import type { PrismApi } from "prism-wasm";
 
 export type SvgOutput = (PrismOutput & { type: "output" })["data"];
 
@@ -75,7 +75,7 @@ const DEFAULT_SCRIPT = `size(16, 16, 16)
     .at(0, 0, 0)
     .render("red");`;
 
-export function initStore(api: PrismApiClient): Store {
+export function initStore(api: PrismApi): Store {
     const save = debounce({
         fn: () => {
             const { script, showGrid, forceSquare } = useStore.getState();

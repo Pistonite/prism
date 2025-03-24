@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef } from "react";
 
-import { setZoomAndTranslate, useStore } from "data/store.ts";
+import { setZoomAndTranslate, useStore } from "self::store";
 
 export const MIN_ZOOM = 0.25;
 export const MAX_ZOOM = 4;

@@ -22,23 +22,19 @@ tasks:
         vars:
           PACKAGE: prism_wasm
           WASM_PACK_ARGS: -t bundler --out-dir src/pkg --no-pack --no-opt
-      
 
   install:
     cmds:
-      - workex -p prism src/proto.ts
+      - workex -p prism --prefix bind src/proto.ts
 
   check:
     cmds:
       - task: cargo:clippy-all
       - task: cargo:fmt-check
       - task: wasm-dev-build # need to generate the types
-      - task: ecma:tsc-check
-      - task: ecma:eslint-check
-      - task: ecma:prettier-check
+      - task: ecma:mono-check
 
   fix:
     cmds:
       - task: cargo:fmt-fix
-      - task: ecma:eslint-fix
-      - task: ecma:prettier-fix
+      - task: ecma:mono-fix
