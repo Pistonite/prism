@@ -1779,7 +1779,7 @@ dependencies = [
  "num-traits",
  "serde",
  "thiserror 2.0.12",
- "tsify-next",
+ "tsify",
  "wasm-bindgen",
 ]
 
@@ -3463,30 +3463,6 @@ name = "tsify-macros"
 version = "0.5.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9a324606929ad11628a19206d7853807481dcaecd6c08be70a235930b8241955"
-dependencies = [
- "proc-macro2",
- "quote",
- "serde_derive_internals",
- "syn 2.0.104",
-]
-
-[[package]]
-name = "tsify-next"
-version = "0.5.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7d0f2208feeb5f7a6edb15a2389c14cd42480ef6417318316bb866da5806a61d"
-dependencies = [
- "serde",
- "serde-wasm-bindgen",
- "tsify-next-macros",
- "wasm-bindgen",
-]
-
-[[package]]
-name = "tsify-next-macros"
-version = "0.5.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f81253930d0d388a3ab8fa4ae56da9973ab171ef833d1be2e9080fc3ce502bd6"
 dependencies = [
  "proc-macro2",
  "quote",

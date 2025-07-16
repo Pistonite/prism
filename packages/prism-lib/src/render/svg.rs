@@ -4,7 +4,7 @@ use super::Polygon;
 
 /// SVG image rendered from polygons
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[cfg_attr(feature = "wasm", derive(tsify_next::Tsify))]
+#[cfg_attr(feature = "wasm", derive(tsify::Tsify))]
 #[cfg_attr(feature = "wasm", tsify(into_wasm_abi))]
 pub struct Svg {
     /// The SVG text content
