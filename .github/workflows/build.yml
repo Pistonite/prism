@@ -1,0 +1,38 @@
+name: Build
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  build-cli:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: ubuntu-latest
+            target: x64
+          - image: ubuntu-24.04-arm
+            target: arm64
+          - image: macos-latest
+            target: x64
+          - image: macos-latest
+            target: arm64
+          - image: windows-latest
+            target: x64
+          - image: windows-11-arm
+            target: arm64
+    runs-on: ${{ matrix.image }}
+    steps:
+      - uses: Pistonight/mono-dev/actions/setup@main
+        with:
+          submodules: true
+          rust: stable
+          rust-native: ${{ matrix.target }}
+          tool-cargo-binstall: workex=Pistonite/workex
+      - uses: Pistonight/mono-dev/actions/rust-xplat@main
+        with:
+          arch: ${{ matrix.target }}
+          binary: prism

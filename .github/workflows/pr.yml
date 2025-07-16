@@ -6,44 +6,43 @@ on:
 
 jobs:
   check:
-    name: check
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
-      - uses: actions/checkout@v4
+      - uses: Pistonight/mono-dev/actions/setup@main
         with:
-          persist-credentials: false
+          runner: blacksmith
           submodules: true
-      - uses: ./.github/steps/setup
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          ecma-pnpm: true
+          ecma-bun: true
+          rust: stable
+          rust-wasm: true
+          tool-cargo-binstall: workex=Pistonite/workex
       - run: task install-ci
       - run: task check
-
   test:
-    name: test
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
-      - uses: actions/checkout@v4
+      - uses: Pistonight/mono-dev/actions/setup@main
         with:
-          persist-credentials: false
+          runner: blacksmith
           submodules: true
-      - uses: ./.github/steps/setup
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          ecma-pnpm: true
+          ecma-bun: true
+          rust: stable
+          tool-cargo-binstall: workex=Pistonite/workex
       - run: task install-ci
       - run: task test
-
-  build:
-    name: build
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+  build-app:
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
-      - uses: actions/checkout@v4
+      - uses: Pistonight/mono-dev/actions/setup@main
         with:
-          persist-credentials: false
+          runner: blacksmith
           submodules: true
-      - uses: ./.github/steps/setup
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          rust_targets: wasm32-unknown-unknown,x86_64-unknown-linux-gnu
+          ecma-pnpm: true
+          ecma-bun: true
+          rust: stable
+          rust-wasm: true
+          tool-cargo-binstall: workex=Pistonite/workex
       - run: task install-ci
       - run: task build-dev
