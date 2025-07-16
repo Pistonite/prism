@@ -31,10 +31,7 @@ jobs:
           submodules: true
           rust: stable
           rust-native: ${{ matrix.target }}
-          ecma-pnpm: true
-          ecma-bun: true
           tool-cargo-binstall: workex=Pistonite/workex
-      - run: task install-ci
       - uses: Pistonight/mono-dev/actions/rust-xplat@main
         with:
           arch: ${{ matrix.target }}
