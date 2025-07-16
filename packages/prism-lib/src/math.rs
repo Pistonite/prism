@@ -380,8 +380,8 @@ impl Display for Rgba {
         let [r, g, b, a] = self.0.to_be_bytes();
         match a {
             0 => write!(f, "#00000000"),
-            255 => write!(f, "#{:02x}{:02x}{:02x}", r, g, b),
-            _ => write!(f, "#{:02x}{:02x}{:02x}{:02x}", r, g, b, a),
+            255 => write!(f, "#{r:02x}{g:02x}{b:02x}"),
+            _ => write!(f, "#{r:02x}{g:02x}{b:02x}{a:02x}"),
         }
     }
 }

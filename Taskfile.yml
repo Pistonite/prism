@@ -34,8 +34,12 @@ tasks:
   install-cargo-extra-tools:
     aliases: [icets]
     cmds:
-      - cargo install magoo wasm-pack
-      - cargo install workex --git https://github.com/Pistonite/workex
+      - task: cargo-binstall
+        vars:
+          PACKAGES: magoo wasm-pack
+      - task: cargo-binstall
+        vars:
+          PACKAGES: workex --git https://github.com/Pistonite/workex
 
   install:
     desc: Install dependencies for local development

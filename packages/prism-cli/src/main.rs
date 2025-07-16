@@ -2,7 +2,7 @@ use std::io::Read as _;
 use std::process::ExitCode;
 
 use clap::Parser;
-use prism_lib::{Svg, transpile};
+use prism_lib::Svg;
 
 mod png;
 
@@ -46,7 +46,7 @@ fn main() -> ExitCode {
         return ExitCode::SUCCESS;
     }
 
-    let mut transpiled_script = match transpile::ts_files_to_js(&args.files) {
+    let mut transpiled_script = match prism_transpile::ts_files_to_js(&args.files) {
         Ok(script) => script,
         Err(e) => {
             eprintln!("Failed to transpile the script: {e}");
@@ -68,7 +68,7 @@ fn main() -> ExitCode {
     }
 
     if args.transpile_only {
-        println!("{}", transpiled_script);
+        println!("{transpiled_script}");
         return ExitCode::SUCCESS;
     }
 
@@ -77,7 +77,7 @@ fn main() -> ExitCode {
     let svg = Svg::from_polygons(&polygons, result.unit, !args.no_square);
 
     for message in result.messages {
-        eprintln!("{}", message);
+        eprintln!("{message}");
     }
 
     if result.has_js_error {
@@ -93,7 +93,7 @@ fn main() -> ExitCode {
     match args.png {
         Some(path) => {
             if let Err(e) = png::save_svg_to_png(&svg, path) {
-                eprintln!("Failed to save the PNG: {}", e);
+                eprintln!("Failed to save the PNG: {e}");
                 return ExitCode::FAILURE;
             }
         }

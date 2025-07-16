@@ -6,27 +6,28 @@ publish = false
 
 [dependencies]
 boa_engine = "0.20.0"
-csscolorparser = { version = "0.7.0", features = ["serde"] }
+csscolorparser = { version = "0.7.2", features = ["serde"] }
 derivative = "2.2.0"
 derive_more = { version = "2.0.1", features = ["full"] }
 num-traits = "0.2.19"
-serde = { version = "1.0.218", features = ["derive"] }
-thiserror = "2.0.11"
-swc = "16.1.1"
-swc_common = "8.0.0"
-swc_ecma_ast = "8.0.0"
-swc_ecma_parser = "10.0.0"
-swc_ecma_transforms_typescript = "12.0.0"
+serde = { version = "1.0.219", features = ["derive"] }
+thiserror = "2.0.12"
 
 # WASM stuff
-tsify-next = { version = "0.5.5", default-features = false, features = ["js"], optional = true }
+tsify-next = { version = "0.5.6", default-features = false, features = ["js"], optional = true }
 wasm-bindgen = { version = "0.2.100", optional = true }
-# BOA dependency, needs the feature flag
-getrandom = { version = "*", optional = true, features = ["js"] }
+
+# Additional feature required by WASM
+[dependencies.getrandom]
+package = "getrandom"
+version = "0.2.6"
+optional = true
 
 [features]
 wasm = [
     "dep:wasm-bindgen", 
     "dep:tsify-next", 
-    "dep:getrandom"
+    "dep:getrandom",
+    "getrandom/js",
+    "boa_engine/js"
 ]

@@ -5,7 +5,6 @@ use crate::render::Layer;
 
 mod builtin;
 use builtin::Builtin;
-pub mod transpile;
 
 /// Execute rendering script and return the result
 ///
@@ -23,7 +22,7 @@ pub fn execute_script(source: &str) -> ScriptResult {
 
     let (output_message, has_js_error) = match execute_internal(&mut context, &binding, source) {
         Ok(_) => ("render ok".to_string(), false),
-        Err(e) => (format!("runtime error: {}", e), true),
+        Err(e) => (format!("runtime error: {e}"), true),
     };
 
     let unit = binding.get_unit();
