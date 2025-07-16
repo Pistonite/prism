@@ -31,7 +31,6 @@ jobs:
           submodules: true
           rust: stable
           rust-native: ${{ matrix.target }}
-          tool-cargo-binstall: workex=Pistonite/workex
       - uses: Pistonight/mono-dev/actions/rust-xplat@main
         with:
           arch: ${{ matrix.target }}
