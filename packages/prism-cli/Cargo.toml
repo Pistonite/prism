@@ -2,6 +2,7 @@
 name = "prism-cli"
 version = "0.1.0"
 edition = "2024"
+repository = "https://github.com/Pistonite/prism"
 publish = false
 
 [dependencies.prism-lib]
@@ -20,3 +21,7 @@ usvg = "0.45.1"
 [[bin]]
 name = "prism"
 path = "src/main.rs"
+
+[package.metadata.binstall.signing]
+algorithm = "minisign"
+pubkey = "RWThJQKJaXayoZBe0YV5LV4KFkQwcqQ6Fg9dJBz18JnpHGdf/cHUyKs+"
