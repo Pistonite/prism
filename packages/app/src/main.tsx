@@ -14,7 +14,7 @@ async function boot() {
     initDark();
 
     await initI18n();
-    initCodeEditor({
+    await initCodeEditor({
         language: {
             typescript: {
                 extraLibs: [{ name: "prism-lib.ts", content: PrismLibTs }],

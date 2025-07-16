@@ -1,0 +1,23 @@
+[package]
+name = "prism-transpile"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+swc = "31.0.0"
+swc_common = "14.0.0"
+swc_ecma_ast = "14.0.0"
+swc_ecma_parser = "20.0.0"
+swc_ecma_transforms_typescript = "23.0.0"
+
+# Additional feature required by wasm
+[dependencies.getrandom]
+version = "0.3.3"
+optional = true
+
+[features]
+wasm = [
+    "dep:getrandom",
+    "getrandom/wasm_js",
+]

@@ -1,5 +1,10 @@
 import { initLocaleWithI18next } from "@pistonite/pure-i18next";
 
+import {
+    loadSharedControlLanguage,
+    namespace as sharedControlsNamespace,
+} from "@pistonite/shared-controls";
+
 export const SupportedLanguages = ["en", "zh"] as const;
 
 export const initI18n = (): Promise<void> => {
@@ -7,9 +12,12 @@ export const initI18n = (): Promise<void> => {
         supported: SupportedLanguages,
         default: "en",
         persist: true,
-        loader: async (language) => {
-            const strings = await import(`./strings/${language}.yaml`);
-            return strings.default as Record<string, string>;
+        loader: {
+            translation: async (language) => {
+                const strings = await import(`./strings/${language}.yaml`);
+                return strings.default as Record<string, string>;
+            },
+            [sharedControlsNamespace]: loadSharedControlLanguage,
         },
     });
 };

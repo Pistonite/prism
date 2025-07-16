@@ -36,8 +36,7 @@ impl Svg {
         let svg_width = width * unit;
         let svg_height = height * unit;
         let mut content = format!(
-            r#"<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="{}" height="{}">"#,
-            svg_width, svg_height
+            r#"<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="{svg_width}" height="{svg_height}">"#
         );
         for polygon in polygons {
             let tag = make_polygon(polygon, shift_x, shift_y, unit);

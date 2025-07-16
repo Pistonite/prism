@@ -7,15 +7,16 @@ packages:
   - packages/shared-controls
 
 catalog:
-  "@fluentui/react-components": ^9.61.2
-  "@fluentui/react-icons": ^2.0.292
-  "@pistonite/pure": ^0.24.1
-  "@pistonite/pure-react": ^0.7.3
-  "@pistonite/pure-i18next": ^0.3.4
-  "@pistonite/workex": ^0.0.7
+  "@fluentui/react-components": ^9.66.8
+  "@fluentui/react-icons": ^2.0.306
+  "@pistonite/pure": ^0.26.8
+  "@pistonite/pure-react": ^0.7.11
+  "@pistonite/pure-i18next": ^0.4.7
+  "@pistonite/workex": ^0.1.2
   "@types/react": ^18
   "@types/react-dom": ^18
   react: ^18
   react-dom: ^18
-  vite: ^6.2.2
+  react-i18next: ^15.6.0
+  vite: ^6.3.5
 

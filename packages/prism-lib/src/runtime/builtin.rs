@@ -210,7 +210,7 @@ impl Builtin {
             define_builtin!(context, "debug", 0, |_args, _ctx| {
                 let id = obj_id.load(Ordering::SeqCst);
                 let mut logs = debug_logs.write().map_err(|e| JsError::from_rust(&e))?;
-                logs.push(format!("debug: next object id is {}", id));
+                logs.push(format!("debug: next object id is {id}"));
                 Ok(JsValue::undefined())
             })?;
         }

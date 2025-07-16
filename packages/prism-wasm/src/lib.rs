@@ -1,6 +1,6 @@
-use prism_lib::{Svg, transpile};
+use prism_lib::Svg;
 use serde::{Deserialize, Serialize};
-use tsify_next::Tsify;
+use tsify::Tsify;
 use wasm_bindgen::prelude::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Tsify)]
@@ -20,7 +20,7 @@ pub enum PrismOutput {
 
 #[wasm_bindgen]
 pub fn run_prism_script(script: String, force_square: bool) -> PrismOutput {
-    let transpiled_script = match transpile::standalone_to_js(&script) {
+    let transpiled_script = match prism_transpile::standalone_to_js(&script) {
         Ok(script) => script,
         Err(_) => return PrismOutput::TranspileError,
     };
