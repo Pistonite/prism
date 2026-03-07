@@ -1,6 +1,8 @@
 use std::collections::BTreeSet;
 use std::path::Path;
 
+use cu::pre::*;
+
 use swc::Compiler;
 use swc::config::IsModule;
 use swc_common::errors::Handler;
@@ -11,14 +13,13 @@ use swc_ecma_ast::{EsVersion, ModuleDecl, ModuleItem, Pass, Program};
 use swc_ecma_parser::Syntax;
 
 /// Import muiltple TS files and transform them into JS,
-pub fn ts_files_to_js(files: &[impl AsRef<Path>]) -> Result<String, String> {
+pub fn ts_files_to_js(files: &[impl AsRef<Path>]) -> cu::Result<String> {
+    use std::fmt::Write as _;
+
     let mut ts_source = String::new();
     for file in files {
-        let file = match file.as_ref().canonicalize() {
-            Ok(file) => file,
-            Err(e) => return Err(format!("failed to find TypeScript file: {e}")),
-        };
-        ts_source.push_str(&format!("import \"{}\";\n", file.display()));
+        let file = file.as_ref().normalize()?.into_utf8()?;
+        let _ = write!(ts_source, "\nimport \"{file}\";");
     }
     let virtual_file = Path::new("./virtual");
     to_js_internal(&ts_source, Some(virtual_file), true)
@@ -26,17 +27,17 @@ pub fn ts_files_to_js(files: &[impl AsRef<Path>]) -> Result<String, String> {
 
 /// Load a TypeScript source file and transform it into JS,
 /// resolving import script statements (`import "..."`)
-pub fn ts_file_to_js(file: impl AsRef<Path>) -> Result<String, String> {
-    let file = file.as_ref();
-    let ts_source = match std::fs::read_to_string(file) {
-        Ok(ts_source) => ts_source,
-        Err(e) => return Err(format!("failed to read TypeScript file: {e}")),
-    };
+#[inline(always)]
+pub fn ts_file_to_js(file: impl AsRef<Path>) -> cu::Result<String> {
+    ts_file_to_js_impl(file.as_ref())
+}
+fn ts_file_to_js_impl(file: &Path) -> cu::Result<String> {
+    let ts_source = cu::check!(cu::fs::read_string(file), "failed to read TypeScript file")?;
     to_js_internal(&ts_source, Some(file), false)
 }
 
 /// Transpile TypeScript source code to JavaScript, without resolving import statements
-pub fn standalone_to_js(source: &str) -> Result<String, String> {
+pub fn standalone_to_js(source: &str) -> cu::Result<String> {
     to_js_internal(source, None, false)
 }
 
@@ -47,7 +48,7 @@ fn to_js_internal(
     ts_source: &str,
     file: Option<&Path>,
     virtual_file: bool,
-) -> Result<String, String> {
+) -> cu::Result<String> {
     let mut imported = BTreeSet::new();
     if let Some(file) = file {
         if !virtual_file {
@@ -63,13 +64,11 @@ fn to_js_internal(
         let mut program = load_program(source_map, &compiler, ts_source, file, &mut imported)?;
         let mut transformer = swc_ecma_transforms_typescript::strip(Mark::new(), Mark::new());
         transformer.process(&mut program);
-        Ok::<_, String>(program)
+        cu::Ok(program)
     })?;
 
-    match compiler.print(&program, Default::default()) {
-        Ok(js) => Ok(js.code),
-        Err(e) => Err(format!("failed to print JavaScript source: {e}")),
-    }
+    let js = cu::check!(compiler.print(&program, Default::default()), "failed to print JavaScript source")?;
+    Ok(js.code)
 }
 
 /// Load a TS source
@@ -79,7 +78,7 @@ fn load_program(
     ts_source: &str,
     file: Option<&Path>,
     imported: &mut BTreeSet<String>,
-) -> Result<Program, String> {
+) -> cu::Result<Program> {
     let source = if let Some(file) = file {
         let file_path = file.to_path_buf();
         if !file_path.exists() {
@@ -112,54 +111,77 @@ fn load_program(
         IsModule::Unknown,
         Some(compiler.comments()),
     );
-    let mut program = match program {
-        Ok(program) => program,
-        Err(e) => return Err(format!("failed to parse TypeScript source: {e}")),
-    };
-    if let Some(file_directory) = file.and_then(|f| f.parent()) {
-        if let Program::Module(module) = &mut program {
-            // resolve imports
-            for item in std::mem::take(&mut module.body) {
-                if let ModuleItem::ModuleDecl(ModuleDecl::Import(import)) = &item {
-                    // only process import "...";
-                    if !import.type_only && import.specifiers.is_empty() {
-                        let import_src = import.src.value.to_string();
-                        let path = file_directory.join(import_src);
-                        let path = match path.canonicalize() {
-                            Ok(path) => path,
-                            Err(e) => return Err(format!("failed to resolve import path: {e}")),
-                        };
-                        if imported.insert(path.to_string_lossy().to_string()) {
-                            let ts_source = match std::fs::read_to_string(&path) {
-                                Ok(ts_source) => ts_source,
-                                Err(e) => return Err(format!("failed to read import file: {e}")),
-                            };
+    let mut program = cu::check!(program, "failed to parse TypeScript source")?;
 
-                            let imported_program = load_program(
-                                source_map.clone(),
-                                compiler,
-                                &ts_source,
-                                Some(&path),
-                                imported,
-                            )?;
-                            match imported_program {
-                                Program::Module(imported_module) => {
-                                    module.body.extend(imported_module.body);
-                                }
-                                Program::Script(imported_script) => {
-                                    for stmt in imported_script.body {
-                                        module.body.push(ModuleItem::Stmt(stmt));
-                                    }
-                                }
-                            }
-                        }
-                        continue;
-                    }
-                }
-                module.body.push(item);
+    let resolve_imports_result = resolve_imports(&source_map, compiler, &mut program, file, imported);
+    if let Err(e) = resolve_imports_result {
+        match file {
+            Some(path) => {
+                cu::rethrow!(e, "failed to resolve imports in file: '{}'", path.display());
+            }
+            None => {
+                cu::rethrow!(e, "failed to resolve imports in virtual file");
             }
         }
     }
 
     Ok(program)
+}
+
+fn resolve_imports(
+    source_map: &Lrc<SourceMap>,
+    compiler: &Compiler,
+    program: &mut Program,
+    file: Option<&Path>,
+    imported: &mut BTreeSet<String>,
+) -> cu::Result<()> {
+    let Some(file_directory) = file.and_then(|f| f.parent()) else {
+        // input is not a file, imports are not possible to be resolved
+        return Ok(());
+    };
+    let Program::Module(module) = program else {
+        // program must be a module to resolve imports
+        return Ok(());
+    };
+    // resolve imports
+    for item in std::mem::take(&mut module.body) {
+        let ModuleItem::ModuleDecl(ModuleDecl::Import(import)) = &item else {
+            module.body.push(item);
+            continue;
+        };
+        // only process import "...";
+        if import.type_only || !import.specifiers.is_empty() {
+            module.body.push(item);
+            continue;
+        }
+        let import_src = cu::check!(import.src.value.as_str(), "import source is not UTF-8: {}", import.src.value.to_string_lossy())?;
+        let path = file_directory.join(import_src);
+        let path = cu::check!(path.normalize(), "failed to resolve import path")?;
+        let path_str = path.as_utf8()?;
+        if !imported.insert(path_str.to_string()) {
+            // already imported this file - similar to the effect of #pragma once
+            continue;
+        }
+        let ts_source = cu::check!(cu::fs::read_string(&path), "failed to read import file")?;
+
+            let imported_program = load_program(
+                source_map.clone(),
+                compiler,
+                &ts_source,
+                Some(&path),
+                imported,
+            )?;
+            match imported_program {
+                Program::Module(imported_module) => {
+                    module.body.extend(imported_module.body);
+                }
+                Program::Script(imported_script) => {
+                    for stmt in imported_script.body {
+                        module.body.push(ModuleItem::Stmt(stmt));
+                    }
+                }
+            }
+    }
+
+    Ok(())
 }

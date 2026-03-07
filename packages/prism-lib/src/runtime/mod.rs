@@ -42,7 +42,7 @@ pub fn execute_script(source: &str) -> ScriptResult {
 
 fn execute_internal(context: &mut Context, binding: &Builtin, source: &str) -> JsResult<()> {
     binding.bind_to_engine(context)?;
-    context.eval(Source::from_bytes(include_str!("ts/index.js")))?;
+    context.eval(Source::from_bytes(include_bytes!("ts/index.js")))?;
     context.eval(Source::from_bytes(source))?;
 
     Ok(())

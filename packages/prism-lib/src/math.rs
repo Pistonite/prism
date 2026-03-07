@@ -3,11 +3,11 @@ use std::fmt::Display;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
+use cu::pre::*;
+use derive_more::{Add, Sub, AddAssign, SubAssign};
+use serde::{Serialize, Deserialize};
 use csscolorparser::Color;
-use derivative::Derivative;
-use derive_more::derive::{Add, AddAssign, From, Into, Sub, SubAssign};
 use num_traits::Num;
-use serde::{Deserialize, Serialize};
 
 macro_rules! nonneg {
     ($x:expr) => {
@@ -309,10 +309,17 @@ impl Axis {
 }
 
 /// A 2D grid of (u, v) -> T
-#[derive(Derivative, Debug, Clone, Serialize, Deserialize)]
-#[derivative(Default(bound = "", new = "true"))]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Grid2<T>(BTreeMap<(i32, i32), T>);
+impl<T> Default for Grid2<T> {
+    fn default() -> Self {
+        Self(Default::default())
+    }
+}
 impl<T> Grid2<T> {
+    pub fn new() -> Self {
+        Self::default()
+    }
     pub fn get(&self, u: i32, v: i32) -> Option<&T> {
         self.0.get(&(u, v))
     }
@@ -323,7 +330,7 @@ impl<T> Grid2<T> {
     pub fn set(&mut self, u: i32, v: i32, value: T) {
         self.0.insert((u, v), value);
     }
-    pub fn entry(&mut self, u: i32, v: i32) -> Entry<T> {
+    pub fn entry(&mut self, u: i32, v: i32) -> Entry<'_, T> {
         self.0.entry((u, v))
     }
     pub fn len(&self) -> usize {
@@ -338,7 +345,7 @@ impl<T> Grid2<T> {
     pub fn remove(&mut self, u: i32, v: i32) -> Option<T> {
         self.0.remove(&(u, v))
     }
-    pub fn iter(&self) -> std::collections::btree_map::Iter<(i32, i32), T> {
+    pub fn iter(&self) -> std::collections::btree_map::Iter<'_, (i32, i32), T> {
         self.0.iter()
     }
 }
@@ -386,10 +393,17 @@ impl Display for Rgba {
     }
 }
 
-#[derive(Debug, Derivative)]
-#[derivative(Default(bound = "", new = "true"))]
+#[derive(Debug)]
 pub struct VecMap<E: VecMapEntry>(Vec<E>);
+impl<E: VecMapEntry> Default for VecMap<E> {
+    fn default() -> Self {
+        Self(Default::default())
+    }
+}
 impl<E: VecMapEntry> VecMap<E> {
+    pub fn new() -> Self {
+        Self::default()
+    }
     pub fn get_mut<'s>(&'s mut self, k: &E::Key) -> &'s mut E::Value {
         match self.0.iter().position(|e| e.key() == k) {
             Some(index) => self.0[index].value_mut(),
