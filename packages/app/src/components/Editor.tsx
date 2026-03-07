@@ -1,9 +1,4 @@
-import {
-    makeStyles,
-    Text,
-    MessageBar,
-    MessageBarBody,
-} from "@fluentui/react-components";
+import { makeStyles, Text, MessageBar, MessageBarBody } from "@fluentui/react-components";
 import { ResizeLayout } from "@pistonite/shared-controls";
 import { CodeEditor, getNormalizedPath } from "@pistonite/intwc";
 
@@ -38,23 +33,16 @@ export const Editor: React.FC = () => {
         >
             <CodeEditor
                 onCreated={(editor) => {
-                    editor.openFile(
-                        FILE_NAME,
-                        useStore.getState().script,
-                        "typescript",
-                    );
+                    editor.openFile(FILE_NAME, useStore.getState().script, "typescript");
                     const unsubsribeStore = useStore.subscribe((state) => {
                         editor.setFileContent(FILE_NAME, state.script);
                     });
-                    const unsubscribeEditor = editor.subscribe(
-                        "content-changed",
-                        (file) => {
-                            if (file !== FILE_NAME) {
-                                return;
-                            }
-                            setScript(editor.getFileContent(file));
-                        },
-                    );
+                    const unsubscribeEditor = editor.subscribe("content-changed", (file) => {
+                        if (file !== FILE_NAME) {
+                            return;
+                        }
+                        setScript(editor.getFileContent(file));
+                    });
                     return () => {
                         unsubsribeStore();
                         unsubscribeEditor();

@@ -79,10 +79,7 @@ export function initStore(api: PrismApi): Store {
     const save = debounce({
         fn: () => {
             const { script, showGrid, forceSquare } = useStore.getState();
-            localStorage.setItem(
-                STATE_KEY,
-                JSON.stringify({ script, showGrid, forceSquare }),
-            );
+            localStorage.setItem(STATE_KEY, JSON.stringify({ script, showGrid, forceSquare }));
         },
         interval: 1000,
     });
@@ -109,10 +106,7 @@ export function initStore(api: PrismApi): Store {
     });
     useStore.subscribe((curr, prev) => {
         void save();
-        if (
-            curr.script !== prev.script ||
-            curr.forceSquare !== prev.forceSquare
-        ) {
+        if (curr.script !== prev.script || curr.forceSquare !== prev.forceSquare) {
             void runScript();
         }
     });

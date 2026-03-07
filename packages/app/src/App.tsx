@@ -53,9 +53,7 @@ export const App: React.FC = () => {
                     <div className={styles.container}>
                         <div className={styles.toolbar}>
                             <Toolbar
-                                setZoom={(x: number) =>
-                                    canvas.current?.setZoomAtCanvasCenter(x)
-                                }
+                                setZoom={(x: number) => canvas.current?.setZoomAtCanvasCenter(x)}
                             />
                         </div>
                         <div className={styles.canvas}>

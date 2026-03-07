@@ -1,12 +1,11 @@
 use std::io::Read as _;
-use std::process::ExitCode;
 
-use clap::Parser;
+use cu::pre::*;
 use prism_lib::Svg;
 
 mod png;
 
-#[derive(Clone, Debug, Parser)]
+#[derive(Clone, Debug, clap::Parser, AsRef)]
 struct Cli {
     /// The prism scripts to import and run, omit to print the Prism lib's .d.ts
     ///
@@ -36,31 +35,33 @@ struct Cli {
     /// If provided, render the SVG as PNG and save to the given path
     #[clap(long, short, conflicts_with = "transpile_only")]
     png: Option<String>,
+
+    #[clap(flatten)]
+    #[as_ref]
+    flags: cu::cli::Flags,
 }
 
-fn main() -> ExitCode {
-    let args = Cli::parse();
+#[cu::cli]
+fn main(args: Cli) -> cu::Result<()> {
+    cu::lv::disable_print_time();
 
     if args.files.is_empty() {
         println!("{}", prism_lib::lib_d_ts());
-        return ExitCode::SUCCESS;
+        return Ok(());
     }
 
-    let mut transpiled_script = match prism_transpile::ts_files_to_js(&args.files) {
-        Ok(script) => script,
-        Err(e) => {
-            eprintln!("Failed to transpile the script: {e}");
-            return ExitCode::FAILURE;
-        }
-    };
+    let mut transpiled_script = cu::check!(
+        prism_transpile::ts_files_to_js(&args.files),
+        "failed to transpile the script"
+    )?;
     if let Some(command) = &args.command {
         transpiled_script.push('\n');
         if command.trim() == "-" {
             let mut input = String::new();
-            if std::io::stdin().read_to_string(&mut input).is_err() {
-                eprintln!("Failed to read from stdin");
-                return ExitCode::FAILURE;
-            }
+            cu::check!(
+                std::io::stdin().read_to_string(&mut input),
+                "failed to read from stdin"
+            )?;
             transpiled_script.push_str(&input);
         } else {
             transpiled_script.push_str(command);
@@ -69,7 +70,7 @@ fn main() -> ExitCode {
 
     if args.transpile_only {
         println!("{transpiled_script}");
-        return ExitCode::SUCCESS;
+        return Ok(());
     }
 
     let result = prism_lib::execute_script(&transpiled_script);
@@ -77,30 +78,29 @@ fn main() -> ExitCode {
     let svg = Svg::from_polygons(&polygons, result.unit, !args.no_square);
 
     for message in result.messages {
-        eprintln!("{message}");
+        eprintln!(":: {message}");
     }
 
     if result.has_js_error {
-        eprintln!();
-        eprintln!("The script has thrown an error!");
-
         if !args.ignore_error {
-            eprintln!("Pass in --ignore-error to print the SVG output anyway");
-            return ExitCode::FAILURE;
+            cu::hint!(
+                "the script threw an error; pass in --ignore-error to print the SVG output anyway"
+            );
+            cu::bail!("script execution error");
+        } else {
+            eprintln!();
+            eprintln!(":: the script has thrown an error!");
         }
     }
 
     match args.png {
         Some(path) => {
-            if let Err(e) = png::save_svg_to_png(&svg, path) {
-                eprintln!("Failed to save the PNG: {e}");
-                return ExitCode::FAILURE;
-            }
+            cu::check!(png::save_svg_to_png(&svg, path), "failed to save the PNG")?;
         }
         None => {
             println!("{}", svg.content);
         }
     }
 
-    ExitCode::SUCCESS
+    Ok(())
 }
