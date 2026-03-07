@@ -43,19 +43,25 @@ struct Cli {
 
 #[cu::cli]
 fn main(args: Cli) -> cu::Result<()> {
-        cu::lv::disable_print_time();
+    cu::lv::disable_print_time();
 
     if args.files.is_empty() {
         println!("{}", prism_lib::lib_d_ts());
         return Ok(());
     }
 
-    let mut transpiled_script = cu::check!( prism_transpile::ts_files_to_js(&args.files) , "failed to transpile the script")?;
+    let mut transpiled_script = cu::check!(
+        prism_transpile::ts_files_to_js(&args.files),
+        "failed to transpile the script"
+    )?;
     if let Some(command) = &args.command {
         transpiled_script.push('\n');
         if command.trim() == "-" {
             let mut input = String::new();
-            cu::check!(std::io::stdin().read_to_string(&mut input), "failed to read from stdin")?;
+            cu::check!(
+                std::io::stdin().read_to_string(&mut input),
+                "failed to read from stdin"
+            )?;
             transpiled_script.push_str(&input);
         } else {
             transpiled_script.push_str(command);
@@ -77,7 +83,9 @@ fn main(args: Cli) -> cu::Result<()> {
 
     if result.has_js_error {
         if !args.ignore_error {
-            cu::hint!("the script threw an error; pass in --ignore-error to print the SVG output anyway");
+            cu::hint!(
+                "the script threw an error; pass in --ignore-error to print the SVG output anyway"
+            );
             cu::bail!("script execution error");
         } else {
             eprintln!();

@@ -1,10 +1,4 @@
-import {
-    Slider,
-    Text,
-    Tooltip,
-    Button,
-    makeStyles,
-} from "@fluentui/react-components";
+import { Slider, Text, Tooltip, Button, makeStyles } from "@fluentui/react-components";
 import { ZoomIn24Regular, ZoomOut24Regular } from "@fluentui/react-icons";
 import { useTranslation } from "react-i18next";
 

@@ -15,6 +15,7 @@ features = ["wasm"]
 
 [dependencies.prism-transpile]
 path = "../prism-transpile"
+default-features = false
 features = ["wasm"]
 
 [lib]

@@ -5,20 +5,22 @@ edition = "2024"
 publish = false
 
 [dependencies]
-cu = { workspace = true, features = ["fs"] }
+cu.workspace = true
 swc = "56.0.0"
 swc_common = "19.0.0"
 swc_ecma_ast = "21.0.0"
 swc_ecma_parser = "35.0.0"
 swc_ecma_transforms_typescript = "42.0.0"
 
-# # Additional feature required by wasm
-# [dependencies.getrandom]
-# version = "0.4.2"
-# optional = true
+# Additional feature required by wasm
+[dependencies.getrandom]
+version = "0.3.4"
+optional = true
 
 [features]
+default = ["native"]
+native = ["cu/fs"]
 wasm = [
-    # "dep:getrandom",
-    # "getrandom/wasm_js",
+    "dep:getrandom",
+    "getrandom/wasm_js",
 ]

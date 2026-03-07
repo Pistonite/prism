@@ -9,10 +9,14 @@ use swc_common::errors::Handler;
 use swc_common::source_map::SourceMap;
 use swc_common::sync::Lrc;
 use swc_common::{FileName, FilePathMapping, GLOBALS, Mark};
-use swc_ecma_ast::{EsVersion, ModuleDecl, ModuleItem, Pass, Program};
+use swc_ecma_ast::{EsVersion, Pass, Program};
 use swc_ecma_parser::Syntax;
 
+#[cfg(feature = "native")]
+use swc_ecma_ast::{ModuleDecl, ModuleItem};
+
 /// Import muiltple TS files and transform them into JS,
+#[cfg(feature = "native")]
 pub fn ts_files_to_js(files: &[impl AsRef<Path>]) -> cu::Result<String> {
     use std::fmt::Write as _;
 
@@ -28,9 +32,11 @@ pub fn ts_files_to_js(files: &[impl AsRef<Path>]) -> cu::Result<String> {
 /// Load a TypeScript source file and transform it into JS,
 /// resolving import script statements (`import "..."`)
 #[inline(always)]
+#[cfg(feature = "native")]
 pub fn ts_file_to_js(file: impl AsRef<Path>) -> cu::Result<String> {
     ts_file_to_js_impl(file.as_ref())
 }
+#[cfg(feature = "native")]
 fn ts_file_to_js_impl(file: &Path) -> cu::Result<String> {
     let ts_source = cu::check!(cu::fs::read_string(file), "failed to read TypeScript file")?;
     to_js_internal(&ts_source, Some(file), false)
@@ -44,11 +50,7 @@ pub fn standalone_to_js(source: &str) -> cu::Result<String> {
 /// Transpile TypeScript source code to JavaScript
 ///
 /// import script statements can be resolved if file path is given
-fn to_js_internal(
-    ts_source: &str,
-    file: Option<&Path>,
-    virtual_file: bool,
-) -> cu::Result<String> {
+fn to_js_internal(ts_source: &str, file: Option<&Path>, virtual_file: bool) -> cu::Result<String> {
     let mut imported = BTreeSet::new();
     if let Some(file) = file {
         if !virtual_file {
@@ -67,7 +69,10 @@ fn to_js_internal(
         cu::Ok(program)
     })?;
 
-    let js = cu::check!(compiler.print(&program, Default::default()), "failed to print JavaScript source")?;
+    let js = cu::check!(
+        compiler.print(&program, Default::default()),
+        "failed to print JavaScript source"
+    )?;
     Ok(js.code)
 }
 
@@ -77,7 +82,7 @@ fn load_program(
     compiler: &Compiler,
     ts_source: &str,
     file: Option<&Path>,
-    imported: &mut BTreeSet<String>,
+    _imported: &mut BTreeSet<String>,
 ) -> cu::Result<Program> {
     let source = if let Some(file) = file {
         let file_path = file.to_path_buf();
@@ -111,23 +116,31 @@ fn load_program(
         IsModule::Unknown,
         Some(compiler.comments()),
     );
-    let mut program = cu::check!(program, "failed to parse TypeScript source")?;
 
-    let resolve_imports_result = resolve_imports(&source_map, compiler, &mut program, file, imported);
-    if let Err(e) = resolve_imports_result {
-        match file {
-            Some(path) => {
-                cu::rethrow!(e, "failed to resolve imports in file: '{}'", path.display());
-            }
-            None => {
-                cu::rethrow!(e, "failed to resolve imports in virtual file");
+    let program = cu::check!(program, "failed to parse TypeScript source")?;
+
+    #[cfg(feature = "native")]
+    let program = {
+        let mut program = program;
+        let resolve_imports_result =
+            resolve_imports(&source_map, compiler, &mut program, file, _imported);
+        if let Err(e) = resolve_imports_result {
+            match file {
+                Some(path) => {
+                    cu::rethrow!(e, "failed to resolve imports in file: '{}'", path.display());
+                }
+                None => {
+                    cu::rethrow!(e, "failed to resolve imports in virtual file");
+                }
             }
         }
-    }
+        program
+    };
 
     Ok(program)
 }
 
+#[cfg(feature = "native")]
 fn resolve_imports(
     source_map: &Lrc<SourceMap>,
     compiler: &Compiler,
@@ -154,7 +167,11 @@ fn resolve_imports(
             module.body.push(item);
             continue;
         }
-        let import_src = cu::check!(import.src.value.as_str(), "import source is not UTF-8: {}", import.src.value.to_string_lossy())?;
+        let import_src = cu::check!(
+            import.src.value.as_str(),
+            "import source is not UTF-8: {}",
+            import.src.value.to_string_lossy()
+        )?;
         let path = file_directory.join(import_src);
         let path = cu::check!(path.normalize(), "failed to resolve import path")?;
         let path_str = path.as_utf8()?;
@@ -164,23 +181,23 @@ fn resolve_imports(
         }
         let ts_source = cu::check!(cu::fs::read_string(&path), "failed to read import file")?;
 
-            let imported_program = load_program(
-                source_map.clone(),
-                compiler,
-                &ts_source,
-                Some(&path),
-                imported,
-            )?;
-            match imported_program {
-                Program::Module(imported_module) => {
-                    module.body.extend(imported_module.body);
-                }
-                Program::Script(imported_script) => {
-                    for stmt in imported_script.body {
-                        module.body.push(ModuleItem::Stmt(stmt));
-                    }
+        let imported_program = load_program(
+            source_map.clone(),
+            compiler,
+            &ts_source,
+            Some(&path),
+            imported,
+        )?;
+        match imported_program {
+            Program::Module(imported_module) => {
+                module.body.extend(imported_module.body);
+            }
+            Program::Script(imported_script) => {
+                for stmt in imported_script.body {
+                    module.body.push(ModuleItem::Stmt(stmt));
                 }
             }
+        }
     }
 
     Ok(())

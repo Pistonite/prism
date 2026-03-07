@@ -1,30 +1,11 @@
-import {
-    Tooltip,
-    Text,
-    ToggleButton,
-    makeStyles,
-    Button,
-} from "@fluentui/react-components";
+import { Tooltip, Text, ToggleButton, makeStyles, Button } from "@fluentui/react-components";
 import { fsSave } from "@pistonite/pure/fs";
 import { useTranslation } from "react-i18next";
-import {
-    ArrowDownload24Regular,
-    Grid24Regular,
-    Square24Regular,
-} from "@fluentui/react-icons";
+import { ArrowDownload24Regular, Grid24Regular, Square24Regular } from "@fluentui/react-icons";
 import { useDark } from "@pistonite/pure-react";
-import {
-    DarkToggle,
-    GitHubLink,
-    LanguagePicker,
-} from "@pistonite/shared-controls";
+import { DarkToggle, GitHubLink, LanguagePicker } from "@pistonite/shared-controls";
 
-import {
-    setForceSquare,
-    setShowGrid,
-    useStore,
-    useSvgContent,
-} from "self::store";
+import { setForceSquare, setShowGrid, useStore, useSvgContent } from "self::store";
 
 import { Zoom } from "./Zoom.tsx";
 

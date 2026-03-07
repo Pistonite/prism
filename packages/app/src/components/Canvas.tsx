@@ -1,11 +1,5 @@
 import { useDark } from "@pistonite/pure-react";
-import {
-    forwardRef,
-    useEffect,
-    useImperativeHandle,
-    useRef,
-    useState,
-} from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { makeStyles } from "@fluentui/react-components";
 
 import { useStore, setTranslate } from "self::store";
@@ -27,11 +21,7 @@ export type CanvasApi = {
     /** Change zoom level center at the canvas center */
     setZoomAtCanvasCenter: (zoom: number) => void;
     /** Change zoom level center at the client point (relative to canvas origin) */
-    setZoomAtClientPoint: (
-        zoom: number,
-        clientX: number,
-        clientY: number,
-    ) => void;
+    setZoomAtClientPoint: (zoom: number, clientX: number, clientY: number) => void;
 };
 
 export const Canvas = forwardRef<CanvasApi>((_, ref) => {
@@ -64,10 +54,7 @@ export const Canvas = forwardRef<CanvasApi>((_, ref) => {
                     return;
                 }
 
-                setTranslate(
-                    e.clientX - dragStart[0],
-                    e.clientY - dragStart[1],
-                );
+                setTranslate(e.clientX - dragStart[0], e.clientY - dragStart[1]);
             }}
             onMouseUp={() => {
                 setDragStart(undefined);

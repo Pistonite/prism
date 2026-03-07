@@ -26,11 +26,7 @@ const useStyles = makeStyles({
 });
 
 /** Grid lines for the canvas */
-export const CanvasGrid: React.FC<CanvasGridProps> = ({
-    width,
-    height,
-    color,
-}) => {
+export const CanvasGrid: React.FC<CanvasGridProps> = ({ width, height, color }) => {
     const zoom = useStore((state) => state.zoom);
     const translateX = useStore((state) => state.translateX);
     const translateY = useStore((state) => state.translateY);
@@ -54,14 +50,12 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
         const xOrigin = -shiftX * unit * zoom + translateX;
         const y1Origin =
             -shiftY * ySpacing +
-            ((-shiftX * unit * zoom) / Math.sqrt(3) +
-                translateX / Math.sqrt(3)) +
+            ((-shiftX * unit * zoom) / Math.sqrt(3) + translateX / Math.sqrt(3)) +
             translateY +
             ySpacing / 2;
         const y2Origin =
             -shiftY * ySpacing -
-            ((-shiftX * unit * zoom) / Math.sqrt(3) +
-                translateX / Math.sqrt(3)) +
+            ((-shiftX * unit * zoom) / Math.sqrt(3) + translateX / Math.sqrt(3)) +
             translateY +
             ySpacing / 2;
 
@@ -70,11 +64,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
         for (let x = xOrigin; x < width; x += xSpacing) {
             xLines.push(x);
         }
-        for (
-            let x = xOrigin - xSpacing;
-            x > -Math.abs(translateX);
-            x -= xSpacing
-        ) {
+        for (let x = xOrigin - xSpacing; x > -Math.abs(translateX); x -= xSpacing) {
             xLines.push(x);
         }
 
@@ -82,11 +72,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
         for (let y = y1Origin; y < height + yOffset; y += ySpacing) {
             y1Lines.push(y);
         }
-        for (
-            let y = y1Origin - ySpacing;
-            y > -Math.abs(translateY);
-            y -= ySpacing
-        ) {
+        for (let y = y1Origin - ySpacing; y > -Math.abs(translateY); y -= ySpacing) {
             y1Lines.push(y);
         }
 
@@ -94,11 +80,7 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
         for (let y = y2Origin; y < height; y += ySpacing) {
             y2Lines.push(y);
         }
-        for (
-            let y = y2Origin - ySpacing;
-            y > -Math.abs(translateY) - yOffset;
-            y -= ySpacing
-        ) {
+        for (let y = y2Origin - ySpacing; y > -Math.abs(translateY) - yOffset; y -= ySpacing) {
             y2Lines.push(y);
         }
 
@@ -110,40 +92,15 @@ export const CanvasGrid: React.FC<CanvasGridProps> = ({
 
     return (
         <div className={styles.gridContainer}>
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width={width}
-                height={height}
-            >
+            <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height}>
                 {lines.x.map((x, i) => (
-                    <line
-                        key={i}
-                        y1={0}
-                        y2={height}
-                        x1={x}
-                        x2={x}
-                        stroke={color}
-                    />
+                    <line key={i} y1={0} y2={height} x1={x} x2={x} stroke={color} />
                 ))}
                 {lines.y1.map((y, i) => (
-                    <line
-                        key={i}
-                        y1={y}
-                        y2={y - yOffset}
-                        x1={0}
-                        x2={width}
-                        stroke={color}
-                    />
+                    <line key={i} y1={y} y2={y - yOffset} x1={0} x2={width} stroke={color} />
                 ))}
                 {lines.y2.map((y, i) => (
-                    <line
-                        key={i}
-                        y1={y}
-                        y2={y + yOffset}
-                        x1={0}
-                        x2={width}
-                        stroke={color}
-                    />
+                    <line key={i} y1={y} y2={y + yOffset} x1={0} x2={width} stroke={color} />
                 ))}
             </svg>
         </div>
