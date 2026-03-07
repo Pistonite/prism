@@ -7,7 +7,6 @@ use csscolorparser::Color;
 use cu::pre::*;
 use derive_more::{Add, AddAssign, Sub, SubAssign};
 use num_traits::Num;
-use serde::{Deserialize, Serialize};
 
 macro_rules! nonneg {
     ($x:expr) => {

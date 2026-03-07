@@ -23,7 +23,8 @@ pub fn ts_files_to_js(files: &[impl AsRef<Path>]) -> cu::Result<String> {
     let mut ts_source = String::new();
     for file in files {
         let file = file.as_ref().normalize()?.into_utf8()?;
-        let _ = write!(ts_source, "\nimport \"{file}\";");
+        let file_escaped = json::stringify(&file)?;
+        let _ = write!(ts_source, "\nimport {file_escaped};");
     }
     let virtual_file = Path::new("./virtual");
     to_js_internal(&ts_source, Some(virtual_file), true)

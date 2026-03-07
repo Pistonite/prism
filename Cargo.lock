@@ -1904,6 +1904,8 @@ dependencies = [
  "pathdiff",
  "pistonite-cu-proc-macros",
  "regex",
+ "serde",
+ "serde_json",
  "terminal_size",
  "tokio",
  "unicode-width 0.2.2",
