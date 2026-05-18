@@ -14,4 +14,4 @@ export const initPrismApi = async (): Promise<PrismApi> => {
     }
 
     return result.val.protocols.api;
-}
+};

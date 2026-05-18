@@ -8,6 +8,7 @@
         "@pistonite/pure": "catalog:",
         "@pistonite/celera": "catalog:",
         "@pistonite/workex": "catalog:",
+        "@pistonite/webfs": "catalog:",
         "prism-wasm": "workspace:*",
         "react": "catalog:",
         "react-dom": "catalog:",
@@ -20,6 +21,7 @@
     },
     "imports": {
         "#components": "./src/components/index.ts",
+        "#editor": "./src/editor/index.ts",
         "#i18n": "./src/i18n/index.ts",
         "#store": "./src/store/index.ts",
         "#worker": "./src/worker/index.ts"

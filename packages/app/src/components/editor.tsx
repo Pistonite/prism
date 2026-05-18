@@ -1,8 +1,8 @@
 import { makeStyles, Text, MessageBar, MessageBarBody } from "@fluentui/react-components";
-import { ResizeLayout } from "@pistonite/shared-controls";
-import { CodeEditor, getNormalizedPath } from "@pistonite/intwc";
+import { ResizeLayout } from "@pistonite/celera";
+import { SimpleEditor, StatusItemPreset } from "@pistonite/intwc";
 
-import { setCodeWindowPercentage, setScript, useStore } from "self::store";
+import { setCodeWindowPercentage, setScript, useStore } from "#store";
 
 const useStyles = makeStyles({
     container: { width: "100%", height: "100%" },
@@ -16,13 +16,12 @@ const useStyles = makeStyles({
     consoleScroll: { maxHeight: 0 },
 });
 
-const FILE_NAME = getNormalizedPath("main.ts");
-
 export const Editor: React.FC = () => {
     const styles = useStyles();
     const scriptError = useStore((state) => state.scriptError);
     const messages = useStore((state) => state.output?.messages);
     const percentage = useStore((state) => state.codeWindowPercentage);
+    const script = useStore((state) => state.script);
 
     return (
         <ResizeLayout
@@ -31,23 +30,24 @@ export const Editor: React.FC = () => {
             valuePercent={percentage}
             setValuePercent={setCodeWindowPercentage}
         >
-            <CodeEditor
-                onCreated={(editor) => {
-                    editor.openFile(FILE_NAME, useStore.getState().script, "typescript");
-                    const unsubsribeStore = useStore.subscribe((state) => {
-                        editor.setFileContent(FILE_NAME, state.script);
-                    });
-                    const unsubscribeEditor = editor.subscribe("content-changed", (file) => {
-                        if (file !== FILE_NAME) {
-                            return;
-                        }
-                        setScript(editor.getFileContent(file));
-                    });
-                    return () => {
-                        unsubsribeStore();
-                        unsubscribeEditor();
-                    };
+            <SimpleEditor
+                editorOptions={{
+                    lineNumbers: "on"
                 }}
+                language="typescript"
+                value={script}
+                onValueChange={setScript}
+                filename="script.ts"
+                statusLeft={[
+                    StatusItemPreset.DiagnosticErrors,
+                    StatusItemPreset.DiagnosticWarnings,
+                    StatusItemPreset.DiagnosticHints,
+                ]}
+                statusRight={[
+                    StatusItemPreset.Position,
+                    StatusItemPreset.WordWrap,
+                    StatusItemPreset.Language,
+                ]}
             />
             <div className={styles.console}>
                 {!!scriptError && (

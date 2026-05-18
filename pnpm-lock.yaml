@@ -13,14 +13,17 @@ catalogs:
       specifier: ^2.0.326
       version: 2.0.326
     '@pistonite/celera':
-      specifier: ^0.3.1
-      version: 0.3.1
+      specifier: ^0.3.2
+      version: 0.3.2
     '@pistonite/intwc':
-      specifier: ^0.1.0
-      version: 0.1.0
+      specifier: ^0.1.2
+      version: 0.1.2
     '@pistonite/pure':
       specifier: ^0.29.7
       version: 0.29.7
+    '@pistonite/webfs':
+      specifier: ^0.1.3
+      version: 0.1.3
     '@pistonite/workex':
       specifier: ^0.2.3
       version: 0.2.3
@@ -64,13 +67,16 @@ importers:
         version: 2.0.326(react@19.2.6)
       '@pistonite/celera':
         specifier: 'catalog:'
-        version: 0.3.1(@fluentui/react-components@9.73.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(scheduler@0.27.0))(@fluentui/react-icons@2.0.326(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@6.0.3)
+        version: 0.3.2(@fluentui/react-components@9.73.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(scheduler@0.27.0))(@fluentui/react-icons@2.0.326(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@6.0.3)
       '@pistonite/intwc':
         specifier: 'catalog:'
-        version: 0.1.0(@fluentui/react-components@9.73.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(scheduler@0.27.0))(@pistonite/celera@0.3.1(@fluentui/react-components@9.73.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(scheduler@0.27.0))(@fluentui/react-icons@2.0.326(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@6.0.3))(react@19.2.6)
+        version: 0.1.2(@fluentui/react-components@9.73.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(scheduler@0.27.0))(@pistonite/celera@0.3.2(@fluentui/react-components@9.73.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(scheduler@0.27.0))(@fluentui/react-icons@2.0.326(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@6.0.3))(react@19.2.6)
       '@pistonite/pure':
         specifier: 'catalog:'
         version: 0.29.7
+      '@pistonite/webfs':
+        specifier: 'catalog:'
+        version: 0.1.3
       '@pistonite/workex':
         specifier: 'catalog:'
         version: 0.2.3
@@ -926,22 +932,25 @@ packages:
   '@oxc-project/types@0.130.0':
     resolution: {integrity: sha512-ibD2usx9JRu7f5pu2tMKMI4cpA4NgXJQoYRP4pQ7Pxmn1l6k/53qWtQWZayhYy3X4QZkt90Ot+mJEaeXouio6Q==}
 
-  '@pistonite/celera@0.3.1':
-    resolution: {integrity: sha512-PeY7KzVmLkjTX3NAGmILtMrMi2eXdkHEe9/l61cmyXGVdzky8cw+YkSDO8EsNJr5iWGB/O99AziazL9NdNDIHQ==}
+  '@pistonite/celera@0.3.2':
+    resolution: {integrity: sha512-/9s6GVEdGDDB8SUZUdwOa31yCD50XwKJgD/O80qwVtw27UKTbIw49hKqfNfIYHvIBK5iuEfgNtRX+f4ctboV3w==}
     peerDependencies:
       '@fluentui/react-components': ^9
       '@fluentui/react-icons': ^2
       react: ^19
 
-  '@pistonite/intwc@0.1.0':
-    resolution: {integrity: sha512-ClCinckiIweZcFNoz1aTeUjb8YTFxzunXz3bG3w/EmfXCldHXnq1u8cbKJ/4Zwwon8dDdZ9TTa9aiXWmXTbeeg==}
+  '@pistonite/intwc@0.1.2':
+    resolution: {integrity: sha512-s/KwtJx2rF1q/KLeXcPyX6o5qVO3JXWP3Wtib/8IQZgLw8rrVdpitQxb1pqKxq5v5yI1THwElvo61afL54cCaA==}
     peerDependencies:
       '@fluentui/react-components': ^9.73.8
-      '@pistonite/celera': ^0.3.1
+      '@pistonite/celera': ^0.3.2
       react: ^19
 
   '@pistonite/pure@0.29.7':
     resolution: {integrity: sha512-p882Npv1xkOj4oyZtCp+r/+IPGPVKn56+Y6xS43p4iBzJMsti5OChSwA6KwsYr8uX/0s6bD1dUSsTr62/tcMmg==}
+
+  '@pistonite/webfs@0.1.3':
+    resolution: {integrity: sha512-hX+B+eXFNxFjRaRg9gFcxeuBD1GXl5ahe/iJw/McL5nrSVEZOvdCUrIc+Vo+rOE0Enndvy9uh5UXkeO4q+xixA==}
 
   '@pistonite/workex@0.2.3':
     resolution: {integrity: sha512-uAEkYu4+N1f43GuyJtT+WSJO7Caxo1RGk30L2QXIGMhj6qPGuQHyD8rzZGnUZGx6aQfXs5nodu/ugiLZa3iPjQ==}
@@ -3936,7 +3945,7 @@ snapshots:
 
   '@oxc-project/types@0.130.0': {}
 
-  '@pistonite/celera@0.3.1(@fluentui/react-components@9.73.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(scheduler@0.27.0))(@fluentui/react-icons@2.0.326(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@6.0.3)':
+  '@pistonite/celera@0.3.2(@fluentui/react-components@9.73.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(scheduler@0.27.0))(@fluentui/react-icons@2.0.326(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@6.0.3)':
     dependencies:
       '@fluentui/react-components': 9.73.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(scheduler@0.27.0)
       '@fluentui/react-icons': 2.0.326(react@19.2.6)
@@ -3949,16 +3958,20 @@ snapshots:
       - react-native
       - typescript
 
-  '@pistonite/intwc@0.1.0(@fluentui/react-components@9.73.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(scheduler@0.27.0))(@pistonite/celera@0.3.1(@fluentui/react-components@9.73.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(scheduler@0.27.0))(@fluentui/react-icons@2.0.326(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@6.0.3))(react@19.2.6)':
+  '@pistonite/intwc@0.1.2(@fluentui/react-components@9.73.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(scheduler@0.27.0))(@pistonite/celera@0.3.2(@fluentui/react-components@9.73.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(scheduler@0.27.0))(@fluentui/react-icons@2.0.326(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@6.0.3))(react@19.2.6)':
     dependencies:
       '@fluentui/react-components': 9.73.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(scheduler@0.27.0)
-      '@pistonite/celera': 0.3.1(@fluentui/react-components@9.73.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(scheduler@0.27.0))(@fluentui/react-icons@2.0.326(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@6.0.3)
+      '@pistonite/celera': 0.3.2(@fluentui/react-components@9.73.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(scheduler@0.27.0))(@fluentui/react-icons@2.0.326(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@6.0.3)
       '@pistonite/pure': 0.29.7
       react: 19.2.6
 
   '@pistonite/pure@0.29.7':
     dependencies:
       denque: 2.1.0
+
+  '@pistonite/webfs@0.1.3':
+    dependencies:
+      '@pistonite/pure': 0.29.7
 
   '@pistonite/workex@0.2.3':
     dependencies:

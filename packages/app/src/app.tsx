@@ -1,16 +1,15 @@
-import { useRef } from "react";
-import {
-    FluentProvider,
-    makeStaticStyles,
-    makeStyles,
-    webDarkTheme,
-    webLightTheme,
-} from "@fluentui/react-components";
-import { useDark } from "@pistonite/pure-react";
-import { ResizeLayout } from "@pistonite/shared-controls";
+import { lazy, Suspense, useRef } from "react";
+import { makeStaticStyles, makeStyles, Spinner } from "@fluentui/react-components";
+import { ResizeLayout, ThemeProvider } from "@pistonite/celera";
 
-import { Canvas, type CanvasApi, Editor, Toolbar } from "self::components";
-import { setSideWindowPercentage, useStore } from "self::store";
+import { Canvas, type CanvasApi, Toolbar } from "#components";
+import { setSideWindowPercentage, useStore } from "#store";
+import { useStyleEngine } from "./components/style";
+
+const EditorLazy = lazy(async () => {
+    const { getEditorComponent } = await import ("./editor.ts");
+    return { default: await getEditorComponent() };
+});
 
 const useStaticStyles = makeStaticStyles({
     ":root": {
@@ -33,14 +32,14 @@ const useStyles = makeStyles({
 export const App: React.FC = () => {
     useStaticStyles();
     const styles = useStyles();
+    const m = useStyleEngine();
 
     const canvas = useRef<CanvasApi>(null);
 
-    const dark = useDark();
     const percentage = useStore((state) => state.sideWindowPercentage);
 
     return (
-        <FluentProvider theme={dark ? webDarkTheme : webLightTheme}>
+        <ThemeProvider>
             <div className={styles.root}>
                 <ResizeLayout
                     className={styles.container}
@@ -48,7 +47,9 @@ export const App: React.FC = () => {
                     setValuePercent={setSideWindowPercentage}
                 >
                     <div className={styles.container}>
-                        <Editor />
+                        <Suspense fallback={<div className={m("flex flex-center h-100")}><Spinner size="huge"/></div>}>
+                        <EditorLazy />
+                        </Suspense>
                     </div>
                     <div className={styles.container}>
                         <div className={styles.toolbar}>
@@ -62,6 +63,6 @@ export const App: React.FC = () => {
                     </div>
                 </ResizeLayout>
             </div>
-        </FluentProvider>
+        </ThemeProvider>
     );
 };

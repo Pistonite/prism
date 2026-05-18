@@ -17,7 +17,7 @@ export interface Store {
     translateY: number;
     sideWindowPercentage: number;
     codeWindowPercentage: number;
-};
+}
 
 export const useStore = create<Store>()(() => ({
     output: undefined,
