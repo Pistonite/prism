@@ -2,14 +2,9 @@ version: '3'
 
 includes:
   common:
-    taskfile: ./packages/mono-dev/task/common.yaml
+    taskfile: ./node_modules/mono-dev/task/common.yaml
     flatten: true
     optional: true
-
-  intwc:
-    taskfile: ./packages/intwc
-    dir: ./packages/intwc
-    internal: true
 
   app:
     taskfile: ./packages/app
@@ -24,10 +19,12 @@ includes:
   wasm:
     taskfile: ./packages/prism-wasm
     dir: ./packages/prism-wasm
+    internal: true
 
   cli:
     taskfile: ./packages/prism-cli
     dir: ./packages/prism-cli
+    internal: true
   
 
 tasks:
@@ -36,7 +33,7 @@ tasks:
     cmds:
       - task: cargo-binstall
         vars:
-          PACKAGES: magoo wasm-pack
+          PACKAGES: wasm-pack
       - task: cargo-binstall
         vars:
           PACKAGES: workex --git https://github.com/Pistonite/workex
@@ -44,13 +41,7 @@ tasks:
   install:
     desc: Install dependencies for local development
     cmds:
-      - magoo install
       - pnpm install
-      - task: post-install
-
-  install-ci:
-    cmds:
-      - pnpm install --frozen-lockfile
       - task: post-install
 
   post-install:
@@ -85,4 +76,17 @@ tasks:
       - task: wasm:build
       - task: app:build
 
+  upgrade:
+    - >
+      pnpm up -r mono-dev react react-dom @types/react @types/react-dom
+      @pistonite/pure @pistonite/celera @pistonite/workex @fluentui/react-components @fluentui/react-icons
+      @pistonite/intwc
+    - pnpm dedupe
+    - pnpm dedupe --check
+    - cargo upgrade
+
+  clean:
+    - rm -rf node_modules
+    - cargo clean
+    - rm -rf packages/prism-wasm/target
   

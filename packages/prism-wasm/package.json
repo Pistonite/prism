@@ -11,7 +11,7 @@
         "@pistonite/workex": "catalog:"
     },
     "devDependencies": {
-        "mono-dev": "workspace:*"
+        "mono-dev": "catalog:"
     },
     "nocheck": [
         "/src/interfaces"

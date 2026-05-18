@@ -5,16 +5,16 @@ edition = "2024"
 publish = false
 
 [dependencies]
-cu.workspace = true
-swc = "56.0.0"
-swc_common = "19.0.0"
-swc_ecma_ast = "21.0.0"
-swc_ecma_parser = "35.0.0"
-swc_ecma_transforms_typescript = "42.0.0"
+cu = { workspace = true, features = ["json"] }
+swc.workspace = true
+swc_common.workspace = true
+swc_ecma_ast.workspace = true
+swc_ecma_parser.workspace = true
+swc_ecma_transforms_typescript.workspace = true
 
 # Additional feature required by wasm
 [dependencies.getrandom]
-version = "0.3.4"
+version = "0.4.2"
 optional = true
 
 [features]

@@ -6,15 +6,15 @@ publish = false
 
 [dependencies]
 cu = { workspace = true, features = ["serde", "derive"] }
-serde.workspace = true
-boa_engine = "0.21.0"
-csscolorparser = { version = "0.8.2", features = ["serde"] }
-num-traits = "0.2.19"
-thiserror = "2.0.18"
+serde = "1"
+boa_engine.workspace = true
+csscolorparser = { workspace = true, features = ["serde"] }
+num-traits.workspace = true
+thiserror.workspace = true
 
 # WASM stuff
 tsify = { version = "0.5.6", default-features = false, features = ["js"], optional = true }
-wasm-bindgen = { version = "0.2.114", optional = true }
+wasm-bindgen = { version = "0.2.121", optional = true }
 
 [features]
 wasm = [

@@ -3,24 +3,18 @@
     "dependencies": {
         "@fluentui/react-components": "catalog:",
         "@fluentui/react-icons": "catalog:",
-        "@pistonite/intwc": "workspace:*",
+        "@pistonite/intwc": "catalog:",
         "@pistonite/pure": "catalog:",
-        "@pistonite/pure-i18next": "catalog:",
-        "@pistonite/pure-react": "catalog:",
-        "@pistonite/shared-controls": "workspace:*",
+        "@pistonite/celera": "catalog:",
         "@pistonite/workex": "catalog:",
         "prism-wasm": "workspace:*",
         "react": "catalog:",
         "react-dom": "catalog:",
-        "react-i18next": "*",
-        "zustand": "^5.0.3"
+        "zustand": "catalog:"
     },
     "devDependencies": {
-        "@pistonite/vite-plugin-intwc": "workspace:*",
         "@types/react": "catalog:",
         "@types/react-dom": "catalog:",
-        "monaco-editor": "*",
-        "mono-dev": "workspace:*",
-        "vite": "catalog:"
+        "mono-dev": "catalog:"
     }
 }

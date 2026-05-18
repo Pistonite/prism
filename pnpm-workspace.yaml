@@ -7,16 +7,15 @@ packages:
   - packages/shared-controls
 
 catalog:
-  "@fluentui/react-components": ^9.66.8
-  "@fluentui/react-icons": ^2.0.306
-  "@pistonite/pure": ^0.28.0
-  "@pistonite/pure-react": ^0.8.0
-  "@pistonite/pure-i18next": ^0.5.0
-  "@pistonite/workex": ^0.1.5
-  "@types/react": ^18
-  "@types/react-dom": ^18
-  react: ^18
-  react-dom: ^18
-  react-i18next: ^15.6.0
-  vite: ^6.3.5
-
+  "@fluentui/react-components": ^9.73.8
+  "@fluentui/react-icons": ^2.0.326
+  "@pistonite/pure": ^0.29.7
+  "@pistonite/celera": ^0.3.1
+  "@pistonite/workex": ^0.2.3
+  "@pistonite/intwc": ^0.1.0
+  "@types/react": ^19.2.14
+  "@types/react-dom": ^19.2.3
+  react: ^19.2.6
+  react-dom: ^19.2.6
+  mono-dev: github:Pistonight/mono-dev#dist
+  zustand: ^5.0.3

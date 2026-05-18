@@ -2,11 +2,13 @@ version: '3'
 
 includes:
   ecma:
-    taskfile: ../mono-dev/task/ecma.yaml
+    taskfile: ./node_modules/mono-dev/task/ecma.yaml
     internal: true
+    optional: true
   cargo:
-    taskfile: ../mono-dev/task/cargo.yaml
+    taskfile: ./node_modules/mono-dev/task/cargo.yaml
     internal: true
+    optional: true
 
 tasks:
   build:

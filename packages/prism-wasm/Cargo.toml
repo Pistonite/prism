@@ -5,9 +5,9 @@ edition = "2024"
 publish = false
 
 [dependencies]
-serde = { version = "1.0.228", features = ["derive"] }
-tsify = { version = "0.5.6", default-features = false, features = ["js"] }
-wasm-bindgen = "0.2.114"
+serde = { version = "1", features = ["derive"] }
+tsify = { workspace = true, features = ["js"] }
+wasm-bindgen.workspace = true
 
 [dependencies.prism-lib]
 path = "../prism-lib"
