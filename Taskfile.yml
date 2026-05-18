@@ -46,7 +46,6 @@ tasks:
 
   post-install:
     cmds:
-      - task: intwc:install
       - task: app:install
       - task: wasm:install
 

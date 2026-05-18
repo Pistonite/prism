@@ -1,11 +1,11 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { initDark } from "@pistonite/pure/pref";
+import { initDark } from "@pistonite/celera";
 import { initCodeEditor } from "@pistonite/intwc";
 
-import { initStore } from "self::store";
-import { initI18n } from "self::i18n";
-import { initPrismApi } from "self::worker";
+import { initStore } from "#store";
+import { initI18n } from "#i18n";
+import { initPrismApi } from "#worker";
 
 import { App } from "./App.tsx";
 import PrismLibTs from "./PrismLib.ts?raw";

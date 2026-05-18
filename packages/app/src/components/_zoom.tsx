@@ -1,8 +1,8 @@
 import { Slider, Text, Tooltip, Button, makeStyles } from "@fluentui/react-components";
 import { ZoomIn24Regular, ZoomOut24Regular } from "@fluentui/react-icons";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@pistonite/celera";
 
-import { useStore } from "self::store";
+import { useStore } from "#store";
 
 import { MAX_ZOOM, MIN_ZOOM } from "./useCanvas.ts";
 

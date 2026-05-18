@@ -2,6 +2,7 @@
     "name": "prism-wasm",
     "version": "0.0.0",
     "type": "module",
+    "private": true,
     "exports": {
         ".": "./src/index.ts",
         "./lib": "./src/pkg/prism_wasm.d.ts",
@@ -13,7 +14,10 @@
     "devDependencies": {
         "mono-dev": "catalog:"
     },
-    "nocheck": [
-        "/src/interfaces"
-    ]
+    "pistonight/mono-dev": {
+        "nocheck": [
+            "/src/interfaces"
+        ]
+    },
+    "imports": {}
 }

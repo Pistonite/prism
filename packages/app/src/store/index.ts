@@ -6,7 +6,7 @@ import type { PrismApi } from "prism-wasm";
 
 export type SvgOutput = (PrismOutput & { type: "output" })["data"];
 
-export type Store = {
+export interface Store {
     output: SvgOutput | undefined;
     scriptError: string;
     script: string;

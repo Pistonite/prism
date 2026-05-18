@@ -13,8 +13,8 @@ swc_ecma_parser.workspace = true
 swc_ecma_transforms_typescript.workspace = true
 
 # Additional feature required by wasm
-[dependencies.getrandom]
-version = "0.4.2"
+[target.'cfg(target_arch="wasm32")'.dependencies.getrandom]
+version = "0.3.4"
 optional = true
 
 [features]

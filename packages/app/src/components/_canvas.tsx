@@ -1,8 +1,8 @@
-import { useDark } from "@pistonite/pure-react";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { useDark } from "@pistonite/celera";
 import { makeStyles } from "@fluentui/react-components";
 
-import { useStore, setTranslate } from "self::store";
+import { useStore, setTranslate } from "#store";
 
 import { useCanvas } from "./useCanvas.ts";
 import { CanvasGrid } from "./CanvasGrid.tsx";

@@ -1,2 +1,2 @@
-/// <reference types="vite/client" />
+/// <reference types="mono-dev/app-types" />
 /// <reference lib="dom" />

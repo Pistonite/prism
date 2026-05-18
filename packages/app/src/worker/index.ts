@@ -4,7 +4,7 @@ import { bindPrismApi, type PrismApi } from "prism-wasm";
 
 import PrismWorker from "./main.ts?worker";
 
-export async function initPrismApi(): Promise<PrismApi> {
+export const initPrismApi = async (): Promise<PrismApi> => {
     const worker = new PrismWorker();
     const result = await wxWorker(worker)({
         api: bindPrismApi(),

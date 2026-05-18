@@ -34,9 +34,9 @@ tasks:
       - task: cargo:clippy-all
       - task: cargo:fmt-check
       - task: wasm-dev-build # need to generate the types
-      - task: ecma:mono-check
+      - task: ecma:check
 
   fix:
     cmds:
       - task: cargo:fmt-fix
-      - task: ecma:mono-fix
+      - task: ecma:fix
