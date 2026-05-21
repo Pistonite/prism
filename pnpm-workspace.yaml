@@ -1,10 +1,6 @@
 packages:
   - packages/app
-  - packages/mono-dev
-  - packages/intwc
-  - packages/intwc/vite-plugin
   - packages/prism-wasm
-  - packages/shared-controls
 
 catalog:
   "@fluentui/react-components": ^9.73.8
