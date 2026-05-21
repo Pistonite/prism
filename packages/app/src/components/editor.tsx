@@ -1,6 +1,7 @@
-import { makeStyles, Text, MessageBar, MessageBarBody } from "@fluentui/react-components";
-import { ResizeLayout } from "@pistonite/celera";
+import { makeStyles } from "@fluentui/react-components";
+import { ResizeLayout, useTranslation } from "@pistonite/celera";
 import { SimpleEditor, StatusItemPreset } from "@pistonite/intwc";
+import { useDebounce } from "@uidotdev/usehooks";
 
 import { setCodeWindowPercentage, setScript, useStore } from "#store";
 
@@ -23,6 +24,11 @@ export const Editor: React.FC = () => {
     const percentage = useStore((state) => state.codeWindowPercentage);
     const script = useStore((state) => state.script);
 
+    const consoleValueImmediate = scriptError ? scriptError : messages?.join("\n")  || "";
+    const consoleValue = useDebounce(consoleValueImmediate, 200);
+
+    const t = useTranslation();
+
     return (
         <ResizeLayout
             className={styles.container}
@@ -32,13 +38,17 @@ export const Editor: React.FC = () => {
         >
             <SimpleEditor
                 editorOptions={{
-                    lineNumbers: "on"
+                    lineNumbers: "on",
+                    minimap: {
+                        enabled: true
+                    }
                 }}
                 language="typescript"
                 value={script}
                 onValueChange={setScript}
                 filename="script.ts"
                 statusLeft={[
+                    t("input_window"),
                     StatusItemPreset.DiagnosticErrors,
                     StatusItemPreset.DiagnosticWarnings,
                     StatusItemPreset.DiagnosticHints,
@@ -49,20 +59,20 @@ export const Editor: React.FC = () => {
                     StatusItemPreset.Language,
                 ]}
             />
-            <div className={styles.console}>
-                {!!scriptError && (
-                    <MessageBar intent="error">
-                        <MessageBarBody>{scriptError}</MessageBarBody>
-                    </MessageBar>
-                )}
-                <div className={styles.consoleScroll}>
-                    {messages?.map((message, i) => (
-                        <Text key={i} font="monospace" block wrap>
-                            {message}
-                        </Text>
-                    ))}
-                </div>
-            </div>
+            <SimpleEditor
+                value={consoleValue}
+                onValueChange={() =>{}}
+                filename="console"
+                editorOptions={{
+                    readOnly: true
+                }}
+                statusLeft={[
+                    t("output_window")
+                ]}
+                statusRight={[
+                    StatusItemPreset.WordWrap,
+                ]}
+            />
         </ResizeLayout>
     );
 };

@@ -7,7 +7,8 @@ export const getEditorComponent = async () => {
     await initCodeEditor({
         language: {
             typescript: {
-                extraLibs: [{ name: "prism-lib.ts", content: PrismLibTs }],
+                lib: ["esnext"],
+                customLibs: [{ name: "prism-lib.ts", content: PrismLibTs }],
             },
         },
     });

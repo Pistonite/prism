@@ -7,7 +7,9 @@ use wasm_bindgen::prelude::*;
 #[tsify(into_wasm_abi)]
 #[serde(tag = "type", content = "data", rename_all = "camelCase")]
 pub enum PrismOutput {
-    TranspileError,
+    TranspileError {
+        message: String,
+    },
     Output {
         /// If the script has thrown an error
         has_error: bool,
@@ -22,7 +24,9 @@ pub enum PrismOutput {
 pub fn run_prism_script(script: String, force_square: bool) -> PrismOutput {
     let transpiled_script = match prism_transpile::standalone_to_js(&script) {
         Ok(script) => script,
-        Err(_) => return PrismOutput::TranspileError,
+        Err(e) => return PrismOutput::TranspileError { 
+            message: format!("{e:?}")
+        },
     };
     let result = prism_lib::execute_script(&transpiled_script);
     let polygons = prism_lib::polygons_from_layers(result.layers);
