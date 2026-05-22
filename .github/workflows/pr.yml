@@ -5,7 +5,7 @@ on:
       - main
 
 jobs:
-  check:
+  check-pr:
     runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - uses: Pistonight/mono-dev/actions/setup@main
@@ -18,28 +18,5 @@ jobs:
       - run: pnpm install
       - run: task post-install
       - run: task check
-  test:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
-    steps:
-      - uses: Pistonight/mono-dev/actions/setup@main
-        with:
-          mono-dev: false
-          ecma-pnpm: true
-          rust: stable
-          tool-cargo-binstall: workex=Pistonite/workex
-      - run: pnpm install
-      - run: task post-install
       - run: task test
-  build-app:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
-    steps:
-      - uses: Pistonight/mono-dev/actions/setup@main
-        with:
-          mono-dev: false
-          ecma-pnpm: true
-          rust: stable
-          rust-wasm: true
-          tool-cargo-binstall: workex=Pistonite/workex
-      - run: pnpm install
-      - run: task post-install
       - run: task build-dev
