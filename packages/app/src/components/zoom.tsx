@@ -1,10 +1,10 @@
 import { Slider, Text, Tooltip, Button, makeStyles } from "@fluentui/react-components";
 import { ZoomIn24Regular, ZoomOut24Regular } from "@fluentui/react-icons";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@pistonite/celera";
 
-import { useStore } from "self::store";
+import { useStore } from "#store";
 
-import { MAX_ZOOM, MIN_ZOOM } from "./useCanvas.ts";
+import { MAX_ZOOM, MIN_ZOOM } from "./use_canvas.tsx";
 
 /// The visual range of the control. 0 is in the middle. 100 means -100 to 100
 const SLIDER_RANGE = 100;
@@ -35,23 +35,26 @@ const sliderToScale = (value: number, min: number, max: number): number => {
     return r * (max - 1) + 1;
 };
 
-/// Prop for zoom control
-type ZoomProps = { set: (zoom: number) => void };
+/** Prop for zoom control */
+interface ZoomProps {
+    set: (zoom: number) => void;
+}
 
 const useStyles = makeStyles({
     zoomLabel: { minWidth: "40px", textAlign: "end" },
 });
 
 /** Zoom button and slider*/
-export const Zoom: React.FC<ZoomProps> = ({ set }) => {
+export const Zoom: React.FC<ZoomProps> = (props) => {
+    const { set } = props;
     const min = MIN_ZOOM;
     const max = MAX_ZOOM;
     const zoom = useStore((state) => state.zoom);
-    const { t } = useTranslation();
+    const t = useTranslation();
     const styles = useStyles();
     return (
         <>
-            <Tooltip content={t("ui.zoom_out")} relationship="label">
+            <Tooltip content={t("zoom_out")} relationship="label">
                 <Button
                     appearance="subtle"
                     icon={<ZoomOut24Regular />}
@@ -69,7 +72,7 @@ export const Zoom: React.FC<ZoomProps> = ({ set }) => {
                     set(sliderToScale(data.value, min, max));
                 }}
             />
-            <Tooltip content={t("ui.zoom_in")} relationship="label">
+            <Tooltip content={t("zoom_in")} relationship="label">
                 <Button
                     appearance="subtle"
                     icon={<ZoomIn24Regular />}

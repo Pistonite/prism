@@ -11,16 +11,15 @@ jobs:
     steps:
       - uses: Pistonight/mono-dev/actions/setup@main
         with:
-          runner: blacksmith
-          submodules: true
+          mono-dev: false
           ecma-pnpm: true
-          ecma-bun: true
           rust: stable
           rust-wasm: true
           tool-cargo-binstall: workex=Pistonite/workex
-      - run: task install-ci
+      - run: pnpm install
+      - run: task post-install
       - run: task build
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: packages/app/dist
           retention-days: 3
@@ -38,4 +37,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

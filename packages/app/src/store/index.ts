@@ -6,7 +6,7 @@ import type { PrismApi } from "prism-wasm";
 
 export type SvgOutput = (PrismOutput & { type: "output" })["data"];
 
-export type Store = {
+export interface Store {
     output: SvgOutput | undefined;
     scriptError: string;
     script: string;
@@ -17,7 +17,7 @@ export type Store = {
     translateY: number;
     sideWindowPercentage: number;
     codeWindowPercentage: number;
-};
+}
 
 export const useStore = create<Store>()(() => ({
     output: undefined,
@@ -97,7 +97,7 @@ export function initStore(api: PrismApi): Store {
             if (result.val.type === "transpileError") {
                 useStore.setState({
                     output: undefined,
-                    scriptError: "Transpile Error",
+                    scriptError: result.val.data.message,
                 });
                 return;
             }

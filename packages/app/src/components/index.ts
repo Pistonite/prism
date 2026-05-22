@@ -1,3 +1,2 @@
-export * from "./Canvas.tsx";
-export * from "./Editor.tsx";
-export * from "./Toolbar.tsx";
+export * from "./canvas.tsx";
+export * from "./toolbar.tsx";

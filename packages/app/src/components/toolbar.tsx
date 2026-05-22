@@ -1,42 +1,33 @@
-import { Tooltip, Text, ToggleButton, makeStyles, Button } from "@fluentui/react-components";
-import { fsSave } from "@pistonite/pure/fs";
-import { useTranslation } from "react-i18next";
+import { Tooltip, Text, ToggleButton, Button } from "@fluentui/react-components";
+import { fsSave } from "@pistonite/webfs";
 import { ArrowDownload24Regular, Grid24Regular, Square24Regular } from "@fluentui/react-icons";
-import { useDark } from "@pistonite/pure-react";
-import { DarkToggle, GitHubLink, LanguagePicker } from "@pistonite/shared-controls";
+import { DarkToggle, GitHubLink, LanguagePicker, useDark, useTranslation } from "@pistonite/celera";
 
-import { setForceSquare, setShowGrid, useStore, useSvgContent } from "self::store";
+import { setForceSquare, setShowGrid, useStore, useSvgContent } from "#store";
 
-import { Zoom } from "./Zoom.tsx";
+import { Zoom } from "./zoom.tsx";
+import { useStyleEngine } from "./style.ts";
 
-export type ToolbarProps = { setZoom: (zoom: number) => void };
+export interface ToolbarProps {
+    setZoom: (zoom: number) => void;
+}
 
-const useStyles = makeStyles({
-    toolbar: {
-        display: "flex",
-        flexDirection: "row",
-        gap: "4px",
-        alignItems: "center",
-        padding: "4px",
-    },
-    referenceText: { margin: "0" },
-});
-
-export const Toolbar: React.FC<ToolbarProps> = ({ setZoom }) => {
-    const { t } = useTranslation();
+export const Toolbar: React.FC<ToolbarProps> = (props) => {
+    const { setZoom } = props;
+    const t = useTranslation();
     const showGrid = useStore((state) => state.showGrid);
     const forceSquare = useStore((state) => state.forceSquare);
-    const styles = useStyles();
     const svg = useSvgContent();
     const dark = useDark();
+    const m = useStyleEngine();
 
     return (
         <div style={{ backgroundColor: dark ? "#00000066" : "#ffffff66" }}>
-            <div className={styles.toolbar}>
+            <div className={m("flex-row flex-centera gap-4 pad-4")}>
                 <Text>
-                    {t("ui.size")}: {toHumanReadableBytes(svg.length)}{" "}
+                    {t("size")}: {toHumanReadableBytes(svg.length)}{" "}
                 </Text>
-                <Tooltip content={t("ui.download")} relationship="label">
+                <Tooltip content={t("download")} relationship="label">
                     <Button
                         appearance="subtle"
                         icon={<ArrowDownload24Regular />}
@@ -45,7 +36,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ setZoom }) => {
                         }}
                     />
                 </Tooltip>
-                <Tooltip content={t("ui.square_icon")} relationship="label">
+                <Tooltip content={t("square_icon")} relationship="label">
                     <ToggleButton
                         appearance="subtle"
                         icon={<Square24Regular />}
@@ -55,7 +46,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ setZoom }) => {
                         }}
                     />
                 </Tooltip>
-                <Tooltip content={t("ui.toggle_grid")} relationship="label">
+                <Tooltip content={t("toggle_grid")} relationship="label">
                     <ToggleButton
                         appearance="subtle"
                         icon={<Grid24Regular />}

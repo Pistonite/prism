@@ -1,15 +1,12 @@
 {
-    "version": "0.1.1",
+    "version": "0.1.2",
     "pnpm": {
-        "patchedDependencies": {
-            "monaco-editor@0.52.2": "packages/intwc/patches/monaco-editor@0.52.2.patch"
-        },
         "onlyBuiltDependencies": [
-            "@swc/core",
             "esbuild"
         ]
     },
     "devDependencies": {
-        "eslint": "^9.31.0"
+        "eslint": "^9",
+        "mono-dev": "catalog:"
     }
 }

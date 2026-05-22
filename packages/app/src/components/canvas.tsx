@@ -1,35 +1,25 @@
-import { useDark } from "@pistonite/pure-react";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { makeStyles } from "@fluentui/react-components";
+import { useDark } from "@pistonite/celera";
 
-import { useStore, setTranslate } from "self::store";
+import { useStore, setTranslate } from "#store";
 
-import { useCanvas } from "./useCanvas.ts";
-import { CanvasGrid } from "./CanvasGrid.tsx";
+import { useCanvas } from "./use_canvas.tsx";
+import { CanvasGrid } from "./canvas_grid.tsx";
+import { useStyleEngine } from "./style.ts";
 
-const useStyles = makeStyles({
-    canvasContainer: {
-        position: "relative",
-        width: "100%",
-        height: "100%",
-        overflow: "hidden",
-    },
-    svgContainer: { backgroundColor: "transparent" },
-});
-
-export type CanvasApi = {
+export interface CanvasApi {
     /** Change zoom level center at the canvas center */
     setZoomAtCanvasCenter: (zoom: number) => void;
     /** Change zoom level center at the client point (relative to canvas origin) */
     setZoomAtClientPoint: (zoom: number, clientX: number, clientY: number) => void;
-};
+}
 
 export const Canvas = forwardRef<CanvasApi>((_, ref) => {
     const canvasApi = useCanvas();
 
     useImperativeHandle(ref, () => canvasApi, [canvasApi]);
 
-    const { canvasRef, setZoomAtClientPoint } = canvasApi;
+    const { canvasRef, width, height, setZoomAtClientPoint } = canvasApi;
     const zoom = useStore((state) => state.zoom);
     const translateX = useStore((state) => state.translateX);
     const translateY = useStore((state) => state.translateY);
@@ -37,13 +27,13 @@ export const Canvas = forwardRef<CanvasApi>((_, ref) => {
     const [dragStart, setDragStart] = useState<[number, number] | undefined>();
     const dark = useDark();
     const showGrid = useStore((state) => state.showGrid);
-    const styles = useStyles();
+    const m = useStyleEngine();
 
     const svgRef = useUpdateSvg();
 
     return (
         <div
-            className={styles.canvasContainer}
+            className={m("pos-rel wh-100 overflow-hidden")}
             ref={canvasRef}
             style={{ backgroundColor: dark ? "#222222" : "#eeeeee" }}
             onMouseDown={(e) => {
@@ -69,8 +59,8 @@ export const Canvas = forwardRef<CanvasApi>((_, ref) => {
         >
             {!dragStart && showGrid && (
                 <CanvasGrid
-                    width={canvasRef.current?.clientWidth || 0}
-                    height={canvasRef.current?.clientHeight || 0}
+                    width={width}
+                    height={height}
                     color={dark ? "#555555" : "#cccccc"}
                     axisColor={dark ? "#eeeeee" : "#111111"}
                 />

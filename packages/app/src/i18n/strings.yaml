@@ -1,0 +1,19 @@
+en:
+  zoom_in: Zoom in
+  zoom_out: Zoom out
+  toggle_grid: Toggle grid
+  size: File size
+  square_icon: Square icon
+  download: Download SVG
+  input_window: Prism Script
+  output_window: Console Output
+zh:
+  zoom_in: 放大
+  zoom_out: 缩小
+  toggle_grid: 切换网格
+  size: 文件大小
+  square_icon: 正方形图标
+  download: 下载 SVG
+  input_window: Prism脚本
+  output_window: 命令行输出
+

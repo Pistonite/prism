@@ -2,15 +2,11 @@ version: '3'
 
 includes:
   cargo:
-    taskfile: ../mono-dev/task/cargo.yaml
+    taskfile: ../../node_modules/mono-dev/task/cargo.yaml
     internal: true
+    optional: true
 
 tasks:
-  dev:
-    desc: Run Tests in Watch Mode
-    cmds:
-      - cargo watch -x test
-
   test:
     desc: Run Tests
     cmds:

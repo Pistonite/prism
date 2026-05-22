@@ -1,15 +1,6 @@
-import { defineConfig } from "vite";
-import intwc from "@pistonite/vite-plugin-intwc";
-import monodev from "mono-dev/vite";
+import intwc from "@pistonite/intwc/vite-plugin";
+import { configure } from "mono-dev/app-build-config";
 
-const monodevConfig = monodev({
-    wasm: true,
-    worker: "es",
-});
-
-// https://vite.dev/config/
-export default defineConfig(() => {
-    return monodevConfig({
-        plugins: [intwc({ basicLanguages: ["typescript"], typescript: true })],
-    });
+export default configure({
+    plugins: [intwc({ languages: ["typescript"], translations: ["zh-cn"] })],
 });
