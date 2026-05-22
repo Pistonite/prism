@@ -7,7 +7,7 @@ import { setSideWindowPercentage, useStore } from "#store";
 import { useStyleEngine } from "./components/style";
 
 const EditorLazy = lazy(async () => {
-    const { getEditorComponent } = await import ("./editor.ts");
+    const { getEditorComponent } = await import("./editor.ts");
     return { default: await getEditorComponent() };
 });
 
@@ -47,8 +47,14 @@ export const App: React.FC = () => {
                     setValuePercent={setSideWindowPercentage}
                 >
                     <div className={styles.container}>
-                        <Suspense fallback={<div className={m("flex flex-center h-100")}><Spinner size="huge"/></div>}>
-                        <EditorLazy />
+                        <Suspense
+                            fallback={
+                                <div className={m("flex flex-center h-100")}>
+                                    <Spinner size="huge" />
+                                </div>
+                            }
+                        >
+                            <EditorLazy />
                         </Suspense>
                     </div>
                     <div className={styles.container}>

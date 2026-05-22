@@ -6,26 +6,10 @@ includes:
     flatten: true
     optional: true
 
-  app:
-    taskfile: ./packages/app
-    dir: ./packages/app
-    internal: true
-
-  lib:
-    taskfile: ./packages/prism-lib
-    dir: ./packages/prism-lib
-    internal: true
-
-  wasm:
-    taskfile: ./packages/prism-wasm
-    dir: ./packages/prism-wasm
-    internal: true
-
-  cli:
-    taskfile: ./packages/prism-cli
-    dir: ./packages/prism-cli
-    internal: true
-  
+  app:  { taskfile: ./packages/app,        dir: ./packages/app,        internal: true }
+  lib:  { taskfile: ./packages/prism-lib,  dir: ./packages/prism-lib,  internal: true }
+  wasm: { taskfile: ./packages/prism-wasm, dir: ./packages/prism-wasm, internal: true }
+  cli:  { taskfile: ./packages/prism-cli,  dir: ./packages/prism-cli,  internal: true }
 
 tasks:
   install-cargo-extra-tools:
@@ -63,9 +47,8 @@ tasks:
       - task: lib:test
 
   build-dev:
-    desc: Sanity build pass
+    desc: Sanity build pass for web app
     cmds:
-      - task: cli:build
       - task: wasm:wasm-dev-build
       - task: app:build
 

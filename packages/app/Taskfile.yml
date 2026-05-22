@@ -9,16 +9,12 @@ includes:
 tasks:
   dev:
     - task: ecma:app-dev
-
   build:
     - task: ecma:app-build
-
   check:
     - task: ecma:check
-
   fix:
     - task: ecma:fix
-
   install:
     cmds:
       - cp ../prism-lib/src/runtime/ts/index.d.ts src/prism_lib.gen.ts

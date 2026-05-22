@@ -1,3 +1,5 @@
+<img src="https://github.com/Pistonite/prism/blob/main/packages/app/public/icon.png?raw=true" width="256px" align="right" />
+
 # Prism
 
 ![Build Badge](https://img.shields.io/github/check-runs/Pistonite/prism/main)

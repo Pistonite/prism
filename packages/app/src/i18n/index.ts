@@ -8,6 +8,6 @@ export const initI18n = (): Promise<void> => {
         supported: SupportedLanguages,
         default: "en",
         persist: true,
-        loader: async (language) => Strings[language] ,
+        loader: async (language) => Strings[language],
     });
 };

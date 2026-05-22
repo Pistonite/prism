@@ -13,4 +13,4 @@ export const getEditorComponent = async () => {
         },
     });
     return Editor;
-}
+};

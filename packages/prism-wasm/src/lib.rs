@@ -24,9 +24,11 @@ pub enum PrismOutput {
 pub fn run_prism_script(script: String, force_square: bool) -> PrismOutput {
     let transpiled_script = match prism_transpile::standalone_to_js(&script) {
         Ok(script) => script,
-        Err(e) => return PrismOutput::TranspileError { 
-            message: format!("{e:?}")
-        },
+        Err(e) => {
+            return PrismOutput::TranspileError {
+                message: format!("{e:?}"),
+            };
+        }
     };
     let result = prism_lib::execute_script(&transpiled_script);
     let polygons = prism_lib::polygons_from_layers(result.layers);

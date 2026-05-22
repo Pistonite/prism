@@ -97,7 +97,7 @@ export function initStore(api: PrismApi): Store {
             if (result.val.type === "transpileError") {
                 useStore.setState({
                     output: undefined,
-                    scriptError: result.val.data.message
+                    scriptError: result.val.data.message,
                 });
                 return;
             }

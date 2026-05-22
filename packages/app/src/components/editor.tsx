@@ -24,7 +24,7 @@ export const Editor: React.FC = () => {
     const percentage = useStore((state) => state.codeWindowPercentage);
     const script = useStore((state) => state.script);
 
-    const consoleValueImmediate = scriptError ? scriptError : messages?.join("\n")  || "";
+    const consoleValueImmediate = scriptError ? scriptError : messages?.join("\n") || "";
     const consoleValue = useDebounce(consoleValueImmediate, 200);
 
     const t = useTranslation();
@@ -40,8 +40,8 @@ export const Editor: React.FC = () => {
                 editorOptions={{
                     lineNumbers: "on",
                     minimap: {
-                        enabled: true
-                    }
+                        enabled: true,
+                    },
                 }}
                 language="typescript"
                 value={script}
@@ -61,17 +61,13 @@ export const Editor: React.FC = () => {
             />
             <SimpleEditor
                 value={consoleValue}
-                onValueChange={() =>{}}
+                onValueChange={() => {}}
                 filename="console"
                 editorOptions={{
-                    readOnly: true
+                    readOnly: true,
                 }}
-                statusLeft={[
-                    t("output_window")
-                ]}
-                statusRight={[
-                    StatusItemPreset.WordWrap,
-                ]}
+                statusLeft={[t("output_window")]}
+                statusRight={[StatusItemPreset.WordWrap]}
             />
         </ResizeLayout>
     );
