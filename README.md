@@ -1,4 +1,4 @@
-<img src="https://github.com/Pistonite/prism/blob/main/packages/app/public/icon.png?raw=true" width="256px" align="right" />
+<img src="https://github.com/Pistonite/prism/blob/main/packages/app/public/icon.svg?raw=true" width="256px" align="right" />
 
 # Prism
 
