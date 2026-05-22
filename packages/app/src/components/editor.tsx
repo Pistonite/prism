@@ -1,24 +1,13 @@
-import { makeStyles } from "@fluentui/react-components";
 import { ResizeLayout, useTranslation } from "@pistonite/celera";
 import { SimpleEditor, StatusItemPreset } from "@pistonite/intwc";
 import { useDebounce } from "@uidotdev/usehooks";
 
 import { setCodeWindowPercentage, setScript, useStore } from "#store";
 
-const useStyles = makeStyles({
-    container: { width: "100%", height: "100%" },
-    console: {
-        padding: "8px",
-        boxSizing: "border-box",
-        overflowY: "auto",
-        overflowX: "hidden",
-        height: "100%",
-    },
-    consoleScroll: { maxHeight: 0 },
-});
+import { useStyleEngine } from "./style.ts";
 
 export const Editor: React.FC = () => {
-    const styles = useStyles();
+    const m = useStyleEngine();
     const scriptError = useStore((state) => state.scriptError);
     const messages = useStore((state) => state.output?.messages);
     const percentage = useStore((state) => state.codeWindowPercentage);
@@ -31,7 +20,7 @@ export const Editor: React.FC = () => {
 
     return (
         <ResizeLayout
-            className={styles.container}
+            className={m("wh-100")}
             vertical
             valuePercent={percentage}
             setValuePercent={setCodeWindowPercentage}
