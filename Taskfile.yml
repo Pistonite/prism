@@ -91,7 +91,7 @@ tasks:
   publish:
     vars:
       VERSION:
-        sh: cargo run -- --version | tr -d 'prism-cli '
+        sh: cargo run -- --version | tr -d 'prism\-cli '
     cmds:
       - git tag 'v{{.VERSION}}'
       - git push origin 'v{{.VERSION}}'
