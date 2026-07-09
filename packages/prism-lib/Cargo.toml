@@ -14,7 +14,7 @@ thiserror.workspace = true
 
 # WASM stuff
 tsify = { version = "0.5.6", default-features = false, features = ["js"], optional = true }
-wasm-bindgen = { version = "0.2.121", optional = true }
+wasm-bindgen = { version = "0.2.126", optional = true }
 
 [features]
 wasm = [
