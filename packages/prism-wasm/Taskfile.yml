@@ -17,6 +17,7 @@ tasks:
         vars:
           PACKAGE: prism_wasm
           WASM_PACK_ARGS: -t bundler --out-dir src/pkg --no-pack
+          TARGET_DIR: ../../target
 
   wasm-dev-build:
     cmds:
@@ -24,6 +25,7 @@ tasks:
         vars:
           PACKAGE: prism_wasm
           WASM_PACK_ARGS: -t bundler --out-dir src/pkg --no-pack --no-opt
+          TARGET_DIR: ../../target
 
   install:
     cmds:

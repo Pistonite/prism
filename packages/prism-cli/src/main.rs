@@ -5,7 +5,9 @@ use prism_lib::Svg;
 
 mod png;
 
+/// CLI for Prism, Isometric hex grid drawing tool using TypeScript
 #[derive(Clone, Debug, clap::Parser, AsRef)]
+#[clap(version)]
 struct Cli {
     /// The prism scripts to import and run, omit to print the Prism lib's .d.ts
     ///
