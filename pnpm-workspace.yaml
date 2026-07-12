@@ -1,15 +1,18 @@
+minimumReleaseAgeExclude:
+  - '@pistonite/*'
+
 packages:
   - packages/app
   - packages/prism-wasm
 
 catalog:
   "@fluentui/react-components": ^9.74.3
-  "@fluentui/react-icons": ^2.0.332
-  "@pistonite/pure": ^0.29.7
-  "@pistonite/celera": ^0.3.3
-  "@pistonite/workex": ^0.2.3
+  "@fluentui/react-icons": ^2.0.333
+  "@pistonite/pure": ^0.29.8
+  "@pistonite/celera": ^0.3.4
+  "@pistonite/workex": ^0.2.4
   "@pistonite/webfs": ^0.1.3
-  "@pistonite/intwc": ^0.1.6
+  "@pistonite/intwc": ^0.1.7
   "@uidotdev/usehooks": ^2.4.1
   "@types/react": ^19.2.17
   "@types/react-dom": ^19.2.3
